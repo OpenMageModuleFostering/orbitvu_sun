@@ -198,8 +198,10 @@ class Orbitvu_Sun_Model_Observer {
              */
             //-------------------------------------------------------------------------------------------------------
             if (Mage::app()->getRequest()->getParam('sun') != 'update') {
-                $product_id = Mage::registry('product')->getId();
-                $this->UpdateThumbnails($product_id);
+                if (is_object(Mage::registry('product'))) {
+                    $product_id = Mage::registry('product')->getId();
+                    $this->UpdateThumbnails($product_id);
+                }
             }
             //-------------------------------------------------------------------------------------------------------
             
