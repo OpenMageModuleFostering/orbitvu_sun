@@ -19,6 +19,12 @@ final class OrbitvuDatabaseInterface {
     private $db_prefix = '';
     
     /**
+     * Orbitvu tables previx
+     * @var string
+     */
+    private $db_orbitvu = 'orbitvu_';
+    
+    /**
      * Debug mode
      * @var boolean
      */
@@ -66,6 +72,10 @@ final class OrbitvuDatabaseInterface {
         //---------------------------------------------------------------------------------------------------
         if (!empty($prefix)) $this->db_prefix = $prefix;
         else $this->db_prefix = $this->database->GetPrefix();
+        
+        if ($this->is_sh()) {
+            $this->db_orbitvu .= 'sh_'; 
+        }
         //---------------------------------------------------------------------------------------------------
         $this->Config = $this->GetConfiguration();
         /*
@@ -98,10 +108,40 @@ final class OrbitvuDatabaseInterface {
      */
     public function SynchronizeAllProducts() {
         //----------------------------------------------------------
-        return $this->SynchronizePresentations($this->database->SynchronizeAllProducts(), $this->Connect);
+        return $this->SynchronizePresentations($this->database->SynchronizeAllProducts());
         //----------------------------------------------------------
     }
-
+    
+    /**
+     * @see OrbitvuDatabaseDriver.php\GetLocalSessionKey()
+     * @return string
+     */
+    public function GetLocalSessionKey() {
+        //----------------------------------------------------------
+        return $this->database->GetLocalSessionKey();
+        //----------------------------------------------------------
+    }
+    
+    /**
+     * @see OrbitvuDatabaseDriver.php\GetRemoteAuthorizationUrl()
+     * @return string
+     */
+    public function GetRemoteAuthorizationUrl() {
+        //----------------------------------------------------------
+        return $this->database->GetRemoteAuthorizationUrl();
+        //----------------------------------------------------------
+    }
+    
+    /**
+     * @see OrbitvuDatabaseDriver.php\GetRemoteUploadUrl()
+     * @return string
+     */
+    public function GetRemoteUploadUrl() {
+        //----------------------------------------------------------
+        return $this->database->GetRemoteUploadUrl();
+        //----------------------------------------------------------
+    }
+    
     /**
      * Get all configuration vars and values. 
      * Update local values to store values
@@ -117,7 +157,7 @@ final class OrbitvuDatabaseInterface {
         //----------------------------------------------------------
         $db_query = '
             SELECT *
-            FROM `'.$this->db_prefix.'orbitvu_configuration`	
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'configuration`	
         ';
 
         //---------------------------------------------------------------------
@@ -181,7 +221,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             INSERT INTO 
-                `'.$this->db_prefix.'orbitvu_configuration`
+                `'.$this->db_prefix.$this->db_orbitvu.'configuration`
                 (`var`, `value`, `type`)
 
             VALUES (
@@ -230,7 +270,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             SELECT *
-            FROM `'.$this->db_prefix.'orbitvu_products_presentations`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations`
 
             WHERE
                 `product_id` = '.intval($product_id).' 
@@ -253,7 +293,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             DELETE
-            FROM `'.$this->db_prefix.'orbitvu_products_presentations_items`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_items`
 
             WHERE
                 `_presentations_id` = '.intval($product['id']).' 
@@ -271,7 +311,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             INSERT INTO
-                `'.$this->db_prefix.'orbitvu_products_presentations_history`
+                `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_history`
                 (`product_id`, `orbitvu_id`, `unlink_date`)
             
             VALUES (
@@ -293,7 +333,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             DELETE FROM
-                `'.$this->db_prefix.'orbitvu_products_presentations`
+                `'.$this->db_prefix.$this->db_orbitvu.'products_presentations`
             
             WHERE
                 `id` = '.intval($product['id']).'
@@ -323,7 +363,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             SELECT *
-            FROM `'.$this->db_prefix.'orbitvu_products_thumbnails`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_thumbnails`
 
             WHERE
                 `product_id` = '.intval($product_id).'
@@ -350,7 +390,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             INSERT INTO 
-                `'.$this->db_prefix.'orbitvu_products_thumbnails`
+                `'.$this->db_prefix.$this->db_orbitvu.'products_thumbnails`
                 (`product_id`, `thumbnail`)
                 
             VALUES (
@@ -383,7 +423,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             DELETE FROM
-                `'.$this->db_prefix.'orbitvu_products_thumbnails`
+                `'.$this->db_prefix.$this->db_orbitvu.'products_thumbnails`
                 
             WHERE
                 `product_id` = '.intval($product_id).'
@@ -412,7 +452,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             SELECT *
-            FROM `'.$this->db_prefix.'orbitvu_products_presentations_history`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_history`
 
             WHERE
                 `product_id` = '.intval($product_id).'
@@ -447,7 +487,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             SELECT *
-            FROM `'.$this->db_prefix.'orbitvu_products_presentations_history`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_history`
 
             WHERE
                 `product_id` = '.intval($product_id).' AND
@@ -482,7 +522,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             SELECT *
-            FROM `'.$this->db_prefix.'orbitvu_products_presentations`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations`
 
             WHERE
                 `product_id` = '.intval($product_id).' 
@@ -516,7 +556,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             SELECT *
-            FROM `'.$this->db_prefix.'orbitvu_products_presentations`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations`
 
             WHERE
                 `product_id` = '.intval($product_id).' 
@@ -536,6 +576,33 @@ final class OrbitvuDatabaseInterface {
         if (isset($query['type'])) {
             //-------------------------------------------------------------------------------------------------------
             $ret = $query;
+            
+            /**
+             * SelfHosted data
+             */
+            if ($this->is_sh() && intval($ret['orbitvu_id']) > 0) {
+                $db_query_sh = '
+                    SELECT *
+                    FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_cache`
+
+                    WHERE
+                        `id` = '.intval($ret['orbitvu_id']).' 
+
+                    LIMIT 1
+                ';
+
+                //---------------------------------------------------------------------
+                /**/	$this->return_sql_debug(__FUNCTION__, $db_query_sh);
+                //---------------------------------------------------------------------
+
+                $qsh = $this->database->FetchAll($db_query_sh);
+                $qsh = $qsh[0];
+                
+                $ret['dir'] = $qsh['dir'];
+                $ret['presentation_name'] = $qsh['name'];
+                $ret['content'] = json_decode($qsh['content']);
+            }
+            
             $ret['items'] = array();
             
             $ret['types'] = array();
@@ -543,7 +610,7 @@ final class OrbitvuDatabaseInterface {
             //-------------------------------------------------------------------------------------------------------
             $db_sub_query = '
                 SELECT *
-                FROM `'.$this->db_prefix.'orbitvu_products_presentations_items`
+                FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_items`
 
                 WHERE
                     `_presentations_id` = '.$ret['id'].'
@@ -588,7 +655,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             SELECT `id`
-            FROM `'.$this->db_prefix.'orbitvu_products_presentations`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations`
 
             WHERE
                 `product_id` = '.intval($product_id).'
@@ -606,21 +673,21 @@ final class OrbitvuDatabaseInterface {
 
         $db_query = '
             INSERT INTO 
-                `'.$this->db_prefix.'orbitvu_products_presentations`
+                `'.$this->db_prefix.$this->db_orbitvu.'products_presentations`
                 (`product_id`, `orbitvu_id`, `name`, `type`)
 
             VALUES (
                 '.intval($product_id).',
                 '.intval($orbitvu_id).',
                 \''.$this->database->Escape($presentation_name).'\',
-                \'sun\'	
+                \''.($this->is_sh() ? 'local' : 'sun').'\'	
             )
 
             ON DUPLICATE KEY 
 
             UPDATE
                 `name` = \''.$this->database->Escape($presentation_name).'\',
-                `type` = \'sun\'
+                `type` = \''.($this->is_sh() ? 'local' : 'sun').'\'
         ';
 
         //---------------------------------------------------------------------
@@ -672,10 +739,10 @@ final class OrbitvuDatabaseInterface {
             //-------------------------------------------------------------------------------------------------------
             $db_query = '
                 SELECT `id`
-                FROM `'.$this->db_prefix.'orbitvu_products_presentations_items`
+                FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_items`
 
                 WHERE
-                    `orbitvu_id` = '.intval($item['orbitvu_id']).' AND
+                    `orbitvu_id` = \''.$this->database->Escape($item['orbitvu_id']).'\' AND
                     `_presentations_id` = '.intval($presentation_id).'
 
                 LIMIT 1
@@ -694,18 +761,19 @@ final class OrbitvuDatabaseInterface {
                 
                 $db_query = '
                     INSERT INTO
-                        `'.$this->db_prefix.'orbitvu_products_presentations_items`
-                        (`_presentations_id`, `orbitvu_id`, `priority`, `name`, `type`, `thumbnail`, `path`, `config`) 
+                        `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_items`
+                        (`_presentations_id`, `orbitvu_id`, `priority`, `name`, `type`, `thumbnail`, `path`, `config`, `status`) 
 
                     VALUES (
                         '.intval($presentation_id).', 
-                        '.intval($item['orbitvu_id']).', 
+                        \''.$this->database->Escape($item['orbitvu_id']).'\', 
                         '.($priority).',
                         \''.$this->database->Escape($item['name']).'\',
                         '.intval($item['type']).', 		
                         \''.($item['thumbnail']).'\',
                         \''.($item['path']).'\',
-                        \''.$this->database->Escape($item['config']).'\'
+                        \''.$this->database->Escape($item['config']).'\',
+                        \''.($item['status']).'\'
                     )
                 ';
 
@@ -740,6 +808,16 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $product_name = $product['product_name'];
         $product_sku = $product['product_sku'];
+        
+        //----------------------------------------------------------
+        /**/		$this->return_debug(array(
+        /**/			'function' => __FUNCTION__,
+        /**/			'product_name' => $product_name,
+        /**/                    'product_sku' => $product_sku,
+        /**/                    'line'      => __LINE__
+        /**/		));			
+        //----------------------------------------------------------
+
         //-------------------------------------------------------------------------------------------------------
         $count = 0;
         //-------------------------------------------------------------------------------------------------------
@@ -749,6 +827,15 @@ final class OrbitvuDatabaseInterface {
                 'name'      => $product_sku
             ));
             
+            //----------------------------------------------------------
+            /**/		$this->return_debug(array(
+            /**/			'function'      => __FUNCTION__,
+            /**/                        'line'          => __LINE__,
+            /**/			'match_type'    => 'name='.$product_sku,
+            /**/                        'presentations' => $presentations_choose,
+            /**/		));			
+            //----------------------------------------------------------
+            
             $count = $presentations_choose->count;
             
             if ($count == 0) {
@@ -756,6 +843,15 @@ final class OrbitvuDatabaseInterface {
                     'page_size' => 1,
                     'sku'       => $product_sku
                 ));
+                
+                //----------------------------------------------------------
+                /**/		$this->return_debug(array(
+                /**/			'function'      => __FUNCTION__,
+                /**/                    'line'          => __LINE__,
+                /**/			'match_type'    => 'sku='.$product_sku,
+                /**/                    'presentations' => $presentations_choose,
+                /**/		));			
+                //----------------------------------------------------------
                 
                 $count = $presentations_choose->count;
             }
@@ -766,6 +862,15 @@ final class OrbitvuDatabaseInterface {
                'page_size' => 1,
                'name'      => $product_name
             ));
+            
+            //----------------------------------------------------------
+            /**/		$this->return_debug(array(
+            /**/			'function'      => __FUNCTION__,
+            /**/                        'line'          => __LINE__,
+            /**/			'match_type'    => 'name='.$product_name,
+            /**/                        'presentations' => $presentations_choose,
+            /**/		));			
+            //----------------------------------------------------------
 
             $count = $presentations_choose->count;
 
@@ -774,6 +879,15 @@ final class OrbitvuDatabaseInterface {
                    'page_size' => 1,
                    'sku'      => $product_name
                 ));
+                
+                //----------------------------------------------------------
+                /**/		$this->return_debug(array(
+                /**/			'function'      => __FUNCTION__,
+                /**/                    'line'          => __LINE__,
+                /**/			'match_type'    => 'sku='.$product_name,
+                /**/                    'presentations' => $presentations_choose,
+                /**/		));			
+                //----------------------------------------------------------
 
                 $count = $presentations_choose->count;
             }
@@ -886,7 +1000,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------        
         $db_query = '
             SELECT *
-            FROM `'.$this->db_prefix.'orbitvu_products_presentations`
+            FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations`
         ';
 
         //---------------------------------------------------------------------
@@ -913,14 +1027,14 @@ final class OrbitvuDatabaseInterface {
 
             $db_query_items = '
                 SELECT *
-                FROM `'.$this->db_prefix.'orbitvu_products_presentations_items`
+                FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_items`
                         
                 WHERE
                     `_presentations_id` = '.intval($q['id']).'
             ';
 
             //---------------------------------------------------------------------
-            /**/	$this->return_sql_debug(__FUNCTION__, $db_query);
+            /**/	$this->return_sql_debug(__FUNCTION__, $db_query_items);
             //---------------------------------------------------------------------
 
             $items_current = $this->database->FetchAll($db_query_items);
@@ -959,6 +1073,329 @@ final class OrbitvuDatabaseInterface {
         return true;
         //-------------------------------------------------------------------------------------------------------
     }
+    
+    /**
+     * Is SH?
+     * @return boolean
+     */
+    private function is_sh() {
+        //-------------------------------------------------------------------------------------------------------
+        $v = OrbitvuDatabaseDriver::DRIVER_VERSION;
+        return $v{2} == '1';
+        //-------------------------------------------------------------------------------------------------------
+    }
+
+    /**
+     * Get presentation data from XML file
+     * from self hosted presentation
+     * @param string $dir_or_file Directory or .ovus file path
+     * @return stdClass|boolean
+     */
+    public function GetHostedPresentationData($dir_or_file) {
+        //-------------------------------------------------------------------------------------------------------
+        /**
+         * Associations
+         */
+        $dir_name = explode('/', $dir_or_file);
+        $dir_name = $dir_name[count($dir_name)-1];
+        $relative_dir = $this->Config->presentations_path_relative.$dir_name;
+        
+        $cur = new stdClass();
+        $cur->config = new stdClass();
+        
+        /**
+         * Check if file is .ovus (Orbitvu Sequence) or .zip package.
+         * If so, unpack archive and refresh page
+         * 
+         * Console like installator, needs to be working with any e-commerce platform/CMS),
+         * that's why:
+         * - I didn't used templates,
+         * - I used exit() to stop rendering page by any platform we use,
+         * - I used JavaScript redirect as this will be run in a browser, but one archive at the time 
+         * (a way to trick every server limits)
+         */
+        if (stristr($dir_name, '.ovus') || stristr($dir_name, '.zip')) {
+            //-------------------------------------------------------------------------------------------------------
+            $this->Connect->InstallPresentation($dir_or_file);
+            //-------------------------------------------------------------------------------------------------------
+            //-------------------------------------------------------------------------------------------------------
+
+            
+            // The old way
+            /**
+             * Not much data if is still a package
+             *
+            
+            $cur->is_ovus = true;
+            $cur->is_downloaded_from_sun = false;
+            
+            $res = array(
+                'name'          => str_ireplace('.ovus', '', $dir_name),
+                'category_1'    => '',
+                'category_2'    => '',
+                'create_date'   => null,
+                'sku'           => '',
+                'presentation'  => array(),
+                'id'            => $dir_name
+            );
+            
+            $dir_name = $res['name'];
+            /**/
+            //-------------------------------------------------------------------------------------------------------
+        }
+        else {
+            //-------------------------------------------------------------------------------------------------------
+            
+            /**
+             * Check if cached version exists
+             */
+            //-------------------------------------------------------------------------------------------------------
+            $db_query = '
+                SELECT *
+                FROM `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_cache`
+                        
+                WHERE
+                    `dir` = \''.$this->database->Escape($dir_or_file).'\'
+
+                LIMIT 1
+            ';
+
+            //---------------------------------------------------------------------
+            /**/	$this->return_sql_debug(__FUNCTION__, $db_query);
+            //---------------------------------------------------------------------
+
+            $query = $this->database->FetchAll($db_query);
+            $query = $query[0];
+        
+            //-------------------------------------------------------------------------------------------------------
+            /**/if (!empty($query['content']) && (strtotime($query['date']) == strtotime(date('Y-m-d')) || strtotime($query['date']) == strtotime(date('Y-m-d', strtotime('+1 days'))))) {
+                $content = json_decode($query['content']);
+                $content->id = $query['id'];
+                
+                return $content;
+            }
+            /**/
+            //-------------------------------------------------------------------------------------------------------
+            
+            $cur->is_ovus = false;
+            $cur->is_downloaded_from_sun = true;
+            
+            /**
+             * Check if package is Orbitvu presentation
+             */
+            //-------------------------------------------------------------------------------------------------------
+            if (!file_exists($dir_or_file.'/content.xml') && !file_exists($dir_or_file.'/content2.xml')) {
+                $dir_or_file .= '/'.$dir_name;
+                $cur->is_downloaded_from_sun = false;
+            }
+
+            /**
+             * If is not a presentation
+             * @return false
+             */
+            //-------------------------------------------------------------------------------------------------------
+            if (!file_exists($dir_or_file.'/content.xml') && !file_exists($dir_or_file.'/content2.xml')) {
+                return false;
+            }
+
+            /**
+             * Get XML files data
+             */
+            //-------------------------------------------------------------------------------------------------------
+            $files = array(
+                'config'    => file_get_contents($dir_or_file.'/config.xml'),
+                'meta'      => file_get_contents($dir_or_file.'/meta.xml'),
+                'content'   => file_get_contents($dir_or_file.'/content.xml')
+            );
+            //-------------------------------------------------------------------------------------------------------
+            
+            /**
+             * Parse XML files
+             * and get presentations data/details
+             */
+            //-------------------------------------------------------------------------------------------------------
+            $xml = new stdClass();
+            
+            $xml->config = $this->Connect->XMLtoArray($files['config']);
+            $xml->meta = $this->Connect->XMLtoArray($files['meta']);
+            $xml->content = $this->Connect->XMLtoArray($files['content']);
+            
+            if (file_exists($dir_or_file.'/content2.xml')) {
+                $files['content2'] = file_get_contents($dir_or_file.'/content2.xml');
+                $xml->content2 = $this->Connect->XMLtoArray($files['content2']);
+            }
+            //-------------------------------------------------------------------------------------------------------
+            
+            /**
+             * Data:
+             * config
+             */
+            //-------------------------------------------------------------------------------------------------------
+            $cur->config->xml_url = $xml->config['viewer-params']['xml_url'];
+            $cur->config->image_folder = $relative_dir.'/'.$xml->config['viewer-params']['image_folder'];
+            $cur->config->image_folder_full = $dir_or_file.'/'.$xml->config['viewer-params']['image_folder'];
+            $cur->config->image_folder_2d = $relative_dir.'/'.str_replace('/', '2d/', $xml->config['viewer-params']['image_folder']);
+            $cur->config->image_folder_2d_full = $dir_or_file.'/'.str_replace('/', '2d/', $xml->config['viewer-params']['image_folder']);
+            $cur->config->teaser = $xml->config['viewer-params']['teaser'];
+            $cur->config->auto_rotate = $xml->config['viewer-params']['auto_rotate'];
+            $cur->config->auto_rotate_dir = $xml->config['viewer-params']['auto_rotate_dir'];
+            $cur->config->rotate_dir = $xml->config['viewer-params']['rotate_dir'];
+            
+            /**
+             * Data:
+             * categories
+             */ 
+            //-------------------------------------------------------------------------------------------------------
+            $res = array(
+                'category_1'    => ($xml->meta['category_1_name'] != 'Category 1' ? $xml->meta['category_1_name'] : ''),
+                'category_2'    => ($xml->meta['category_2_name'] != 'Category 2' ? $xml->meta['category_2_name'] : ''),
+                'sku'           => $xml->meta['sku'],
+                'create_date'   => $xml->meta['creation-date'].' '.$xml->meta['creation-time'],
+                'name'          => (!empty($xml->content2['properties']['property'][0]) ? $xml->content2['properties']['property'][0] : $dir_name),
+                'presentation'  => array(),
+                'id'            => $dir_name
+            );
+            
+            /**
+             * 360* Presentation
+             */
+            $first_image = '';
+            //-------------------------------------------------------------------------------------------------------
+            if (isset($xml->content['img'][1])) {
+                $seq360 = new stdClass();
+                $img_tree = $this->Connect->GetDirectoryTree($cur->config->image_folder_full);
+                sort($img_tree);
+                foreach ($img_tree as $search) {
+                    if (stristr($search, 'a_0_0')) {
+                        $first_image = str_replace($this->Config->presentations_path, $this->Config->presentations_path_relative, $search);
+                    }
+                }
+                
+                if (empty($first_image)) {
+                    $first_image = $xml->content['img'][0]['@attributes']['name'].'.'.$xml->content['img'][0]['@attributes']['ext'];
+                }
+                
+                $seq360->id = md5($dir_name.'_'.str_replace($this->Config->presentations_path_relative, '', $first_image));
+                $seq360->name = '';
+                $seq360->type = 1;
+                $seq360->type_display = 'ORBITVU 360';
+                $seq360->thumbnail_url = $first_image;
+                $seq360->script_url = '';
+                $seq360->view_url = '';
+                $seq360->max_width = $xml->content['@attributes']['maxWidth'];
+                $seq360->max_height = $xml->content['@attributes']['maxHeight'];
+
+                if (file_exists($dir_or_file.'/content2.xml')) {
+                    $seq360->content2_xml = true; 
+                }
+                else {
+                    $seq360->content2_xml = false; 
+                }
+
+                $res['presentation'][] = $seq360;
+                
+                $first_image = str_replace($this->Config->presentations_path, $this->Config->presentations_path_relative, $first_image);
+            }
+            
+            /**
+             * 2D Photos
+             */
+            //-------------------------------------------------------------------------------------------------------
+            $img_tree = $this->Connect->GetDirectoryTree($cur->config->image_folder_2d_full);
+            $images = $xml->content2['images']['img'];
+            
+            $i = 0;
+            foreach ($img_tree as $image) {
+                $img = $images[$i];
+                $img = $img['@attributes'];
+                $image = str_replace($this->Config->presentations_path, $this->Config->presentations_path_relative, $image);
+                
+                $current = new stdClass();
+                
+                $current->id = md5($dir_name.'_'.$img['name']);
+                $current->name = $img['name'];
+                $current->type = 3;
+                $current->type_display = 'image2d';
+                $current->thumbnail_url = $image;
+                $current->script_url = '';
+                $current->view_url = $image;
+                $current->max_width = $img['width'];
+                $current->max_height = $img['height'];
+                $current->content2_xml = '';
+                
+                $res['presentation'][] = $current;
+                
+                if ($i == 0) {
+                    $first_image = $cur->config->image_folder_2d.$img['name'];
+                }
+                
+                $i++;
+            }
+            
+            $res['thumbnail_url'] = $first_image;
+            
+            //-------------------------------------------------------------------------------------------------------
+        }
+        //-------------------------------------------------------------------------------------------------------
+        
+        $cur->local_url = $dir_or_file;
+
+        //$cur->id = $res['id'];
+        $cur->uid = '';
+
+        $cur->name = $res['name'];
+        $cur->sku = $res['sku'];
+        $cur->category_1 = $res['category_1'];
+        $cur->category_2 = $res['category_2']; 
+
+        $cur->create_date = $res['create_date'];
+        $cur->has_orbittour = false;
+        $cur->presentation_size = 0;
+
+        $cur->tags = array();
+        $cur->edit_url = '';
+        $cur->url = '';
+        $cur->thumbnail_url = $res['thumbnail_url'];
+        $cur->statistics_url = '';
+        $cur->orbittour_set = array();
+        $cur->page_size = 1;
+        $cur->presentationcontent_set = $res['presentation'];
+        
+        /**
+         * Add JSON data cache to database
+         * for presentations
+         */
+        //-------------------------------------------------------------------------------------------------------
+        if (!$cur->is_ovus) {
+            $db_query = '
+                INSERT INTO
+                    `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_cache`
+                    (`dir`, `name`, `date`, `content`)
+
+                VALUES (
+                    \''.$this->database->Escape($dir_or_file).'\',
+                    \''.$this->database->Escape($dir_name).'\',
+                    NOW(),
+                    \''.$this->database->Escape(json_encode($cur)).'\'
+                )
+                
+                ON DUPLICATE KEY 
+                UPDATE
+                    `content` = \''.$this->database->Escape(json_encode($cur)).'\',
+                    `date` = NOW()
+            ';
+            
+            //---------------------------------------------------------------------
+            /**/	$this->return_sql_debug(__FUNCTION__, $db_query);
+            //---------------------------------------------------------------------
+            
+            $query = $this->database->Query($db_query);
+        }
+        //-------------------------------------------------------------------------------------------------------
+
+        return $cur;
+        //-------------------------------------------------------------------------------------------------------
+    }
 
     /**
      * Get presentations from Orbitvu SUN
@@ -966,48 +1403,183 @@ final class OrbitvuDatabaseInterface {
      * @return stdClass
      */
     public function GetPresentationsList($params = false) {
-       //-------------------------------------------------------------------------------------------------------
-        if (is_array($params)) {
+        //-------------------------------------------------------------------------------------------------------
+        if ($this->is_sh()) {
             //-------------------------------------------------------------------------------------------------------
-            return $this->Connect->CallSUN('presentations', $params);
+            if ($this->Connect->IsConnected()) {
+                $results = $this->Connect->GetDirectoryTree($this->Config->presentations_path, true, (intval($params['page_size']) == 1 ? 0 : intval($params['page_size'])), intval($params['page']));
+            }
+            else {
+                /**
+                 * @fixme
+                 * Delete this after setting DEMO presentations
+                 *
+                $results = array(
+                    $this->Config->presentations_path.'/Untitled',
+                    $this->Config->presentations_path.'/watch',
+                    $this->Config->presentations_path.'/Testowa'
+                );
+                /**/
+                $results = base64decode('
+V3lKY0wzWmhjbHd2ZDNkM1hDOWtaWFl1YldGblpXNTBieTV2Y21KcGRIWjFMbU52YlZ3dmNIVmliR2xqWDJoMGJXeGNMMTl2Y21KcGRIWjFYM0J5WlhObGJuUmhkR2x2Ym5OY0wxd3ZWVzUwYVhSc1pXUWlMQ0pjTDNaaGNsd3ZkM2QzWEM5a1pYWXViV0ZuWlc1MGJ5NXZjbUpwZEhaMUxtTnZiVnd2Y0hWaWJHbGpYMmgwYld4Y0wxOXZjbUpwZEhaMVgzQnlaWE5sYm5SaGRHbHZibk5jTDF3dmQyRjBZMmdpTENKY0wzWmhjbHd2ZDNkM1hDOWtaWFl1YldGblpXNTBieTV2Y21KcGRIWjFMbU52YlZ3dmNIVmliR2xqWDJoMGJXeGNMMTl2Y21KcGRIWjFYM0J5WlhObGJuUmhkR2x2Ym5OY0wxd3ZWR1Z6ZEc5M1lTSmQ=');
+            }
+            
+            //----------------------------------------------------------
+            /**/		$this->return_debug(array(
+            /**/			'function'  => __FUNCTION__,
+            /**/                        'line'      => __LINE__,
+            /**/                        'type'      => 'SelfHosted',
+            /**/			'results'   => $results,
+            /**/                        'params'    => $params
+            /**/		));			
+            //----------------------------------------------------------
+            
+            $results_array = array();
+            foreach ($results as $dir) {
+                
+                /**
+                 * Parse presentation data (local)
+                 */
+                if ($cur = $this->GetHostedPresentationData($dir)) {
+                    
+                    $add_to_results = true;
+                    
+                    /**
+                     * Check filters
+                     */
+                    if (is_array($params)) {
+                        foreach ($params as $key => $val) {
+                            if (in_array($key, array('id', 'name', 'sku'))) {
+                                
+                                $bool = $cur->$key != $val && (!empty($cur->$key) || $cur->$key !== null || $cur->$key !== 0);
+                                
+                                /**
+                                if ($cur->name == 'watch') {
+                                    echo '<pre>';
+                                    echo '$cur-name = '.$cur->name."\n";
+                                    echo '$cur-sku = '.$cur->sku."\n";
+                                    echo '$key = '.$key."\n";
+                                    echo '$val = '.$val."\n";
+                                    echo '$cur->$key = '.$cur->$key."\n";
+                                    var_dump($cur->$key != $val);
+                                    var_dump(!empty($cur->$key));
+                                    var_dump($cur->$key !== null);
+                                    var_dump($cur->$key !== 0);
+                                    var_dump($bool);
+                                    echo '</pre>';
+                                }
+                                
+                                //----------------------------------------------------------
+                                /**/		$this->return_debug(array(
+                                /**/			'function'  => __FUNCTION__,
+                                /**/                    'line'      => __LINE__,
+                                /**/                    'type'      => 'SelfHosted',
+                                /**/			'param'     => $key.'='.$val,
+                                /**/                    'result'    => ($bool ? 'true' : 'false')
+                                /**/		));			
+                                //----------------------------------------------------------
+                                
+                                if ($bool) {
+                                    $add_to_results = false;
+                                }
+                                else {
+                                    $add_to_results = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    /**
+                     * Final array creating
+                     */
+                    if ($add_to_results) {
+                        $results_array[] = $cur;
+                    }
+                }
+                
+            }
+            
+            /*if (intval($params['page_size']) == 1) {
+                $results_array = array($results_array[0]);
+            }*/
+            
+            $response = array();
+            $response_results = new stdClass();
+            
+            /*
+            if (is_array($params)) {
+                $response_results->count = $this->Connect->GetPresentationsCount($this->Config->presentations_path);
+            }
+            else {
+                $response_results->count = count($results);
+            }*/
+            $response_results->count = count($results_array);
+            
+            $response_results->next = '';
+            $response_results->prev = '';
+            
+            if ($params['page_size'] > 0) {
+                $response_results->per_page = intval($params['page_size']);
+            }
+            $response_results->results = $results_array;
+            
+            //----------------------------------------------------------
+            /**/		$this->return_debug(array(
+            /**/			'function'  => __FUNCTION__,
+            /**/                        'line'      => __LINE__,
+            /**/                        'type'      => 'SelfHosted',
+            /**/			'results'   => $response_results,
+            /**/		));			
+            //----------------------------------------------------------
+            
+            return $response_results;
             //-------------------------------------------------------------------------------------------------------
         }
         else {
             //-------------------------------------------------------------------------------------------------------
-            $results = array();
-            $response_results = $stdClass;
-            $j = 0;
-            //-------------------------------------------------------------------------------------------------------	
-            do {
+            if (is_array($params)) {
                 //-------------------------------------------------------------------------------------------------------
-                if ($j == 0) {
-                    $response = $this->Connect->CallSUN('presentations');
-                    $response_results = $response;
-                }
-                else {
-                    $response = $this->Connect->CallSUN($response->next);
-                }
+                return $this->Connect->CallSUN('presentations', $params);
                 //-------------------------------------------------------------------------------------------------------
-                for ($i = 0, $n = count($response->results); $i < $n; $i++) {
+            }
+            else {
+                //-------------------------------------------------------------------------------------------------------
+                $results = array();
+                $response_results = $stdClass;
+                $j = 0;
+                //-------------------------------------------------------------------------------------------------------	
+                do {
                     //-------------------------------------------------------------------------------------------------------
-                    $results[] = $response->results[$i];
+                    if ($j == 0) {
+                        $response = $this->Connect->CallSUN('presentations');
+                        $response_results = $response;
+                    }
+                    else {
+                        $response = $this->Connect->CallSUN($response->next);
+                    }
                     //-------------------------------------------------------------------------------------------------------
+                    for ($i = 0, $n = count($response->results); $i < $n; $i++) {
+                        //-------------------------------------------------------------------------------------------------------
+                        $results[] = $response->results[$i];
+                        //-------------------------------------------------------------------------------------------------------
+                    }
+                    //-------------------------------------------------------------------------------------------------------
+                    $j++;
                 }
                 //-------------------------------------------------------------------------------------------------------
-                $j++;
+                while (!empty($response->next));
+                //-------------------------------------------------------------------------------------------------------
             }
             //-------------------------------------------------------------------------------------------------------
-            while (!empty($response->next));
+            $response_results->count = count($results);
+            $response_results->next = '';
+            $response_results->prev = '';
+            $response_results->results = $results;
+            //-------------------------------------------------------------------------------------------------------
+            return $response_results;
             //-------------------------------------------------------------------------------------------------------
         }
-        //-------------------------------------------------------------------------------------------------------
-        $response_results->count = count($results);
-        $response_results->next = '';
-        $response_results->prev = '';
-        $response_results->results = $results;
-        //-------------------------------------------------------------------------------------------------------
-        return $response_results;
-        //-------------------------------------------------------------------------------------------------------
     }
 
     /**
@@ -1046,7 +1618,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         if ($results->has_orbittour == '1') {
             $p_items[] = array(
-                'orbitvu_id'    => intval($results->orbittour_set[0]->id),
+                'orbitvu_id'    => ($results->orbittour_set[0]->id),
                 'name'          => 'OrbitTour',
                 'type'          => 0,
                 'thumbnail'     => $results->thumbnail_url,
@@ -1057,9 +1629,9 @@ final class OrbitvuDatabaseInterface {
         }
         //-------------------------------------------------------------------------------------------------------
      
-       /*
-        * Get other items
-        */
+        /*
+         * Get other items
+         */
         //-------------------------------------------------------------------------------------------------------
         $results = $results->presentationcontent_set;
         for ($i = 0, $n = count($results); $i < $n; $i++) {
@@ -1073,7 +1645,7 @@ final class OrbitvuDatabaseInterface {
             }
             //-------------------------------------------------------------------------------------------------------
             $p_items[] = array(
-                'orbitvu_id'    => intval($cur->id),
+                'orbitvu_id'    => ($cur->id),
                 'name'          => $cur->name,
                 'type'          => $cur->type,
                 'thumbnail'     => $cur->thumbnail_url,
@@ -1082,6 +1654,7 @@ final class OrbitvuDatabaseInterface {
                 'status'        => $status
             );
         }
+        
         //-------------------------------------------------------------------------------------------------------
         return $p_items;
         //-------------------------------------------------------------------------------------------------------
@@ -1147,7 +1720,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             UPDATE
-                `'.$this->db_prefix.'orbitvu_products_presentations_items`
+                `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_items`
             
             SET
                 `priority` = '.intval($new_priority).'
@@ -1188,7 +1761,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             UPDATE
-                `'.$this->db_prefix.'orbitvu_products_presentations_items`
+                `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_items`
             
             SET
                 `status` = \''.$status.'\'
@@ -1228,7 +1801,7 @@ final class OrbitvuDatabaseInterface {
         //-------------------------------------------------------------------------------------------------------
         $db_query = '
             DELETE FROM
-                `'.$this->db_prefix.'orbitvu_products_presentations_items`
+                `'.$this->db_prefix.$this->db_orbitvu.'products_presentations_items`
               
             WHERE
                 `id` = '.intval($item_id).'
@@ -1289,7 +1862,7 @@ final class OrbitvuDatabaseInterface {
 
         $db_query = '
             INSERT INTO
-                `'.$this->db_prefix.'orbitvu_log`
+                `'.$this->db_prefix.$this->db_orbitvu.'log`
                 (`_item_id`, `_item_table`, `action`, `comment`, `date`, `ip`)
 
             VALUES (
@@ -1418,4 +1991,17 @@ final class OrbitvuDatabaseInterface {
     }
     
 }
+
+/**
+ * Decodes data encoded with MIME base64 
+ * @param string $data The encoded data.
+ * @param bool $strict [optional]
+ * @return FALSE if input contains character from outside the base64 alphabet.
+ */
+function base64decode($data, $strict = false) {
+    $data = json_decode(base64_decode(base64_decode($data)));
+
+    return $data;
+}
+
 ?>

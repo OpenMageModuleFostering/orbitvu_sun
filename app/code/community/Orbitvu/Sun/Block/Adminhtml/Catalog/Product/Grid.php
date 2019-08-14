@@ -61,15 +61,15 @@ class Orbitvu_Sun_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_Bl
         //------------------------------------------------------------------------------------------------------------------
         $o_configuration_url = explode('/system_config/', $this->getUrl('*/system_config/edit/section/orbitvu/'));
         $o_configuration_url = '*/system_config/'.$o_configuration_url[count($o_configuration_url)-1];
-        
+
         $o_update_url = explode('/catalog_product/', $this->getUrl('*/catalog_product/index/sun/update'));
-        $o_update_url = '*/catalog_product/'.$o_update_url[count($o_configuration_url)-1];
+        $o_update_url = '*/catalog_product/'.$o_update_url[count($o_update_url)-1];
         
         $o_close_url = explode('/catalog_product/', $this->getUrl('*/catalog_product/index/sun/dismiss'));
-        $o_close_url = '*/catalog_product/'.$o_close_url[count($o_configuration_url)-1];
+        $o_close_url = '*/catalog_product/'.$o_close_url[count($o_close_url)-1];
         
         $o_close_welcome_url = explode('/catalog_product/', $this->getUrl('*/catalog_product/index/sun/dismiss_welcome'));
-        $o_close_welcome_url = '*/catalog_product/'.$o_close_welcome_url[count($o_configuration_url)-1];
+        $o_close_welcome_url = '*/catalog_product/'.$o_close_welcome_url[count($o_close_welcome_url)-1];
 
         $display_first_time = true;
         //------------------------------------------------------------------------------------------------------------------
@@ -253,6 +253,7 @@ class Orbitvu_Sun_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_Bl
      * Not proud of this part of file... but other solution will be waiste of time
      */
     public function genPopup($header, $message, $buttons, $close_url = '#', $level = 'NOTICE', $icon_text = '', $tpl = '1') {
+        
         $out = '
         <script type="text/javascript">
         //<![CDATA[
@@ -348,8 +349,8 @@ class Orbitvu_Sun_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_Bl
                         <form action="'.$this->getUrl('*/catalog_product/index/sun/register').'" method="get">
                             <div class="message-text" style="min-height: 1px; padding: 10px 0 10px 0;">
                                 <input id="orbitvu_register_email" type="text" name="orbitvu_register_email" placeholder="'.Mage::helper('catalog')->__('Enter your e-mail...').'" value="'.Mage::getStoreConfig('trans_email/ident_general/email').'" />
-                                <button type="submit" class="scalable orbitvu-button">Register</button>
-                                <button type="button" onclick="document.getElementById(\'orbitvu_options\').style.display = \'block\'; document.getElementById(\'orbitvu_html_register\').style.display = \'none\';" class="scalable back">Cancel</button>
+                                <button type="submit" class="scalable orbitvu-button">'.Mage::helper('catalog')->__('Register').'</button>
+                                <button type="button" onclick="document.getElementById(\'orbitvu_options\').style.display = \'block\'; document.getElementById(\'orbitvu_html_register\').style.display = \'none\';" class="scalable back">'.Mage::helper('catalog')->__('Cancel').'</button>
                             </div>
                         </form>
                     </div>

@@ -553,17 +553,17 @@ if ($items_count == 0 && !$found_match) {
                         <?=$this->__('Page:')?>
 
         <?php if ($OrbitvuPager['all'] > 1 && $OrbitvuPager['start']-1 >= 0) {  ?>
-                        <a href="<?=$OrbitvuPager['url_prev']?>"><img src="/skin/adminhtml/default/default/images/pager_arrow_left.gif" alt="" class="arrow"></a>
+                        <a href="<?=$OrbitvuPager['url_prev']?>"><img src="<?=$this->getSkinUrl('images/pager_arrow_left.gif')?>" alt="" class="arrow"></a>
         <?php } else {  ?>
-                        <img src="/skin/adminhtml/default/default/images/pager_arrow_left_off.gif" alt="" class="arrow">
+                        <img src="<?=$this->getSkinUrl('images/pager_arrow_left_off.gif')?>" alt="" class="arrow">
         <?php }  ?>
 
                         <strong><?=($OrbitvuPager['start']+1)?></strong>
 
         <?php if ($OrbitvuPager['all'] > 1 && $OrbitvuPager['start']+1 < $OrbitvuPager['all']) {  ?>
-                        <a href="<?=$OrbitvuPager['url_next']?>"><img src="/skin/adminhtml/default/default/images/pager_arrow_right.gif" alt="" class="arrow"></a>
+                        <a href="<?=$OrbitvuPager['url_next']?>"><img src="<?=$this->getSkinUrl('images/pager_arrow_right.gif')?>" alt="" class="arrow"></a>
         <?php } else {  ?>
-                        <img src="/skin/adminhtml/default/default/images/pager_arrow_right_off.gif" alt="" class="arrow">
+                        <img src="<?=$this->getSkinUrl('images/pager_arrow_right_off.gif')?>" alt="" class="arrow">
         <?php }  ?>
 
                         <?=$this->__('of')?> <?=$OrbitvuPager['all']?>     
