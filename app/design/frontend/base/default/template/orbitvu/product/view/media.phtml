@@ -16,8 +16,12 @@ $jspreloader_tn = array();
 $thumbs_list = array();
 $images_list = array();
 //-------------------------------------------------------------------------------------------------------
-$observer = \Mage::getSingleton('sun/observer');
+$observer = Mage::getSingleton('sun/observer');
 $_Orbitvu = $observer->ExtendOrbitvu();
+
+if ($_GET['flush'] == 'true') {
+    $observer->SynchronizeAllThumbnails();
+}   
 //-------------------------------------------------------------------------------------------------------
 /*
  * Gallery theme

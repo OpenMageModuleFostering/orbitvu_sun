@@ -731,7 +731,12 @@ foreach ($presentations['items'] as $item) {
     
     if (!$update_sku && $orbitvu_connected) {
         
-        $add_buttons .= '<button type="button" class="orbitvu-button-sku scalable" onclick="if (confirm(\''.$this->__('Do you really want to update this presentation SKU on your Orbitvu SUN account?').'\')) { OrbitvuSetAction(\'sun/set_sku/presentation_id/'.$presentations['orbitvu_id'].'/sun_new_sku/'.$product_sku.'\'); }"><span><span></span>'.$this->__('Update SKU on SUN').'</span></button> ';
+        if (!$orbitvu_demo) { 
+            $add_buttons .= '<button type="button" class="orbitvu-button-sku scalable" onclick="if (confirm(\''.$this->__('Do you really want to update this presentation SKU on your Orbitvu SUN account?').'\')) { OrbitvuSetAction(\'sun/set_sku/presentation_id/'.$presentations['orbitvu_id'].'/sun_new_sku/'.$product_sku.'\'); }"><span><span></span>'.$this->__('Update SKU on SUN').'</span></button> ';
+        }
+        else {
+            $add_buttons .= '<button type="button" class="orbitvu-button-sku scalable disabled orbitvu-button-disabled"><span><span></span>'.$this->__('Update SKU on SUN').'</span></button> ';
+        }
 ?>
         <strong><?=$this->__('SKU')?>:</strong> <?=$sku?><br>
             <ul class="messages" style="float: left; max-width: 680px;">
@@ -836,19 +841,30 @@ function orbitvu_ajax(file, func) {
 }
 
 function orbitvu_drag_start() {
-    var elems = document.getElementsByClassName('orbitvu-drag-box');
+    if (document.getElementsByClassName('orbitvu-drag-box')) {
+        var elems = document.getElementsByClassName('orbitvu-drag-box');
 
-    for (var i = 0, n = elems.length; i < n; i++) {
-        elems[i].className += ' drag';
+        for (var i = 0, n = elems.length; i < n; i++) {
+            if (elems[i]) {
+                elems[i].className += ' drag';
+            }
+        }
     }
+    //orbitvu_log('Drag start!');
 }
 
 function orbitvu_drag_end() {
-    var elems = document.getElementsByClassName('orbitvu-drag-box');
+    if (document.getElementsByClassName('orbitvu-drag-box')) {
+        var elems = document.getElementsByClassName('orbitvu-drag-box');
 
-    for (var i = 0, n = elems.length; i < n; i++) {
-        elems[i].className = elems[i].className.replace(' drag', '');
-    }    
+        //orbitvu_log('Drag end!');
+
+        for (var i = 0, n = elems.length; i < n; i++) {
+            if (elems[i]) {
+                elems[i].className = elems[i].className.replace(' drag', '');
+            }
+        }    
+    }
 }
 
 var elems = document.getElementsByClassName('orbitvu-visibility');
@@ -983,7 +999,7 @@ function orbitvu_mouse_move(ev) {
 
 
     if (OrbitvuLastTarget && (target !== OrbitvuLastTarget)) {
-        orbitvu_log(OrbitvuLastTarget, 'Mouse Out Fired');
+        //orbitvu_log(OrbitvuLastTarget, 'Mouse Out Fired');
 
 
         var origClass = OrbitvuLastTarget.getAttribute('origClass');
@@ -999,7 +1015,7 @@ function orbitvu_mouse_move(ev) {
 
 
         if (target != OrbitvuLastTarget) {
-            orbitvu_log(target, 'Mouse Over Fired');
+            //orbitvu_log(target, 'Mouse Over Fired');
 
             var oClass = target.getAttribute('overClass');
             if (oClass) {
@@ -1132,7 +1148,7 @@ function orbitvu_mouse_move(ev) {
 
             if (beforeNode) {
                 if (beforeNode != OrbitvuCurrentTarget.nextSibling) {
-                    orbitvu_log(OrbitvuCurrentTarget, 'Ajax action -> Insert before ' + beforeNode.id);
+                    //`orbitvu_log(OrbitvuCurrentTarget, 'Ajax action -> Insert before ' + beforeNode.id);
                     orbitvu_final_item_id = OrbitvuCurrentTarget.id;
                     orbitvu_final_node = beforeNode.id;
                     activeCont.insertBefore(OrbitvuCurrentTarget, beforeNode);
@@ -1203,9 +1219,25 @@ function orbitvu_mouse_up(ev) {
 
     if (OrbitvuCurrentTarget) {
         orbitvu_log(OrbitvuCurrentTarget, 'Mouse Up Fired');
+        orbitvu_drag_end();
         orbitvu_log(OrbitvuCurrentTarget, 'orbitvu_final_item_id: ' + orbitvu_final_item_id + ' / orbitvu_final_node: ' + orbitvu_final_node + ' / final_target: ' + OrbitvuLastTarget.id);
         
         orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_order/sun_item_id/' + parseInt(orbitvu_final_item_id.replace('orbitvu-gallery-item-', '')) + '/sun_before_item_id/' + parseInt(orbitvu_final_node.replace('orbitvu-gallery-item-', '')), function(odp){});
+                
+        if (document.getElementById('media_gallery_content_grid')) {
+            var torem = document.getElementById('media_gallery_content_grid');
+            torem.parentNode.removeChild(torem);
+        }
+        
+        if (document.getElementById('media_gallery_content_save')) {
+            var torem2 = document.getElementById('media_gallery_content_save');
+            torem2.parentNode.removeChild(torem2);
+        }
+        
+        if (document.getElementById('media_gallery_content_save_image')) {
+            var torem3 = document.getElementById('media_gallery_content_save_image');
+            torem3.parentNode.removeChild(torem3);
+        }
 
         OrbitvuDragTemp.style.display = 'none';
         if (OrbitvuCurrentTarget.style.display == 'block') {
@@ -1215,7 +1247,7 @@ function orbitvu_mouse_up(ev) {
                 OrbitvuRootParent.appendChild(OrbitvuCurrentTarget);
             }
         }
-        orbitvu_drag_end();
+        
         OrbitvuCurrentTarget.style.display = '';
         OrbitvuCurrentTarget.style.opacity = '';
         OrbitvuCurrentTarget.style.cursor = '';
@@ -1223,6 +1255,9 @@ function orbitvu_mouse_up(ev) {
         OrbitvuCurrentTarget.style.boxShadow = '';
         OrbitvuCurrentTarget.className = OrbitvuCurrentTarget.className.replace(' dragstate','');
     }
+    
+    orbitvu_drag_end();
+    
     OrbitvuCurrentTarget = null;
 
 
