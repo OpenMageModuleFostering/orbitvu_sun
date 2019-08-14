@@ -108,7 +108,7 @@ final class OrbitvuDatabaseInterface {
      */
     public function SynchronizeAllProducts() {
         //----------------------------------------------------------
-        return $this->SynchronizePresentations($this->database->SynchronizeAllProducts());
+        return $this->SynchronizeAllPresentations($this->database->SynchronizeAllProducts());
         //----------------------------------------------------------
     }
     
@@ -899,7 +899,147 @@ final class OrbitvuDatabaseInterface {
         }
         //-------------------------------------------------------------------------------------------------------
     }
-    
+
+    public function SynchronizeAllPresentations($products_array) {
+        $products = array();
+        $presentations_list = $this->GetPresentationsList();
+
+        for($i = 0; $i < count($products_array); $i++) {
+            $current_product = $products_array[$i];
+
+
+            //product has to posses name and id at least
+            if (empty($current_product['product_id']) || empty($current_product['product_name'])) {
+                //-------------------------------------------------------------------------------------------------------
+                continue; //
+                //-------------------------------------------------------------------------------------------------------
+            }
+
+
+            //check if product is already linked
+            if ($try = $this->GetProductPresentation($current_product['product_id'])) {
+                $comment = 'auto';
+
+                $this->Log($current_product['product_id'], '_presentations', 'skip', $comment);
+                //-------------------------------------------------------------------------------------------------------
+                continue;
+                //-------------------------------------------------------------------------------------------------------
+            }
+            $products[] = $current_product;
+        }
+
+
+        if ($presentations_list->count) {
+            for($i = 0; $i < $presentations_list->count; $i++) {
+
+                $current_presentation = $presentations_list->results[$i];
+                for($j = 0; $j < count($products); $j++) {
+
+                    //ommit products which have been linked to current_presentation id
+                    //we dont set the ommit flag becasue product may match to presentation with other id
+                    if ($this->IsPresentationUnlinked($products[$j]['product_id'], $current_presentation->id)) {
+                        continue;
+                    }
+
+                    if (isset($products[$j]['ommit']) && $products[$j]['ommit'] = true) {
+                        continue;
+                    }
+
+                    $synch = false;
+                    if (isset($products[$j]['product_sku']) && $products[$j]['product_sku'] == $current_presentation->sku) {
+                        $products[$j]['ommit'] = true;
+                        $synch = true;
+
+                    } else if ($products[$j]['product_name'] && strcasecmp($products[$j]['product_name'], $current_presentation->name) == 0) {
+                        $products[$j]['ommit'] = true;
+                        $synch = true;
+                    }
+
+                    if ($synch) {
+                        $comment = ' auto - "'.$products[$j]['product_sku'].'"';
+
+                        $this->SetProductPresentation($products[$j]['product_id'], $current_presentation->id, $current_presentation->name, $comment);
+
+                        $p_items = array();
+                        //-------------------------------------------------------------------------------------------------------
+                        $sync_order = array(
+                            'sync_2d'           => true,
+                            'sync_360'          => true,
+                            'sync_orbittour'    => true
+                        );
+                        //-------------------------------------------------------------------------------------------------------
+                        foreach ($sync_order as $key => $value) {
+                            $sync_order[$key] = $this->Config->$key;
+                        }
+
+                        $results = $current_presentation;
+                        $uid = $results->uid;
+                        //-------------------------------------------------------------------------------------------------------
+                        /*
+                         * Get OrbitTour
+                         */
+                        //-------------------------------------------------------------------------------------------------------
+                        if ($results->has_orbittour == '1') {
+                            $p_items[] = array(
+                                'orbitvu_id'    => ($results->orbittour_set[0]->id),
+                                'name'          => 'OrbitTour',
+                                'type'          => 0,
+                                'thumbnail'     => $results->thumbnail_url,
+                                'path'          => $results->orbittour_set[0]->script_url,
+                                'config'        => json_encode(array('uid' => $uid)),
+                                'status'        => ($sync_order['sync_orbittour'] == 'true' ? 'active' : 'inactive')
+                            );
+                        }
+                        //-------------------------------------------------------------------------------------------------------
+
+                        /*
+                         * Get other items
+                         */
+                        //-------------------------------------------------------------------------------------------------------
+                        $results = $results->presentationcontent_set;
+                        for ($k = 0, $n = count($results); $k < $n; $k++) {
+                            $cur = $results[$k];
+                            //-------------------------------------------------------------------------------------------------------
+                            if (($sync_order['sync_360'] == 'true' && $cur->type == '1') || ($sync_order['sync_2d'] == 'true' && $cur->type == '3')) {
+                                $status = 'active';
+                            }
+                            else {
+                                $status = 'inactive';
+                            }
+                            //-------------------------------------------------------------------------------------------------------
+                            $p_items[] = array(
+                                'orbitvu_id'    => ($cur->id),
+                                'name'          => $cur->name,
+                                'type'          => $cur->type,
+                                'thumbnail'     => $cur->thumbnail_url,
+                                'path'          => (!empty($cur->script_url) ? $cur->script_url : $cur->view_url),
+                                'config'        => json_encode(array('uid' => $uid)),
+                                'status'        => $status
+                            );
+                        }
+
+                        if (count($p_items) >= 1) {
+                            //-------------------------------------------------------------------------------------------------------
+                            $this->SetProductPresentationItems($products[$j]['product_id'], $current_presentation->id, $current_presentation->name, $p_items, 'auto');
+                            //-------------------------------------------------------------------------------------------------------
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        //-------------------------------------------------------------------------------------------------------
+        $this->SetConfiguration('last_updated', date('Y-m-d H:i:s'));
+        //-------------------------------------------------------------------------------------------------------
+
+        return $products_array;
+        //-------------------------------------------------------------------------------------------------------
+
+    }
+
+
     /**
      * Synchronize presentations
      * @param array $products_array Products array
@@ -1546,7 +1686,7 @@ V3lKY0wzWmhjbHd2ZDNkM1hDOWtaWFl1YldGblpXNTBieTV2Y21KcGRIWjFMbU52YlZ3dmNIVmliR2xq
             else {
                 //-------------------------------------------------------------------------------------------------------
                 $results = array();
-                $response_results = $stdClass;
+                $response_results = new stdClass();
                 $j = 0;
                 //-------------------------------------------------------------------------------------------------------	
                 do {

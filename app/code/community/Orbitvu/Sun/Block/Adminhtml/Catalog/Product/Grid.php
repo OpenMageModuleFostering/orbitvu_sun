@@ -17,16 +17,16 @@ class Orbitvu_Sun_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_Bl
      */
     public function setCollection($collection) {
         //------------------------------------------------------------------------------------------------------------------
-        $store = $this->_getStore();
+        //$store = $this->_getStore();
         //------------------------------------------------------------------------------------------------------------------
-        if ($store->getId() && !isset($this->_joinAttributes['orbitvu_sun'])) {
+        /*if ($store->getId() && !isset($this->_joinAttributes['orbitvu_sun'])) {
             $collection->joinAttribute(
                     'orbitvu_sun', 'catalog_product/orbitvu_sun', 'entity_id', null, 'left', $store->getId()
             );
         }
         else {
             $collection->addAttributeToSelect('orbitvu_sun');
-        }
+        }*/
         //------------------------------------------------------------------------------------------------------------------
         parent::setCollection($collection);
         //------------------------------------------------------------------------------------------------------------------

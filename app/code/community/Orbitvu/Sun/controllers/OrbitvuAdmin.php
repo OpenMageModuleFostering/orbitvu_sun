@@ -932,7 +932,7 @@ final class OrbitvuAdmin {
      */
     public function SynchronizeAllProducts() {
         //-------------------------------------------------------------------------------------------------------
-        return $this->driver->SynchronizeAllProducts($params);
+        return $this->driver->SynchronizeAllProducts();
         //-------------------------------------------------------------------------------------------------------
     }
      
