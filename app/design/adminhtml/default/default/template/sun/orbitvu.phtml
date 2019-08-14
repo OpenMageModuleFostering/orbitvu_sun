@@ -904,21 +904,23 @@ if (!$found_match) {
                     var elems = document.getElementsByClassName('orbitvu-visibility'),
                         button = document.getElementById('orbitvu-button-enable-items'),
                         img = document.getElementById('enable_all_items_loader'),
-                        ids = [];
+                        ids = [],
+                        proper_elems = [];
 
                     button.style.display = 'none';
                     img.style.display = 'inline-block';
                     for (var i = 0, n = elems.length; i < n; i++) {
                         if (elems[i].className.replace(' disabled', '') !== elems[i].className) {
                             ids.push(parseInt(elems[i].id.replace('orbitvu-visibility-trigger-', '')));
+                            proper_elems.push(elems[i]);
                         }
                     }
                     if (ids.length) {
                         orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_statuses/sun_items_statuses/' + ids.join(',') + '/sun_status/active', function(data){
                             data = JSON.parse(data);
                             if (data.status) {
-                                for (var i = 0, n = elems.length; i < n; i++) {
-                                    elems[i].className = elems[i].className.replace(' disabled', '');
+                                for (var i = 0, n = proper_elems.length; i < n; i++) {
+                                    proper_elems[i].className = proper_elems[i].className.replace(' disabled', '');
                                     document.getElementById('orbitvu-gallery-item-' + ids[i]).className = document.getElementById('orbitvu-gallery-item-' + ids[i]).className.replace(' hidden', '');
                                 }
                                 button.style.display = 'inline-block';
@@ -935,21 +937,23 @@ if (!$found_match) {
                     var elems = document.getElementsByClassName('orbitvu-visibility'),
                         button = document.getElementById('orbitvu-button-disable-items'),
                         img = document.getElementById('disable_all_items_loader'),
-                        ids = [];
+                        ids = [],
+                        proper_elems = [];
 
                     button.style.display = 'none';
                     img.style.display = 'inline-block';
                     for (var i = 0, n = elems.length; i < n; i++) {
                         if (elems[i].className.replace(' disabled', '') === elems[i].className) {
                             ids.push(parseInt(elems[i].id.replace('orbitvu-visibility-trigger-', '')));
+                            proper_elems.push(elems[i]);
                         }
                     }
                     if (ids.length) {
                         orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_statuses/sun_items_statuses/' + ids.join(','), function(data){
                             data = JSON.parse(data);
                             if (data.status) {
-                                for (var i = 0, n = elems.length; i < n; i++) {
-                                    elems[i].className += ' disabled';
+                                for (var i = 0, n = proper_elems.length; i < n; i++) {
+                                    proper_elems[i].className += ' disabled';
                                     document.getElementById('orbitvu-gallery-item-' + ids[i]).className += ' hidden';
                                 }
                                 button.style.display = 'inline-block';
