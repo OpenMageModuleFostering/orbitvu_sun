@@ -27,26 +27,42 @@ if (isset($_GET['flush']) && $_GET['flush'] == 'true') {
  * Gallery theme
  */         
 $_orbitvu_gallery = array(
-    'width'             => $_Orbitvu->GetConfiguration('width'),
-    'img_height'        => $_Orbitvu->GetConfiguration('img_height'),
-    'border_color'      => $_Orbitvu->GetConfiguration('border_color'),
-    'img_width_zoom'    => $_Orbitvu->GetConfiguration('img_width_zoom'),
-    'img_height_zoom'   => $_Orbitvu->GetConfiguration('img_height_zoom'),
-    'img_width_tn'      => $_Orbitvu->GetConfiguration('img_width_tn'),
-    'img_height_tn'     => $_Orbitvu->GetConfiguration('img_height_tn'),
-    'img_tn_margin'     => $_Orbitvu->GetConfiguration('img_tn_margin'),
-    'button_width'      => $_Orbitvu->GetConfiguration('button_width'),
-    'button_height'     => $_Orbitvu->GetConfiguration('button_height'),
-    'button_opacity'    => $_Orbitvu->GetConfiguration('button_opacity'),
-    'img_width'         => $_Orbitvu->GetConfiguration('img_width'),
-    'img_tn_padding'    => $_Orbitvu->GetConfiguration('img_tn_padding'),
-    'scroll'            => $_Orbitvu->GetConfiguration('scroll'),
+    'width'                 => $_Orbitvu->GetConfiguration('width'),
+    'img_height'            => $_Orbitvu->GetConfiguration('img_height'),
+    'border_color'          => $_Orbitvu->GetConfiguration('border_color'),
+    'img_width_zoom'        => $_Orbitvu->GetConfiguration('img_width_zoom'),
+    'img_height_zoom'       => $_Orbitvu->GetConfiguration('img_height_zoom'),
+    'img_width_tn'          => $_Orbitvu->GetConfiguration('img_width_tn'),
+    'img_height_tn'         => $_Orbitvu->GetConfiguration('img_height_tn'),
+    'img_tn_margin'         => $_Orbitvu->GetConfiguration('img_tn_margin'),
+    'button_width'          => $_Orbitvu->GetConfiguration('button_width'),
+    'button_height'         => $_Orbitvu->GetConfiguration('button_height'),
+    'button_opacity'        => $_Orbitvu->GetConfiguration('button_opacity'),
+    'img_width'             => $_Orbitvu->GetConfiguration('img_width'),
+    'img_tn_padding'        => $_Orbitvu->GetConfiguration('img_tn_padding'),
+    'scroll'                => $_Orbitvu->GetConfiguration('scroll'),
+    'supplement_color' => $_Orbitvu->GetConfiguration('supplement_color')
 );
 $_orbitvu_gallery['height'] = (str_replace('px', '', $_orbitvu_gallery['img_height']) + str_replace('px', '', $_orbitvu_gallery['img_height_tn'] + 2) + (3 * str_replace('px', '', $_orbitvu_gallery['img_tn_margin']))).'px';
 $_orbitvu_gallery['img_width_tn_marg'] = (str_replace('px', '', $_orbitvu_gallery['img_width_tn']) + str_replace('px', '', $_orbitvu_gallery['img_tn_margin'])).'px';
 $_orbitvu_gallery['img_height_tn_marg'] = (str_replace('px', '', $_orbitvu_gallery['img_height_tn']) + str_replace('px', '', $_orbitvu_gallery['img_tn_margin'])).'px';
 
 $append_prepend = $_Orbitvu->GetConfiguration('append_prepend'); //append or prepend orbitvu thumbnails to the front image product original images
+
+if (!$_orbitvu_gallery['supplement_color']) {
+    $_orbitvu_gallery['supplement_color'] = 'ffffffff';
+} else if (strtolower($_orbitvu_gallery['supplement_color']) == 'transparent') {
+    $_orbitvu_gallery['supplement_color'] = 'ffffff00';
+} else {
+    if (strpos($_orbitvu_gallery['supplement_color'], '#') === 0) {
+        $_orbitvu_gallery['supplement_color'] = substr($_orbitvu_gallery['supplement_color'], 1);
+    }
+    if (strlen($_orbitvu_gallery['supplement_color']) == 6) {
+        $_orbitvu_gallery['supplement_color'] = $_orbitvu_gallery['supplement_color'].'ff';
+    } else if (strlen($_orbitvu_gallery['supplement_color']) != 8) {
+        $_orbitvu_gallery['supplement_color'] = 'ffffffff';
+    }
+}
 
 if (!$_orbitvu_gallery['scroll']) {
     $_orbitvu_gallery['scroll'] = 'yes';
@@ -167,13 +183,13 @@ if (count($presentation['items']) > 0) {
  */
         if ($item['type'] == '3') {
 //-------------------------------------------------------------------------------------------------------         
-            $current_path = 'http:'.$item['path'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
-            $current_path_tn = 'http:'.$item['path'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']).'&action=supplement';
+            $current_path = $item['path'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
+            $current_path_tn = $item['path'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']).'&action=supplement&supplement_color='.$_orbitvu_gallery['supplement_color'];
             
             $_out_items .= $observer->UseTemplate(array(
                 'path'      => $current_path,
                 'path_tn'   => $current_path_tn,
-                'path_tn2'  => 'http:'.$item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']).'&action=supplement',
+                'path_tn2'  => $item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']).'&action=supplement&supplement_color='.$_orbitvu_gallery['supplement_color'],
                 'class'     => '',
                 'id'        => $all_items
             ), $_media_item_tpl);
@@ -195,13 +211,13 @@ if (count($presentation['items']) > 0) {
  */
         else if ($item['type'] == '1') {
 //-------------------------------------------------------------------------------------------------------         
-            $current_path = 'http:'.$item['thumbnail'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
-            $current_path_tn = 'http:'.$item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']).'&action=supplement';
+            $current_path = $item['thumbnail'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
+            $current_path_tn = $item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']).'&action=supplement&supplement_color='.$_orbitvu_gallery['supplement_color'];
             
             $_out_items .= $observer->UseTemplate(array(
                 'path'      => $current_path,
                 'path_tn'   => $current_path_tn,
-                'path_tn2'  => 'http:'.$item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']).'&action=supplement',
+                'path_tn2'  => $item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']).'&action=supplement&supplement_color='.$_orbitvu_gallery['supplement_color'],
                 'class'     => '',
                 'id'        => $all_items
             ), $_presentation_item_tpl);
@@ -232,13 +248,13 @@ if (count($presentation['items']) > 0) {
  */
         else if ($item['type'] == '0') {
 //-------------------------------------------------------------------------------------------------------         
-            $current_path = 'http:'.$item['thumbnail'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
-            $current_path_tn = 'http:'.$item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']).'&action=supplement';
+            $current_path = $item['thumbnail'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
+            $current_path_tn = $item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']).'&action=supplement&supplement_color='.$_orbitvu_gallery['supplement_color'];
             
             $_out_items .= $observer->UseTemplate(array(
                 'path'      => $current_path,
                 'path_tn'   => $current_path_tn,
-                'path_tn2'  => 'http:'.$item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']).'&action=supplement',
+                'path_tn2'  => $item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']).'&action=supplement&supplement_color='.$_orbitvu_gallery['supplement_color'],
                 'class'     => '',
                 'id'        => $all_items
             ), $_orbittour_item_tpl);

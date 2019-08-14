@@ -319,6 +319,15 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </button_opacity>
+                        <supplement_color translate="label comment">
+                            <label>Resized image background color</label>
+                            <comment><![CDATA[Recommended: <strong>#ffffff</strong><br />Enter <strong>transparent</strong> if you don't want background]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </supplement_color>
                     </fields>
                     
                 </layout>
