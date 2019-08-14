@@ -642,7 +642,7 @@ function orbitvu_hide_zoom() {
 function orbitvu_show_zoom() {
     if (!orbitvu_ready) return false;
 
-    Orb$('orbitvu-gallery-product-image-zoom').style.backgroundImage = 'url(' + orbitvu_current_image.path + ')';
+    Orb$('orbitvu-gallery-product-image-zoom').style.backgroundImage = 'url("' + orbitvu_current_image.path + '")';
     Orb$('orbitvu-gallery-product-image-zoom').style.display = 'block';
     
     if (((Orb$('orbitvu-gallery-product-image-zoom').offsetLeft + Orb$('orbitvu-gallery-product-image-zoom').offsetWidth) > document.body.offsetWidth) || window.innerWidth < 770 || document.body.offsetWidth < 770) {
