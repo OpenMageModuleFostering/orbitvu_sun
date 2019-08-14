@@ -4,7 +4,7 @@
  * @Copyright: Orbitvu Sp. z o.o. is the owner of full rights to this code
  */
 
-class OrbitvuDatabaseInterface {
+final class OrbitvuDatabaseInterface {
     
     /**
      * Database driver instance

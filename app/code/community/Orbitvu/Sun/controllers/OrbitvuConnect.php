@@ -4,7 +4,7 @@
  * @Copyright: Orbitvu Sp. z o.o. is the owner of full rights to this code
  */
 
-class Orbitvu {
+final class Orbitvu {
 
     /**
      * License Key
@@ -335,7 +335,7 @@ class Orbitvu {
          * Set the access token
          */
         $header[] = "Authorization: Token ".$this->access_token;
-        $header[] = "Accept-User-Agent: 1.0.1";
+        $header[] = "Accept-User-Agent: ".OrbitvuDatabaseDriver::DRIVER_VERSION;
         $header[] = "Accept-User-Agent-Version: ".$this->curl_version;
 
         //----------------------------------------------------------

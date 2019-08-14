@@ -23,6 +23,11 @@ class OrbitvuDatabaseDriver {
     private $db_last_id = 0;
     
     /**
+     * Driver version (ID)
+     */
+    const DRIVER_VERSION = '1.0.1';
+    
+    /**
      * Connect to database
      */
     public function __construct() {

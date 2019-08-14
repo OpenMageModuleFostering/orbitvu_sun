@@ -2,7 +2,7 @@
 <config>
     <sections>
         <orbitvu translate="label">
-            <label>Orbitvu</label>
+            <label>Orbitvu SUN</label>
             <tab>catalog</tab>
             <frontend_type>text</frontend_type>
             <sort_order>30</sort_order>

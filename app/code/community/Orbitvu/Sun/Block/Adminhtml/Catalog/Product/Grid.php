@@ -59,18 +59,18 @@ class Orbitvu_Sun_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_Bl
         
         $orbitvu_connected = $observer->_Orbitvu->IsConnected();
         //------------------------------------------------------------------------------------------------------------------
-        $o_configuration_url = explode('/admin/', $this->getUrl('*/system_config/edit/section/orbitvu/'));
-        $o_configuration_url = '*/'.$o_configuration_url[1];
+        $o_configuration_url = explode('/system_config/', $this->getUrl('*/system_config/edit/section/orbitvu/'));
+        $o_configuration_url = '*/system_config/'.$o_configuration_url[count($o_configuration_url)-1];
         
-        $o_update_url = explode('/admin/', $this->getUrl('*/catalog_product/index/sun/update'));
-        $o_update_url = '*/'.$o_update_url[1];
+        $o_update_url = explode('/catalog_product/', $this->getUrl('*/catalog_product/index/sun/update'));
+        $o_update_url = '*/catalog_product/'.$o_update_url[count($o_configuration_url)-1];
         
-        $o_close_url = explode('/admin/', $this->getUrl('*/catalog_product/index/sun/dismiss'));
-        $o_close_url = '*/'.$o_close_url[1];
+        $o_close_url = explode('/catalog_product/', $this->getUrl('*/catalog_product/index/sun/dismiss'));
+        $o_close_url = '*/catalog_product/'.$o_close_url[count($o_configuration_url)-1];
         
-        $o_close_welcome_url = explode('/admin/', $this->getUrl('*/catalog_product/index/sun/dismiss_welcome'));
-        $o_close_welcome_url = '*/'.$o_close_welcome_url[1];
-        
+        $o_close_welcome_url = explode('/catalog_product/', $this->getUrl('*/catalog_product/index/sun/dismiss_welcome'));
+        $o_close_welcome_url = '*/catalog_product/'.$o_close_welcome_url[count($o_configuration_url)-1];
+
         $display_first_time = true;
         //------------------------------------------------------------------------------------------------------------------
         

@@ -457,7 +457,7 @@ if ($items_count == 0) {
     button.orbitvu-button-ok span span { background-position: -32px -76px !important; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/black.png) !important; }
     button.orbitvu-button-cancel span span { background-position: -48px -76px !important; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/black.png) !important; }
     button.orbitvu-button-disabled { opacity: 0.5; cursor: default; }
-    button.orbitvu-button-disabled:hover, button.orbitvu-button-disabled.active { background: url("http://dev.magento.orbitvu.com/skin/adminhtml/default/default/images/btn_bg-disabled.gif") 0px 0px repeat-x #919191 !important; opacity: 0.5 !important; }
+    button.orbitvu-button-disabled:hover, button.orbitvu-button-disabled.active { background: url(<?=$this->getSkinUrl('images/btn_bg-disabled.gif')?>) 0px 0px repeat-x #919191 !important; opacity: 0.5 !important; }
 .dragstate span.orbitvu-visibility { display: none !important; }
 
 .presentation_types { width: 80px; position: absolute; bottom: 5px; left: 0; }

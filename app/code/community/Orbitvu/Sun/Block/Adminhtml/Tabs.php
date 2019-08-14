@@ -23,7 +23,7 @@ class Orbitvu_Sun_Block_Adminhtml_Tabs extends Mage_Adminhtml_Block_Catalog_Prod
         
         if ($product_id > 0) {
             $this->addTab('tabid', array(
-                'label'     => Mage::helper('catalog')->__('Orbitvu'),
+                'label'     => Mage::helper('catalog')->__('Orbitvu SUN'),
                 'content'   => $this->getLayout()->createBlock('sun/adminhtml_tabs_tabid')->toHtml()
             ));
         }
