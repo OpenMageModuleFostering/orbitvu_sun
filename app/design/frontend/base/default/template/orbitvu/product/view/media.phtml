@@ -889,6 +889,32 @@ function orbitvu_refresh() {
         
         orbitvu_calculate_zoom();
     }
+
+    if (orbitvu_scroll == 'yes') {
+        if ((orbitvu_xAllReal - (<?=(str_replace('px', '', $_orbitvu_gallery['img_tn_margin'])*2)?>)) < orbitvu_gallery_inner) {
+            Orb$('orbitvu_go_back').style.display = 'none';
+            Orb$('orbitvu_go_next').style.display = 'none';
+            orbitvu_buttons = false;
+        } else {
+            orbitvu_buttons = true;
+        }
+
+        if (orbitvu_buttons) {
+            new_pos = orbitvu_get_pos();
+            if ((orbitvu_dir == -1 && (new_pos * -1) > orbitvu_xAll)) {
+                Orb$('orbitvu_go_next').style.display = 'none';
+            }
+            else {
+                Orb$('orbitvu_go_next').style.display = 'block';
+            }
+            if ((orbitvu_dir == 1 && (new_pos * -1) <= 0)) {
+                Orb$('orbitvu_go_back').style.display = 'none';
+            }
+            else {
+                Orb$('orbitvu_go_back').style.display = 'block';
+            }
+        }
+    }
 }
 
 function orbitvu_calculate_zoom() {
