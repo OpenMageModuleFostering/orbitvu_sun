@@ -75,7 +75,10 @@ class OrbitvuDatabaseDriver {
      */
     public function Escape($query_string) {
         //---------------------------------------------------------------------------------------------------
-        return mysql_escape_string(str_replace("'", "\'", $query_string));
+        //return mysql_escape_string(str_replace("'", "\'", $query_string));
+        $query_string = Mage::getSingleton('core/resource')->getConnection('default_write')->quote(str_replace("'", "\'", $query_string));
+        $query_string = substr($query_string, 1, count($query_string) - 2);
+        return $query_string;
         //---------------------------------------------------------------------------------------------------
     }
 
@@ -238,7 +241,6 @@ class OrbitvuDatabaseDriver {
                 ('default', 0, 'orbitvu/items/sync_orbittour', '1'),
                 ('default', 0, 'orbitvu/items/sync_360', '1'),
                 ('default', 0, 'orbitvu/items/sync_2d', '1'),
-                ('default', 0, 'orbitvu/synchro/sync_order', '0'),
                 ('default', 0, 'orbitvu/synchro/auto_sync', '0');
        
             CREATE TABLE IF NOT EXISTS `".$prefix."orbitvu_configuration` (

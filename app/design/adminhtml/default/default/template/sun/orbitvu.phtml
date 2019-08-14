@@ -278,12 +278,17 @@ if ($items_count == 0) {
          * Do not link again, if auto_sync
          */
         //-------------------------------------------------------------------------------------------------------
-        if ($presentations_choose->count > 0) {
+        if ((!$presentations_choose || $presentations_choose->count == 0)) {
             //-------------------------------------------------------------------------------------------------------
-            $presentation_id = intval($presentations_choose->results[0]->id);
+            $presentation_id = is_object($presentations_choose) ? intval($presentations_choose->results[0]->id) : 0;
             //-------------------------------------------------------------------------------------------------------
-            if ($_Orbitvu->IsPresentationUnlinked($product_id, $presentation_id)) {
-                $presentations_choose->count = 0;
+            if ($presentation_id == 0 || $_Orbitvu->IsPresentationUnlinked($product_id, $presentation_id)) {
+                if (is_object($presentations_choose)) {
+                    $presentations_choose->count = 0;
+                } else {
+                    $presentations_choose = new stdClass();
+                    $presentations_choose->count = 0;
+                }
                 $auto_sync = 'false';
                 $found_match = false;
                 $unlinked_before = true;
@@ -297,7 +302,7 @@ if ($items_count == 0) {
      * Not found? Show all
      */
     //-------------------------------------------------------------------------------------------------------
-    if ($presentations_choose->count == 0 || $_action == 'set_show_all') {
+    if ((!isset($presentations_choose) || !$presentations_choose || $presentations_choose->count == 0) || $_action == 'set_show_all') {
         if ($_action != 'set_show_all') {
             if ($unlinked_before) {
                 //$_messages[] = array('error', $this->__('We matched the presentation, but it was unlinked before and we don\'t link it automatically. You have to select a presentation on your own.'));
@@ -704,10 +709,12 @@ if (!$found_match) {
             $add_buttons = '';
 
             $thumbnail = $presentations['items'][0]['thumbnail'];
-            foreach ($presentations['items'] as $item) {
-                if ($item['status'] == 'active') {
-                    $thumbnail = $item['thumbnail'];
-                    break;
+            if ($presentations) {
+                foreach ($presentations['items'] as $item) {
+                    if ($item['status'] == 'active') {
+                        $thumbnail = $item['thumbnail'];
+                        break;
+                    }
                 }
             }
             ?>
@@ -720,22 +727,24 @@ if (!$found_match) {
 
                                 $types = $presentations['types'];
                                 $new_types = array();
-                                foreach ($types as $type) {
-                                    switch ($type) {
-                                        case '0':
-                                            $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-0 orbitvu-icon-bg" title="'.$this->__('Orbittour').'"></span>';
-                                            break;
-                                        case '1':
-                                            $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-1 orbitvu-icon-bg" title="'.$this->__('360&deg;').'"></span>';
-                                            break;
-                                        default:
-                                            $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-3 orbitvu-icon-bg" title="'.$this->__('2D').'"></span>';
-                                            break;
+                                if ($types) {
+                                    foreach ($types as $type) {
+                                        switch ($type) {
+                                            case '0':
+                                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-0 orbitvu-icon-bg" title="'.$this->__('Orbittour').'"></span>';
+                                                break;
+                                            case '1':
+                                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-1 orbitvu-icon-bg" title="'.$this->__('360&deg;').'"></span>';
+                                                break;
+                                            default:
+                                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-3 orbitvu-icon-bg" title="'.$this->__('2D').'"></span>';
+                                                break;
+                                        }
                                     }
-                                }
-                                $types = $new_types;
+                                    $types = $new_types;
 
-                                print implode('', $types);
+                                    print implode('', $types);
+                                }
                                 ?>
                             </div>
                         </div>
@@ -818,6 +827,25 @@ if (!$found_match) {
                                 <img src="<?=Mage::getBaseUrl('media')?>orbitvu/loader.gif" id="disable_all_items_loader" style="display: none" alt="" />
 
                             </div>
+
+                            <?php if ($CurrentProduct->isConfigurable()): ?>
+                                <div class="orbitvu_clearfix" style="padding-top: 10px">
+                                    <ul class="messages">
+                                        <li class="notice-msg">
+                                            <ul>
+                                                <li>
+                                                    <?=$this->__('This option affect only associated products which don\'t have any images.')?>
+                                                    <div style="padding-top: 10px;">
+                                                        <input id="orbitvu-no-assign-configurable" name="orbitvu_assign_configurable" value="0" type="radio" checked="checked"><label for="orbitvu-no-assign-configurable"> <?=$this->__('Don\'t assign Orbitvu thumbnail to associated products'); ?></label><br />
+                                                        <input id="orbitvu-assign-configurable" name="orbitvu_assign_configurable" value="1" type="radio"><label for="orbitvu-assign-configurable"> <?=$this->__('Assign Orbitvu thumbnail to associated products'); ?></label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            <?php endif; ?>
+
                         </div>
 
                     </td></tr></table>

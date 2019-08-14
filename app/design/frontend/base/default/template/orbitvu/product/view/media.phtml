@@ -284,7 +284,7 @@ if (count($presentation['items']) > 0) {
         }
     </style>
 
-<?
+<?php
 if ($all_items <= 0) {
     ?>
     <div id="orbitvu-gallery-wrapper">
@@ -494,7 +494,7 @@ function orbitvu_inject_tour() {
     if (orbitvu_ready) {
         clearInterval(orbitvu_tour_interval);
         orbitvu_inject_tour_now();
-        console.log('OrbitTour loaded.');
+        //console.log('OrbitTour loaded.');
     }
     <?php
     }
@@ -523,7 +523,7 @@ function orbitvu_inject_360() {
     if (orbitvu_ready) {
         clearInterval(orbitvu_360_interval);
         orbitvu_inject_360_now();
-        console.log('360 loaded.');
+        //console.log('360 loaded.');
     }
     <?php
     }
@@ -706,14 +706,14 @@ function orbitvu_preload_images() {
     
     Orb$('orbitvu-img-0').onload = function() {
         orbitvu_current_image = OrbitvuImage('orbitvu-0');
-        console.log('Image preloader continues...');
+        //console.log('Image preloader continues...');
         
         for (var i = 1, n = orbitvu_img_preloader_tn.length; i < n; i++) {
             Orb$('orbitvu-gallery-preloader').innerHTML += '<img id="orbitvu-img-tn-' + i + '" src="' + orbitvu_img_preloader_tn[i] + '" style="width: 1px; height: 1px;" alt="" /> ';
             Orb$('orbitvu-gallery-preloader').innerHTML += '<img id="orbitvu-img-' + i + '" src="' + orbitvu_img_preloader[i] + '" style="width: 1px; height: 1px;" alt="" /> ';
         }  
         
-        console.log('Done.');
+        //console.log('Done.');
     
     }
      
@@ -884,7 +884,7 @@ function orbitvu_refresh() {
         //orbitvu_maxHeight_fix();
 
         clearInterval(orbitvu_init_interval); 
-        console.log('Ready.');
+        //console.log('Ready.');
         orbitvu_ready = true;
         
         orbitvu_calculate_zoom();
@@ -939,7 +939,7 @@ function OrbitvuInit() {
      */
     orbitvu_init_gallery();
     
-    console.log('Waiting for image preloader...');
+    //console.log('Waiting for image preloader...');
     orbitvu_preload_images();
 
     /*

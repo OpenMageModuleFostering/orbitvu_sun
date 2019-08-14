@@ -550,7 +550,7 @@ final class OrbitvuAdmin {
     public function SynchronizeProductPresentation($product_id, $presentation_id, $presentation_name) {
         //-------------------------------------------------------------------------------------------------------
         $this->SetProductPresentation($product_id, $presentation_id, $presentation_name); 
-        $p_items = $this->GetProductPresentationItems($presentation_id, $this->GetConfiguration('sync_order'));
+        $p_items = $this->GetProductPresentationItems($presentation_id);
         $this->SetProductPresentationItems($product_id, $presentation_id, $presentation_name, $p_items);
         //-------------------------------------------------------------------------------------------------------
         return true;
@@ -935,7 +935,15 @@ final class OrbitvuAdmin {
         return $this->driver->SynchronizeAllProducts();
         //-------------------------------------------------------------------------------------------------------
     }
-     
+
+    /**
+     * Get associated products of a given product     *
+     * @param $product_id
+     * @return mixed
+     */
+    public function GetAssociatedProducts($product_id) {
+        return $this->driver->GetAssociatedProducts($product_id);
+    }
 }
 
 ?>

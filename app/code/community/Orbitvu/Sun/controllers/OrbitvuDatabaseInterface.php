@@ -341,6 +341,11 @@ final class OrbitvuDatabaseInterface {
             LIMIT 1
         ';
 
+        /*
+         * Free thumbnails
+         */
+        $this->DeleteProductThumbnail($product['product_id']);
+
         //---------------------------------------------------------------------
         /**/	$this->return_sql_debug(__FUNCTION__, $db_query);
         //---------------------------------------------------------------------
@@ -465,10 +470,10 @@ final class OrbitvuDatabaseInterface {
         //---------------------------------------------------------------------
 
         $query = $this->database->FetchAll($db_query);
-        $query = $query[0];
+        $query = isset($query[0]) ? $query[0] : null;
         
         //-------------------------------------------------------------------------------------------------------
-        if ($query['orbitvu_id'] > 0) {
+        if (isset($query['orbitvu_id']) && $query['orbitvu_id']  > 0) {
             return true;
         }
         else {
@@ -476,7 +481,29 @@ final class OrbitvuDatabaseInterface {
         }
         //-------------------------------------------------------------------------------------------------------
     }
-    
+
+    /**
+     * @param $product_id
+     * @return array|Exception
+     */
+    public function GetAssociatedProducts($product_id) {
+        //-------------------------------------------------------------------------------------------------------
+        $db_query = '
+            SELECT `product_id`
+            FROM `'.$this->db_prefix.'catalog_product_super_link`
+
+            WHERE
+                `parent_id` = '.intval($product_id).'
+
+        ';
+
+        $query = $this->database->FetchAll($db_query);
+
+        //-------------------------------------------------------------------------------------------------------
+        return $query;
+        //-------------------------------------------------------------------------------------------------------
+    }
+
     /**
      * Is presentation unlinked?
      * @param integer $product_id Store product ID from database
@@ -501,10 +528,10 @@ final class OrbitvuDatabaseInterface {
         //---------------------------------------------------------------------
 
         $query = $this->database->FetchAll($db_query);
-        $query = $query[0];
+        $query = isset($query[0]) ? $query[0] : null;
         
         //-------------------------------------------------------------------------------------------------------
-        if ($query['orbitvu_id'] > 0) {
+        if (isset($query['orbitvu_id']) && $query['orbitvu_id'] > 0) {
             return true;
         }
         else {
@@ -535,7 +562,7 @@ final class OrbitvuDatabaseInterface {
         //---------------------------------------------------------------------
 
         $query = $this->database->FetchAll($db_query);
-        $query = $query[0];
+        $query = isset($query[0]) ? $query[0] : null;
         //-------------------------------------------------------------------------------------------------------
         if (isset($query['type'])) {
             return true;
@@ -668,7 +695,7 @@ final class OrbitvuDatabaseInterface {
         //---------------------------------------------------------------------
 
         $check = $this->database->FetchAll($db_query);
-        $check = $check[0];
+        $check = isset($check[0]) ? $check[0] : null;
         //-------------------------------------------------------------------------------------------------------
 
         $db_query = '
@@ -753,7 +780,7 @@ final class OrbitvuDatabaseInterface {
             //---------------------------------------------------------------------
 
             $check = $this->database->FetchAll($db_query);
-            $check = $check[0];
+            $check = isset($check[0]) ? $check[0] : null;
             //-------------------------------------------------------------------------------------------------------
             if (!isset($check['id'])) {
                 //-------------------------------------------------------------------------------------------------------
@@ -1034,7 +1061,7 @@ final class OrbitvuDatabaseInterface {
         $this->SetConfiguration('last_updated', date('Y-m-d H:i:s'));
         //-------------------------------------------------------------------------------------------------------
 
-        return $products_array;
+        return $products;
         //-------------------------------------------------------------------------------------------------------
 
     }
@@ -1305,10 +1332,10 @@ final class OrbitvuDatabaseInterface {
             //---------------------------------------------------------------------
 
             $query = $this->database->FetchAll($db_query);
-            $query = $query[0];
+            $query = isset($query[0]) ? $query[0] : null;
         
             //-------------------------------------------------------------------------------------------------------
-            /**/if (!empty($query['content']) && (strtotime($query['date']) == strtotime(date('Y-m-d')) || strtotime($query['date']) == strtotime(date('Y-m-d', strtotime('+1 days'))))) {
+            /**/if (isset($query['content']) && !empty($query['content']) && (strtotime($query['date']) == strtotime(date('Y-m-d')) || strtotime($query['date']) == strtotime(date('Y-m-d', strtotime('+1 days'))))) {
                 $content = json_decode($query['content']);
                 $content->id = $query['id'];
                 

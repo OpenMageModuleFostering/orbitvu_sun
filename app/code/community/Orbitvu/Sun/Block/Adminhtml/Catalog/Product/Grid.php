@@ -231,7 +231,7 @@ class Orbitvu_Sun_Block_Adminhtml_Catalog_Product_Grid extends Mage_Adminhtml_Bl
     window.onbeforeunload = function() {
         document.getElementById(\'orbitvu_postloader\').style.display = \'block\';
     }            
-</script></a>'.$orbitvu_popup.'<div id="orbitvu_postloader">
+</script></a>'.(isset($orbitvu_popup) ? $orbitvu_popup : '').'<div id="orbitvu_postloader">
     <div id="orbitvu_postloader_bg"></div>
     <div id="orbitvu_postloader_fg"><img src="'.Mage::getBaseUrl('media').'orbitvu/loader.gif" style="margin-top: 150px;" alt="" /></div>
 </div><style type="text/css">

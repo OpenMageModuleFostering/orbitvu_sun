@@ -287,8 +287,8 @@ final class Orbitvu {
         curl_setopt($c, CURLOPT_URL, $url);
         curl_setopt($c, CURLOPT_HTTPHEADER, $header);
         curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($c, CURLOPT_CONNECTTIMEOUT,2);
-        curl_setopt($c, CURLOPT_TIMEOUT,5);
+        curl_setopt($c, CURLOPT_CONNECTTIMEOUT,10);
+        curl_setopt($c, CURLOPT_TIMEOUT,20);
         curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
         if ($method_post) {
             curl_setopt($c, CURLOPT_POST, count($parameters_array));
