@@ -14,8 +14,13 @@ class Orbitvu_Sun_Model_Observer {
     public $_Orbitvu;
     //-------------------------------------------------------------------------------------------------------
     public function ExtendOrbitvu($return = true) {
-    	$helpers = __DIR__.'/../controllers/OrbitvuAdmin.php';
-    	include_once($helpers);
+        $no = strpos(dirname((__FILE__)), "Orbitvu".DIRECTORY_SEPARATOR."Sun");
+        $dir = substr(dirname(__FILE__), 0, $no ? $no : strlen(dirname(__FILE__)));
+        $helpers = $dir.DIRECTORY_SEPARATOR."Orbitvu".DIRECTORY_SEPARATOR."Sun".DIRECTORY_SEPARATOR."controllers".DIRECTORY_SEPARATOR."OrbitvuAdmin.php";
+        include_once($helpers);
+
+        /*$helpers = __DIR__.'/../controllers/OrbitvuAdmin.php';
+    	include_once($helpers);*/
     	
     	$this->_Orbitvu = new OrbitvuAdmin(false);
     	
@@ -198,8 +203,10 @@ class Orbitvu_Sun_Model_Observer {
              */
             //-------------------------------------------------------------------------------------------------------
             if (Mage::app()->getRequest()->getParam('sun') != 'update') {
-                $product_id = Mage::registry('product')->getId();
-                $this->UpdateThumbnails($product_id);
+                if (is_object(Mage::registry('product'))) {
+                    $product_id = Mage::registry('product')->getId();
+                    $this->UpdateThumbnails($product_id);
+                }
             }
             //-------------------------------------------------------------------------------------------------------
             

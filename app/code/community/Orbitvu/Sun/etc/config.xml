@@ -9,7 +9,7 @@
 <config>
     <modules>
         <Orbitvu_Sun>
-            <version>1.0.0</version>
+            <version>1.0.10</version>
         </Orbitvu_Sun>
     </modules>
     <global>
@@ -19,6 +19,11 @@
                 <resourceModel>sun_resource</resourceModel>
             </sun>
         </models>
+        <helpers>
+            <sun>
+                <class>Orbitvu_Sun_Helper</class>
+            </sun>
+        </helpers>
         <resources>
             <sun_setup>
                 <setup>

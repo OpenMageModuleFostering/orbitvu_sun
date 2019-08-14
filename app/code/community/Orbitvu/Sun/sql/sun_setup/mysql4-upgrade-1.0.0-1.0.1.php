@@ -12,12 +12,6 @@
 
 $installer = $this;
 $installer->startSetup();
-
-$inc = Mage::getBaseDir('app').'/code/community/Orbitvu/Sun/controllers/OrbitvuAdmin.php';
-include_once($inc);
-
-$_Orbitvu = new OrbitvuAdmin(false);
-$_Orbitvu->Install();
     
 $installer->endSetup();
 ?>
