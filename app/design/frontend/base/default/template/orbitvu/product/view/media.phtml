@@ -46,6 +46,8 @@ $_orbitvu_gallery['height'] = (str_replace('px', '', $_orbitvu_gallery['img_heig
 $_orbitvu_gallery['img_width_tn_marg'] = (str_replace('px', '', $_orbitvu_gallery['img_width_tn']) + str_replace('px', '', $_orbitvu_gallery['img_tn_margin'])).'px';
 $_orbitvu_gallery['img_height_tn_marg'] = (str_replace('px', '', $_orbitvu_gallery['img_height_tn']) + str_replace('px', '', $_orbitvu_gallery['img_tn_margin'])).'px';
 
+$append_prepend = $_Orbitvu->GetConfiguration('append_prepend'); //append or prepend orbitvu thumbnails to the front image product original images
+
 if (!$_orbitvu_gallery['scroll']) {
     $_orbitvu_gallery['scroll'] = 'yes';
 }
@@ -63,35 +65,7 @@ if ((strpos($_orbitvu_gallery['img_width'], 'px') !== false) && (strpos($_orbitv
     $ratio = (string)$ratio.'%';
 }
 
-//-------------------------------------------------------------------------------------------------------
-/*
- * Get original product images
- */    
-foreach ($this->getGalleryImages() as $_image) {
-    $current_array = array();
-    // original image
-    //-------------------------------------------------------------------------------------------------------
-    $this_url = $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile());
-    $thumbs_list[] = (string)$this_url;
-    $jspreloader[] = '\''.((string)$this_url).'\'';
-    $current_array['path'] = (string)$this_url;
-    //-------------------------------------------------------------------------------------------------------
-    // thumbnail 538x300
-    //-------------------------------------------------------------------------------------------------------
-    $this_url_tn = $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(str_replace('px', '', $_orbitvu_gallery['img_width']), str_replace('px', '', $_orbitvu_gallery['img_height']));
-    $jspreloader_tn[] = '\''.((string)$this_url_tn).'\'';
-    $current_array['path_tn'] = (string)$this_url_tn;
-    //-------------------------------------------------------------------------------------------------------
-    // thumbnail 75x75
-    //-------------------------------------------------------------------------------------------------------
-    $this_url_tn2 = $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(str_replace('px', '', $_orbitvu_gallery['img_width_tn']), str_replace('px', '', $_orbitvu_gallery['img_height_tn']));
-    $current_array['path_tn2'] = (string)$this_url_tn2;
-    //-------------------------------------------------------------------------------------------------------
 
-    //-------------------------------------------------------------------------------------------------------
-    $images_list[] = $current_array;
-    //-------------------------------------------------------------------------------------------------------
-}
 //-------------------------------------------------------------------------------------------------------
 /*
  * Item template
@@ -101,7 +75,7 @@ $_media_item_tpl = '
         <a class="orbitvu-gallery-item-link" id="orbitvu-{id}" href="{path}" target="_blank">
             <img src="{path_tn2}" alt="" />
         </a>
-    </li>    
+    </li>
 ';
 
 $_presentation_item_tpl = '
@@ -109,7 +83,7 @@ $_presentation_item_tpl = '
         <a class="orbitvu-gallery-item-link" id="orbitvu-{id}" rel="presentation-360" href="{path}" target="_blank">
             <img src="{path_tn2}" alt="" /><span class="orbitvu-gallery-item-desc"><span class="orbitvu-icon orbitvu-icon-type-1"></span></span>
         </a>
-    </li>    
+    </li>
 ';
 
 $_orbittour_item_tpl = '
@@ -117,27 +91,61 @@ $_orbittour_item_tpl = '
         <a class="orbitvu-gallery-item-link" id="orbitvu-{id}" rel="presentation-tour" href="{path}" target="_blank">
             <img src="{path_tn2}" alt="" /><span class="orbitvu-gallery-item-desc"><span class="orbitvu-icon orbitvu-icon-type-0"></span></span>
         </a>
-    </li>    
+    </li>
 ';
 //-------------------------------------------------------------------------------------------------------
+
 $all_items = 0;
 $_out_items = '';
 $i = 0;
 $first_image = '';
-/*
- * Magento images
- */
-//-------------------------------------------------------------------------------------------------------
-foreach ($images_list as $item) {
-    if ($i == 0) $item['class'] = ' orbitvu_active';
-    else $item['class'] = '';
-    
-    $item['id'] = $all_items;
 
-    $_out_items .= $observer->UseTemplate($item, $_media_item_tpl);
-    
-    $i++;
-    $all_items++;
+if ($append_prepend != 'prepend') {
+//-------------------------------------------------------------------------------------------------------
+    /*
+     * Get original product images
+     */
+    foreach ($this->getGalleryImages() as $_image) {
+        $current_array = array();
+        // original image
+        //-------------------------------------------------------------------------------------------------------
+        $this_url = $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile());
+        $thumbs_list[] = (string)$this_url;
+        $jspreloader[] = '\''.((string)$this_url).'\'';
+        $current_array['path'] = (string)$this_url;
+        //-------------------------------------------------------------------------------------------------------
+        // thumbnail 538x300
+        //-------------------------------------------------------------------------------------------------------
+        $this_url_tn = $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(str_replace('px', '', $_orbitvu_gallery['img_width']), str_replace('px', '', $_orbitvu_gallery['img_height']));
+        $jspreloader_tn[] = '\''.((string)$this_url_tn).'\'';
+        $current_array['path_tn'] = (string)$this_url_tn;
+        //-------------------------------------------------------------------------------------------------------
+        // thumbnail 75x75
+        //-------------------------------------------------------------------------------------------------------
+        $this_url_tn2 = $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(str_replace('px', '', $_orbitvu_gallery['img_width_tn']), str_replace('px', '', $_orbitvu_gallery['img_height_tn']));
+        $current_array['path_tn2'] = (string)$this_url_tn2;
+        //-------------------------------------------------------------------------------------------------------
+
+        //-------------------------------------------------------------------------------------------------------
+        $images_list[] = $current_array;
+        //-------------------------------------------------------------------------------------------------------
+    }
+
+    /*
+     * Magento images
+     */
+    //-------------------------------------------------------------------------------------------------------
+    foreach ($images_list as $item) {
+        if ($i == 0) $item['class'] = ' orbitvu_active';
+        else $item['class'] = '';
+
+        $item['id'] = $all_items;
+
+        $_out_items .= $observer->UseTemplate($item, $_media_item_tpl);
+
+        $i++;
+        $all_items++;
+    }
 }
 //-------------------------------------------------------------------------------------------------------
 if (isset($images_list[0]['path_tn'])) {
@@ -259,6 +267,58 @@ if (count($presentation['items']) > 0) {
         $i++;
     }
 }
+
+
+
+/*
+ * Magento images
+ */
+if ($append_prepend == 'prepend') {
+//-------------------------------------------------------------------------------------------------------
+    /*
+     * Get original product images
+     */
+    foreach ($this->getGalleryImages() as $_image) {
+        $current_array = array();
+        // original image
+        //-------------------------------------------------------------------------------------------------------
+        $this_url = $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile());
+        $thumbs_list[] = (string)$this_url;
+        $jspreloader[] = '\''.((string)$this_url).'\'';
+        $current_array['path'] = (string)$this_url;
+        //-------------------------------------------------------------------------------------------------------
+        // thumbnail 538x300
+        //-------------------------------------------------------------------------------------------------------
+        $this_url_tn = $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(str_replace('px', '', $_orbitvu_gallery['img_width']), str_replace('px', '', $_orbitvu_gallery['img_height']));
+        $jspreloader_tn[] = '\''.((string)$this_url_tn).'\'';
+        $current_array['path_tn'] = (string)$this_url_tn;
+        //-------------------------------------------------------------------------------------------------------
+        // thumbnail 75x75
+        //-------------------------------------------------------------------------------------------------------
+        $this_url_tn2 = $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(str_replace('px', '', $_orbitvu_gallery['img_width_tn']), str_replace('px', '', $_orbitvu_gallery['img_height_tn']));
+        $current_array['path_tn2'] = (string)$this_url_tn2;
+        //-------------------------------------------------------------------------------------------------------
+
+        //-------------------------------------------------------------------------------------------------------
+        $images_list[] = $current_array;
+        //-------------------------------------------------------------------------------------------------------
+    }
+
+//-------------------------------------------------------------------------------------------------------
+    foreach ($images_list as $item) {
+        if ($i == 0) $item['class'] = ' orbitvu_active';
+        else $item['class'] = '';
+
+        $item['id'] = $all_items;
+
+        $_out_items .= $observer->UseTemplate($item, $_media_item_tpl);
+
+        $i++;
+        $all_items++;
+    }
+}
+
+
 
 //-------------------------------------------------------------------------------------------------------
 /*

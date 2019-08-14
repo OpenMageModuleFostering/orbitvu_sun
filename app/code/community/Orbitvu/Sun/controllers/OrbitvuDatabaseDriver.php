@@ -140,6 +140,7 @@ class OrbitvuDatabaseDriver {
             'hover_delay'           => $this->make_boolean(Mage::getStoreConfig('orbitvu/mode/hover_delay')),
             'teaser'                => $this->make_boolean(Mage::getStoreConfig('orbitvu/mode/teaser')),
             'html5'                 => $this->make_boolean(Mage::getStoreConfig('orbitvu/mode/html5')),
+            'append_prepend'        => Mage::getStoreConfig('orbitvu/mode/append_prepend'),
             'orbittour_thumbnails'  => Mage::getStoreConfig('orbitvu/mode/orbittour_thumbnails')
         );
         //---------------------------------------------------------------------------------------------------
@@ -218,6 +219,7 @@ class OrbitvuDatabaseDriver {
                 ('default', 0, 'orbitvu/api/access_token', '1567f2b4a02a8bfc5d8aacf0f44b16157e149d29'),
                 ('default', 0, 'orbitvu/mode/orbittour_thumbnails', 'right_views'),
                 ('default', 0, 'orbitvu/mode/html5', 'yes'),
+                ('default', 0, 'orbitvu/mode/append_prepend', 'append'),
                 ('default', 0, 'orbitvu/mode/hover_delay', '2'),
                 ('default', 0, 'orbitvu/mode/teaser', 'autorotate'),
                 ('default', 0, 'orbitvu/mode/hover_mode', '1'),
@@ -287,6 +289,7 @@ class OrbitvuDatabaseDriver {
                 ('teaser', 'autorotate', 'mode', ''),
                 ('hover_delay', '2', 'mode', ''),
                 ('html5', 'yes', 'mode', ''),
+                ('append_prepend', 'append', 'mode', ''),
                 ('orbittour_thumbnails', 'right_views', 'mode', ''),
                 ('first_time', 'true', 'main', '');
                 
