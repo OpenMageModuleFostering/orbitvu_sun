@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <translations>
+            <active>true</active>
+            <codepool>local</codepool>
+        </translations>
+    </modules>
+</config>

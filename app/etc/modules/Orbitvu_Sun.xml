@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Orbitvu
+ * @package     Orbitvu_Sun
+ * @copyright   Copyright (c) 2014 Orbitvu (http://www.orbitvu.com)
+ */
+-->
+<config>
+    <modules>
+        <Orbitvu_Sun>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Orbitvu_Sun>
+    </modules>
+</config>

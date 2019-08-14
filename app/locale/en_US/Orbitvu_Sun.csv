@@ -1,0 +1,138 @@
+Orbitvu,Orbitvu
+Error!,Error!
+OK,OK
+Your account was created!,Your account was created!
+Now you have your own account on Orbitvu SUN.<br />We sent your an email with details.,Orbitvu SUN account has been created for you.<br />Shortly you\'ll receive confirmation email.
+Your trial License Key was created and it\'s now in use.,Your trial License Key was created and it\'s now in use.
+Update your key,Update your key
+Contact Orbitvu,Contact Orbitvu
+License Key is not valid,License Key is not valid
+Your Orbitvu extension License Key is not valid. Please update your Key. Orbitvu extension functionality is now limited.,Your Orbitvu extension License Key is not valid. Please enter valid License Key. Orbitvu extension functionality is now limited.
+Orbitvu Extension Wizard,Orbitvu SUN Product Teleporting Extension Wizard
+"You need a <a href=""http://orbitvu.co"" target=""_blank"">Orbitvu SUN</a> account and License Key to use the extension.","You need a <a href=""http://orbitvu.co"" target=""_blank"">Orbitvu SUN</a> account and License Key to use the extension."
+Choose an option:,Choose an option:
+Enter License Key,Enter License Key
+Link Orbitvu SUN presentations to all products matched with SKU or name.,Link Orbitvu SUN presentations to all products matched with SKU or name.
+Link Orbitvu SUN presentations,Link Orbitvu SUN presentations
+Do you really want to link Orbitvu SUN presentations to all products matched with SKU or name?,Do you really want to link Orbitvu SUN presentations to all products matched with SKU or name?
+This operation will only be applied to not yet linked products.,This operation will only be applied to not yet linked products.
+Orbitvu Configuration,Orbitvu Configuration
+close,close
+Try extension with DEMO account,Try extension with DEMO account
+You get access to predefined set of 360&deg; presentations.,You get access to predefined set of 360&deg; presentations.
+Register Orbitvu SUN FREE trial account,Register Orbitvu SUN FREE trial account
+Create and customize your own presentations.,Create and customize your own presentations.
+Enter License Key,Enter License Key
+Connect to your Orbitvu SUN account.,Connect to your Orbitvu SUN account.
+Creating new account is free. Just enter your e-mail address,Creating new account is free. Just enter your e-mail address
+We will send you the password and generate trial License Key automaticaly.,We will send you the password and generate trial License Key automaticaly.
+Linked,Linked
+Orbittour,Orbittour
+360&deg;,360&deg;
+360°,360°
+2D,2D
+Unlinked,Unlinked
+Not linked,Not linked
+No delay,No delay
+"0,1 second","0,1 second"
+"0,2 second","0,2 second"
+"0,3 second","0,3 second"
+"0,4 second","0,4 second"
+half a second,half a second
+Always use HTML5,Always use HTML5
+"Use Flash if available, otherwise use HTML5","Use Flash if available, otherwise use HTML5"
+"You need <a href=""http://orbitvu.co"" target=""_blank"">Orbitvu SUN</a> account and License Key to use Orbitvu extension.","You need <a href=""http://orbitvu.co"" target=""_blank"">Orbitvu SUN</a> account and License Key to use Orbitvu extension."
+Register,Register
+trial account or,trial account or
+use DEMO License Key,use DEMO License Key
+Views to the right,Views to the right
+Views at the bottom,Views at the bottom
+No views,No views
+Use Orbitvu SUN setting,Use Orbitvu SUN setting
+"Enable, if remote SKU is empty","Enable, if remote SKU is empty"
+Auto-rotation,Auto-rotation
+Play button enables rotation,Play button enables rotation
+No teaser (static presentation),No teaser (static presentation)
+Quick single rotation (make sense only if 360 presentation is your first gallery item),Quick single rotation (makes sense only if 360 presentation is your first gallery item)
+Slow single rotation (make sense only if 360 presentation is your first gallery item),Slow single rotation (makes sense only if 360 presentation is your first gallery item)
+Use Orbitvu SUN setting,Use Orbitvu SUN setting
+Orbitvu SUN Synchronization,Orbitvu SUN Synchronization
+Orbitvu SUN connection settings,Orbitvu SUN connection settings
+License Key,License Key
+Orbitvu SUN integration,Orbitvu SUN integration
+Link Orbitvu SUN presentations to products automatically,Link Orbitvu SUN presentations to products automatically
+Matching (by SKU or name) Orbitvu SUN presentation will be linked to new products immediately. Once a day we will check for changes at Orbitvu SUN and link matching presentations to products.,Matching (by SKU or name) Orbitvu SUN presentation will be linked to new products immediately. Once a day we will check for changes at Orbitvu SUN and link matching presentations to products.
+Update presentation SKU on Orbitvu SUN automatically,Automatically update presentation SKU on Orbitvu SUN
+Automatically update empty Presentation's SKU on Orbitvu SUN server when such Presentation is linked to Product.,Automatically update empty Presentation's SKU on Orbitvu SUN server when such Presentation is linked to Product.
+Select what type of presentation content will be visible in store by default,Select what type of presentation content will be visible in store by default
+Product view - gallery behavior,Product view - gallery behavior
+Mouse over mode,Mouse over mode
+Change presentation items in gallery with just mouse over instead of click.,Change presentation items in gallery with just mouse over instead of click.
+360° Presentation teaser,360° Presentation teaser
+HTML5 or Flash mode,HTML5 or Flash mode
+Orbittour views visibility,Orbittour views visibility
+Product view - gallery layout (edit only if you know what are you doing!),Product view - gallery layout (edit only if you know what you are doing!)
+Gallery width,Gallery width
+Enter <strong>100%</strong> if you wan't to have responsive gallery layout (recommended),Enter <strong>100%</strong> if you want to have responsive gallery layout (recommended)
+Gallery preview maximum width,Gallery maximum width
+Recommended: Your layout proportion to gallery preview maximum height eg. <strong>600px</strong>,Recommended: Your layout proportion to gallery maximum height eg. <strong>600px</strong>
+Gallery preview maximum height,Gallery maximum height
+Recommended: <strong>300px</strong>,Recommended: <strong>300px</strong>
+Gallery border color,Gallery border color
+Recommended: <strong>#ccc</strong><br />Enter <strong>transparent</strong> if you don't want borders,Recommended: <strong>#ccc</strong><br />Enter <strong>transparent</strong> if you don't want borders
+Internal zoom image width,Internal zoom image width
+Recommended: <strong>1024px</strong>,Recommended: <strong>1024px</strong>
+Internal zoom image height,Internal zoom image height
+Recommended: <strong>768px</strong>,Recommended: <strong>768px</strong>
+Thumbnail width,Thumbnail width
+Recommended: <strong>75px</strong>,Recommended: <strong>75px</strong>
+Thumbnail height,Thumbnail height
+Recommended: <strong>50px</strong>,Recommended: <strong>50px</strong>
+Thumbnail margin,Thumbnail margin
+Recommended: <strong>3px</strong>,Recommended: <strong>3px</strong>
+Button prev/next width,Button prev/next width
+Recommended: <strong>30px</strong>,Recommended: <strong>30px</strong>
+Button prev/next height,Button prev/next height
+Recommended: <strong>53px</strong>,Recommended: <strong>53px</strong>
+Button prev/next opacity,Button prev/next opacity
+"1 = 100% (recommended), 0.5 = 50%, 0 = 0%","1 = 100% (recommended), 0.5 = 50%, 0 = 0%"
+SKU,SKU
+One of your presentations already has this SKU assigned. SKU need to be unique. Modify SKU on your SUN Server and try again.,This SKU is already in use by one of Orbitvu SUN presentations. Modify SKU on Orbitvu SUN and try again.
+Your Orbitvu extension License Key is not valid. Please update your Key. Orbitvu extension functionality is now limited.,Your Orbitvu extension License Key is not valid. Please enter valid License Key. Orbitvu extension functionality is now limited.
+Update your key,Update your License Key
+Orbitvu extension is connected to DEMO account. Register Orbitvu SUN FREE trial account to create your own presentations.,Orbitvu extension uses DEMO account License Key. Register Orbitvu SUN FREE trial account to create your own presentations.
+Get free trial,Get free trial
+Version,Version
+of Orbitvu extension is out!,of Orbitvu extension is out!
+Upgrade now from,Upgrade now from
+to,to
+Your presentation has been unlinked. You can select a new one below.,Your presentation has been unlinked. You can select a new one below.
+We used your product\'s SKU:,We used your product\'s SKU:
+and name:,and name:
+to match one of your SUN presentations.,to match one of your Orbitvu SUN presentations.
+Link this presentation,Link this presentation
+Select another one,Select another one
+Confirm linking matched presentation,Confirm linking matched presentation
+Select presentation from your Orbitvu SUN account to link with product,Select presentation from your Orbitvu SUN account to link with product
+Page:,Page:
+of,of
+Per page:,Per page:
+Total:,Total:
+Date,Date
+Name,Name
+Enter presentation name or SKU...,Enter presentation name or SKU...
+Search,Search
+Reset,Reset
+Do you really want to link this presentation with current product?,Do you really want to link this presentation with current product?
+Orbitvu SUN presentation linked to current product,Orbitvu SUN presentation linked to current product
+o you really want to update this presentation SKU on your Orbitvu SUN account?,Do you really want to update this presentation SKU on Orbitvu SUN?
+Product\'s SKU:,Product\'s SKU:
+. Presentation\'s SKU from Orbitvu SUN:,. Presentation\'s SKU from Orbitvu SUN:
+"Click ""Update SKU on SUN"" button below to update your presentation\'s SKU on Orbitvu SUN with:","Click ""Update SKU on SUN"" button below to update your presentation\'s SKU on Orbitvu SUN with:"
+We can\'t change your SUN Presentation SKU. One of your presentations already has this product SKU assigned. SKU need to be unique. Modify SKU on your SUN Server.,We can\'t change your Orbitvu SUN Presentation SKU because it is already in use by another presentation. SKU needs to be unique. Modify Presentation SKU on Orbitvu SUN Server to resolve the problem.
+Do you really want to unlink this presentation?,Do you really want to unlink this presentation?
+Unlink this presentation,Unlink this presentation
+Edit on SUN,Edit on SUN
+Drag &amp; move item,Drag &amp; move item
+Hide item,Hide item
+Show item,Show item

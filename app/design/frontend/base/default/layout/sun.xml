@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Orbitvu
+ * @package     Orbitvu_Sun
+ * @copyright   Copyright (C) 2014 Orbitvu (http://www.orbitvu.com)
+ * @license     http://www.orbitvu.com/plugins/license
+ * @version     1.0.0
+ */
+-->
+<layout version="1.0">
+    <catalog_product_view>
+        <reference name="product.info.media">
+            <action method="setTemplate"><name>orbitvu/product/view/media.phtml</name></action>
+        </reference>
+    </catalog_product_view>
+</layout>

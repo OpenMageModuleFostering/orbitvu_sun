@@ -1,0 +1,924 @@
+<?php
+/**
+ * @category    Orbitvu
+ * @package     Orbitvu_Sun
+ * @copyright   Copyright (C) 2014 Orbitvu (http://www.orbitvu.com)
+ * @license     http://www.orbitvu.com/plugins/license
+ * @version     1.0.0
+ */
+
+//-------------------------------------------------------------------------------------------------------
+$_product = $this->getProduct();
+$_helper = $this->helper('catalog/output');
+//-------------------------------------------------------------------------------------------------------
+$jspreloader = array();
+$jspreloader_tn = array();
+$thumbs_list = array();
+$images_list = array();
+//-------------------------------------------------------------------------------------------------------
+$observer = \Mage::getSingleton('sun/observer');
+$_Orbitvu = $observer->ExtendOrbitvu();
+//-------------------------------------------------------------------------------------------------------
+/*
+ * Gallery theme
+ */         
+$_orbitvu_gallery = array(
+    'width'             => $_Orbitvu->GetConfiguration('width'),
+    'img_height'        => $_Orbitvu->GetConfiguration('img_height'),
+    'border_color'      => $_Orbitvu->GetConfiguration('border_color'),
+    'img_width_zoom'    => $_Orbitvu->GetConfiguration('img_width_zoom'),
+    'img_height_zoom'   => $_Orbitvu->GetConfiguration('img_height_zoom'),
+    'img_width_tn'      => $_Orbitvu->GetConfiguration('img_width_tn'),
+    'img_height_tn'     => $_Orbitvu->GetConfiguration('img_height_tn'),
+    'img_tn_margin'     => $_Orbitvu->GetConfiguration('img_tn_margin'),
+    'button_width'      => $_Orbitvu->GetConfiguration('button_width'),
+    'button_height'     => $_Orbitvu->GetConfiguration('button_height'),
+    'button_opacity'    => $_Orbitvu->GetConfiguration('button_opacity'),
+    'img_width'         => $_Orbitvu->GetConfiguration('img_width'),
+);
+$_orbitvu_gallery['height'] = (str_replace('px', '', $_orbitvu_gallery['img_height']) + str_replace('px', '', $_orbitvu_gallery['img_height_tn'] + 2) + (3 * str_replace('px', '', $_orbitvu_gallery['img_tn_margin']))).'px';
+$_orbitvu_gallery['img_width_tn_marg'] = (str_replace('px', '', $_orbitvu_gallery['img_width_tn']) + str_replace('px', '', $_orbitvu_gallery['img_tn_margin'])).'px';
+$_orbitvu_gallery['img_height_tn_marg'] = (str_replace('px', '', $_orbitvu_gallery['img_height_tn']) + str_replace('px', '', $_orbitvu_gallery['img_tn_margin'])).'px';
+//-------------------------------------------------------------------------------------------------------
+/*
+ * Get original product images
+ */    
+foreach ($this->getGalleryImages() as $_image) {
+    $current_array = array();
+    // original image
+    //-------------------------------------------------------------------------------------------------------
+    $this_url = $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile());
+    $thumbs_list[] = (string)$this_url;
+    $jspreloader[] = '\''.((string)$this_url).'\'';
+    $current_array['path'] = (string)$this_url;
+    //-------------------------------------------------------------------------------------------------------
+    // thumbnail 538x300
+    //-------------------------------------------------------------------------------------------------------
+    $this_url_tn = $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(str_replace('px', '', $_orbitvu_gallery['img_width']), str_replace('px', '', $_orbitvu_gallery['img_height']));
+    $jspreloader_tn[] = '\''.((string)$this_url_tn).'\'';
+    $current_array['path_tn'] = (string)$this_url_tn;
+    //-------------------------------------------------------------------------------------------------------
+    // thumbnail 75x75
+    //-------------------------------------------------------------------------------------------------------
+    $this_url_tn2 = $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(str_replace('px', '', $_orbitvu_gallery['img_width_tn']), str_replace('px', '', $_orbitvu_gallery['img_height_tn']));
+    $current_array['path_tn2'] = (string)$this_url_tn2;
+    //-------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------
+    $images_list[] = $current_array;
+    //-------------------------------------------------------------------------------------------------------
+}
+//-------------------------------------------------------------------------------------------------------
+/*
+ * Item template
+ */
+$_media_item_tpl = '
+    <li class="orbitvu-gallery-item{class}">
+        <a class="orbitvu-gallery-item-link" id="orbitvu-{id}" href="{path}" target="_blank">
+            <img src="{path_tn2}" alt="" />
+        </a>
+    </li>    
+';
+
+$_presentation_item_tpl = '
+    <li class="orbitvu-gallery-item{class}">
+        <a class="orbitvu-gallery-item-link" id="orbitvu-{id}" rel="presentation-360" href="{path}" target="_blank">
+            <img src="{path_tn2}" alt="" /><span class="orbitvu-gallery-item-desc"><span class="orbitvu-icon orbitvu-icon-type-1"></span></span>
+        </a>
+    </li>    
+';
+
+$_orbittour_item_tpl = '
+    <li class="orbitvu-gallery-item{class}">
+        <a class="orbitvu-gallery-item-link" id="orbitvu-{id}" rel="presentation-tour" href="{path}" target="_blank">
+            <img src="{path_tn2}" alt="" /><span class="orbitvu-gallery-item-desc"><span class="orbitvu-icon orbitvu-icon-type-0"></span></span>
+        </a>
+    </li>    
+';
+//-------------------------------------------------------------------------------------------------------
+$all_items = 0;
+$_out_items = '';
+$i = 0;
+$first_image = '';
+/*
+ * Magento images
+ */
+//-------------------------------------------------------------------------------------------------------
+foreach ($images_list as $item) {
+    if ($i == 0) $item['class'] = ' orbitvu_active';
+    else $item['class'] = '';
+    
+    $item['id'] = $all_items;
+
+    $_out_items .= $observer->UseTemplate($item, $_media_item_tpl);
+    
+    $i++;
+    $all_items++;
+}
+//-------------------------------------------------------------------------------------------------------
+if (isset($images_list[0]['path_tn'])) {
+    $first_image = array(
+        'path_tn'   => $images_list[0]['path_tn'],
+        'path'      => $images_list[0]['path']
+    );
+}
+//-------------------------------------------------------------------------------------------------------
+$presentation = $_Orbitvu->GetProductPresentation($_product->getId(), true);
+
+$view_360 = array();
+$orbittour = array();
+$i = 0;
+if (count($presentation['items']) > 0) {
+    foreach ($presentation['items'] as $item) {
+/*
+ * Orbitvu 2D Images
+ */
+        if ($item['type'] == '3') {
+//-------------------------------------------------------------------------------------------------------         
+            $current_path = 'http:'.$item['path'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
+            $current_path_tn = 'http:'.$item['path'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']);
+            
+            $_out_items .= $observer->UseTemplate(array(
+                'path'      => $current_path,
+                'path_tn'   => $current_path_tn,
+                'path_tn2'  => 'http:'.$item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&max_height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']),
+                'class'     => '',
+                'id'        => $all_items
+            ), $_media_item_tpl);
+//-------------------------------------------------------------------------------------------------------
+            $jspreloader_tn[] = '\''.$current_path_tn.'\'';
+            $jspreloader[] = '\''.$current_path.'\'';
+            
+            if ($i == 0 && empty($first_image)) {
+                $first_image = array(
+                    'path_tn'   => $current_path_tn,
+                    'path'      => $current_path
+                );
+            }
+            
+            $all_items++;
+        }
+/*
+ * Orbitvu 360 Presentations
+ */
+        else if ($item['type'] == '1') {
+//-------------------------------------------------------------------------------------------------------         
+            $current_path = 'http:'.$item['thumbnail'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
+            $current_path_tn = 'http:'.$item['thumbnail'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']);
+            
+            $_out_items .= $observer->UseTemplate(array(
+                'path'      => $current_path,
+                'path_tn'   => $current_path_tn,
+                'path_tn2'  => 'http:'.$item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&max_height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']),
+                'class'     => '',
+                'id'        => $all_items
+            ), $_presentation_item_tpl);
+            
+            $item_config = json_decode($item['config']);
+            $item_uid = $item_config->uid;
+            $view_360 = array(
+                'path'      => $item['path'],
+                'path_tn'   => $current_path_tn,
+                'uid'       => $item_uid,
+                'thumbnail' => $item['thumbnail']
+            );
+//-------------------------------------------------------------------------------------------------------
+            $jspreloader_tn[] = '\''.$current_path_tn.'\'';
+            $jspreloader[] = '\''.$current_path.'\'';
+            
+            if ($i == 0 && empty($first_image)) {
+                $first_image = array(
+                    'path_tn'   => $current_path_tn,
+                    'path'      => $current_path
+                );
+            }
+            
+            $all_items++;
+        }
+/*
+ * Orbittour presentation
+ */
+        else if ($item['type'] == '0') {
+//-------------------------------------------------------------------------------------------------------         
+            $current_path = 'http:'.$item['thumbnail'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width_zoom']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height_zoom']);
+            $current_path_tn = 'http:'.$item['thumbnail'].'?max_width='.str_replace('px', '', $_orbitvu_gallery['img_width']).'&height='.str_replace('px', '', $_orbitvu_gallery['img_height']);
+            
+            $_out_items .= $observer->UseTemplate(array(
+                'path'      => $current_path,
+                'path_tn'   => $current_path_tn,
+                'path_tn2'  => 'http:'.$item['thumbnail'].'?width='.str_replace('px', '', $_orbitvu_gallery['img_width_tn']).'&max_height='.str_replace('px', '', $_orbitvu_gallery['img_height_tn']),
+                'class'     => '',
+                'id'        => $all_items
+            ), $_orbittour_item_tpl);
+            
+            $item_config = json_decode($item['config']);
+            $item_uid = $item_config->uid;
+            $orbittour = array(
+                'path'      => $item['path'],
+                'path_tn'   => $current_path_tn,
+                'uid'       => $item_uid   
+            );
+//-------------------------------------------------------------------------------------------------------
+            $jspreloader_tn[] = '\''.$current_path_tn.'\'';
+            $jspreloader[] = '\''.$current_path.'\'';
+            
+            if ($i == 0 && empty($first_image)) {
+                $first_image = array(
+                    'path_tn'   => $current_path_tn,
+                    'path'      => $current_path
+                );
+            }
+            
+            $all_items++;
+        }
+//-------------------------------------------------------------------------------------------------------       
+        $i++;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------
+/*
+ * Display output
+ */
+if ($all_items <= 0) {
+?>
+<div class="orbitvu-gallery" id="orbitvu-gallery-placeholder" style="width: <?=$_orbitvu_gallery['width']?>; height: <?=$_orbitvu_gallery['height']?>; margin: 0; padding: 0; position: relative; border: 1px solid <?=$_orbitvu_gallery['border_color']?>; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/placeholder.png); background-position: center; center; background-repeat: no-repeat;"></div>
+<script>
+window.onresize = function() {
+    if (window.innerWidth < 770) document.getElementById('orbitvu-gallery-placeholder').style.display = 'none';
+    else document.getElementById('orbitvu-gallery-placeholder').style.display = 'block';
+}
+window.onresize();
+</script>
+<?php
+}
+else if ($all_items > 0) {
+?>
+<div class="orbitvu-gallery" id="orbitvu-gallery">
+    <div id="orbitvu-gallery-product-image" class="orbitvu-gallery-product-image">
+        <div id="orbitvu-gallery-view-image">
+            <img id="orbitvu-gallery-main-image" style="display: inline;" alt="orbitvu-0" src="<?=$first_image['path_tn']?>" />
+        </div>
+        <div id="orbitvu-gallery-view-360" class="orbitvu-presentation"<?php if (!empty($view_360['path'])) {
+            echo ' style="background-image: url('.$view_360['thumbnail'].'?max_height='.str_replace('px', '', $_orbitvu_gallery['img_height']).');"';
+        }?>><?php
+    if (!empty($view_360['path'])) { 
+    ?>
+    <script type="text/javascript" src="<?=$view_360['path']?>?content2=yes&force_html5=<?=$_Orbitvu->GetConfiguration('html5')?><?php
+    $orbitvu_teaser = $_Orbitvu->GetConfiguration('teaser');
+    if ($orbitvu_teaser != 'sun') {
+        print '&teaser='.$orbitvu_teaser;
+    }
+    ?>&width=auto&height=auto&viewer_delayed=yes" id="orbitvu-viewer-script"></script>
+    <div id="ovContent-<?=$view_360['uid']?>" class="orbitvu-container" style="width: 100%; height: 100%; background-repeat: no-repeat; background-position: center center; background-size: contain; background-image: url(<?=$view_360['thumbnail']?>?max_height=<?=str_replace('px', '', $_orbitvu_gallery['img_height'])?>);"></div>
+    <?php
+    }
+    ?></div>
+        <div id="orbitvu-gallery-view-tour" class="orbitvu-presentation"><?php
+    if (!empty($orbittour['path'])) { 
+    ?>
+            <div id="orbittour-<?=$orbittour['uid']?>" class="orbittour-container"></div>
+            <script type="text/javascript" src="<?=$orbittour['path']?>?orbittour_delayed=yes&onready=no&force_html5=<?=$_Orbitvu->GetConfiguration('html5')?><?php 
+            $otn = $_Orbitvu->GetConfiguration('orbittour_thumbnails');
+            
+            if ($otn != 'sun') {
+                print '&style='.$otn;
+            }
+            
+            ?>"></script>
+    <?php } ?></div>
+    </div>
+    <div id="orbitvu-gallery-product-image-zoom" style="background-image: url(<?=$first_image['path']?>);"></div>
+    <div class="orbitvu-gallery-product-views" id="orbitvu-gallery-product-views">
+        <ul class="orbitvu-image-thumbs" id="orbitvu-image-thumbs" style="margin-left: 0;">
+            <?=$_out_items?>
+        </ul>
+        <em id="orbitvu_go_next" class="orbitvu-gallery-button"><span>&raquo;</span></em>
+        <em id="orbitvu_go_back" class="orbitvu-gallery-button"><span>&laquo;</span></em>
+    </div>
+    <div id="orbitvu-gallery-preloader"></div>
+</div>
+<style type="text/css">
+.orbitvu-gallery { width: <?=$_orbitvu_gallery['width']?>; height: <?=$_orbitvu_gallery['height']?>; margin: 0; padding: 0; position: relative; border: 1px solid <?=$_orbitvu_gallery['border_color']?>; }
+    .orbitvu-gallery-product-image { clear: both; overflow: hidden; zoom: 1.0; max-height: <?=$_orbitvu_gallery['img_height']?>; position: relative; text-align: center; }
+        .orbitvu-gallery-product-image img#orbitvu-gallery-main-image { display: inline; margin: 0; padding: 0; border: 0; max-width: 100%; max-height: 100%; cursor: crosshair; }
+        #orbitvu-gallery-product-image-zoom { display: none; height: auto; box-sizing: content-box; position: absolute; top: -1px; bottom: -1px; right: -100%; width: 100%; border: 1px solid <?=$_orbitvu_gallery['border_color']?>; background-color: white; background-repeat: no-repeat; cursor: crosshair;  }
+    .orbitvu-gallery-product-views { width: 100%; position: absolute; bottom: 0; left: 0; clear: both; overflow: hidden; zoom: 1.0; }
+        .orbitvu-gallery-product-views ul.orbitvu-image-thumbs { margin: 0; padding: 0; width: 99999px; }
+            .orbitvu-gallery-product-views ul.orbitvu-image-thumbs li.orbitvu-gallery-item { float: left; display: table-row; overflow: hidden; width: <?=$_orbitvu_gallery['img_width_tn_marg']?>; height: <?=$_orbitvu_gallery['img_height_tn_marg']?>; margin: <?=$_orbitvu_gallery['img_tn_margin']?>; position: relative; border: 1px solid transparent; }
+            .orbitvu-gallery-product-views ul.orbitvu-image-thumbs li.orbitvu-gallery-item:hover, .orbitvu-gallery-product-views ul.orbitvu-image-thumbs li.orbitvu-gallery-item.orbitvu_active { border: 1px solid <?=$_orbitvu_gallery['border_color']?>; }
+                .orbitvu-gallery-product-views ul.orbitvu-image-thumbs li.orbitvu-gallery-item a.orbitvu-gallery-item-link { display: table-cell; vertical-align: middle; width: <?=$_orbitvu_gallery['img_width_tn_marg']?>; height: <?=$_orbitvu_gallery['img_height_tn_marg']?>; text-align: center; }
+                    .orbitvu-gallery-product-views ul.orbitvu-image-thumbs li.orbitvu-gallery-item a.orbitvu-gallery-item-link img { display: block; margin: 0 auto; max-width: <?=$_orbitvu_gallery['img_width_tn']?>; max-height: <?=$_orbitvu_gallery['img_height_tn']?>; }
+                    .orbitvu-gallery-item-desc { display: block; padding: 2px; position: absolute; bottom: 0; left: 0; background: rgba(255, 255, 255, 0.5); color: black; font-weight: bold; font-size: 0.8em; }
+    .orbitvu-gallery-button { display: table-row; position: absolute; bottom: <?=$_orbitvu_gallery['img_tn_margin']?>; width: <?=$_orbitvu_gallery['button_width']?>; height: <?=$_orbitvu_gallery['button_height']?>; background: white; border: 1px solid <?=$_orbitvu_gallery['border_color']?>; font-weight: bold; text-align: center; opacity: <?=$_orbitvu_gallery['button_opacity']?>; color: black; font-size: 24px; text-decoration: none; font-style: normal; cursor: pointer; }
+    .orbitvu-gallery-button:hover { background: black; color: white; text-decoration: none; border-color: black; }
+        .orbitvu-gallery-button span { display: table-cell; vertical-align: middle; width: <?=$_orbitvu_gallery['button_width']?>; height: <?=$_orbitvu_gallery['button_height']?>; }
+    #orbitvu_go_next { right: -1px; }
+    #orbitvu_go_back { display: none; left: -1px; }
+    #orbitvu-gallery-preloader { position: absolute; top: -10000px; left: -10000px; }
+    .orbitvu-presentation { display: block; width: 100%; height: <?=$_orbitvu_gallery['img_height']?>; top: -10000px; background-repeat: no-repeat; background-position: center center; background-size: contain; }
+    .orbitvu-icon { display: block; width: 22px; height: 22px; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/black.png); background-repeat: no-repeat; }
+    .orbitvu-icon-type-3 { background-position: 0 -32px; }
+    .orbitvu-icon-type-1 { background-position: -22px -32px; }
+    .orbitvu-icon-type-0 { background-position: -44px -32px; }
+</style>
+<script>
+/*
+ * Orbitvu Public Declarations
+ */   
+var orbitvu_timer, orbitvu_rectangle, orbitvu_current_image, orbitvu_init_interval, orbitvu_box_width, orbitvu_box_height, orbitvu_switch_timer, orbitvu_360_interval, orbitvu_tour_interval;
+var orbitvu_image_thumbs = Orb$('orbitvu-image-thumbs');
+var orbitvu_speed = 24;
+var orbitvu_xAll = 0;
+var orbitvu_xAllReal = 0;
+var orbitvu_xMax = 0;
+var orbitvu_gallery_inner;
+var orbitvu_pos = 0;
+var orbitvu_dir = 1;
+var orbitvu_fps = 30;
+var orbitvu_interval = 1000 / orbitvu_fps;
+var orbitvu_lastV = 0;
+var orbitvu_img_preloader_tn = new Array(<?=implode(',', $jspreloader_tn)?>); 
+var orbitvu_img_preloader = new Array(<?=implode(',', $jspreloader)?>); 
+var orbitvu_buttons = false;
+var orbitvu_max_counter = 3;
+var orbitvu_ready = false;
+var orbitvu_window_before = window.innerWidth;
+var orbitvu_window_growing = false;
+var orbitvu_smallest_height = '<?=$_orbitvu_gallery['img_height']?>';
+var orbitvu_window_onresize_enabled = true;
+var orbitvu_zoom_responsive = false;
+
+/*
+ * Orbitvu Objects
+ */
+function OrbitvuOffsetRectangle(elem){
+    var box = elem.getBoundingClientRect();
+    var clientTop = document.documentElement.clientTop || document.body.clientTop||0;
+    var clientLeft = document.documentElement.clientLeft || document.body.clientLeft||0;
+    var top = box.top - clientTop;
+    var left = box.left - clientLeft;
+    
+    return {
+        top:    Math.round(top),
+        left:   Math.round(left)
+    };
+}
+
+function OrbitvuImage(id) {
+    id = parseInt(String(id).replace('orbitvu-', ''));
+    
+    var temp = orbitvu_get_image_dimensions(Orb$('orbitvu-img-tn-' + id));
+    var temp_zoom = orbitvu_get_image_dimensions(Orb$('orbitvu-img-' + id));
+    
+    return { 
+        orbitvu_id:     'orbitvu-' + id,
+        path:           orbitvu_img_preloader[id], 
+        path_tn:        orbitvu_img_preloader_tn[id], 
+        width:          temp.width,
+        height:         temp.height,
+        width_zoom:     temp_zoom.width,
+        height_zoom:    temp_zoom.height
+    };
+}
+   
+/*
+* Orbitvu Funtions Pure JS
+*/
+function Orb$(el) {
+    return document.getElementById(el);
+}
+
+function orbitvu_stristr(haystack, needle, bool) {
+    var pos = 0;
+
+    haystack += '';
+    pos = haystack.toLowerCase().indexOf((needle + '').toLowerCase());
+    if (pos == -1) {
+        return false;
+    } 
+    else {
+        if (bool) {
+            return haystack.substr(0, pos);
+        } 
+        else {
+            return haystack.slice(pos);
+        }
+    }
+}
+
+/*
+ * Inject 360
+ */
+function orbitvu_inject_tour_now() {
+    inject_orbittour_<?=$orbittour['uid']?>();
+}
+
+function orbitvu_inject_tour() {
+    <?php
+    if (!empty($orbittour['path'])) { 
+    ?>
+    if (orbitvu_ready) {
+        clearInterval(orbitvu_tour_interval);
+        orbitvu_inject_tour_now();
+        console.log('OrbitTour loaded.');
+    }
+    <?php
+    }
+    ?>
+}
+
+function orbitvu_remove_bg_360() {
+    Orb$('orbitvu-gallery-view-360').style.backgroundImage = '';
+}
+
+function orbitvu_inject_360_now() {
+    <?php
+    if (!empty($view_360['path'])) { 
+    ?>
+    inject_viewer_<?=$view_360['uid']?>();
+    setTimeout('orbitvu_remove_bg_360()', 500);
+    <?php
+    }
+    ?>    
+}
+
+function orbitvu_inject_360() {
+    <?php
+    if (!empty($view_360['path'])) { 
+    ?>
+    if (orbitvu_ready) {
+        clearInterval(orbitvu_360_interval);
+        orbitvu_inject_360_now();
+        console.log('360 loaded.');
+    }
+    <?php
+    }
+    ?>
+}
+
+/*
+ * Get real image dimensions from preloaded 1x1
+ * @returns {integer width, integer height}
+ */
+function orbitvu_get_image_dimensions(temp) {
+    temp.style.width = 'auto';
+    temp.style.height = 'auto';
+    var img_width = parseInt(temp.offsetWidth);
+    var img_height = parseInt(temp.offsetHeight);
+    temp.style.width = '1px';
+    temp.style.height = '1px';
+    
+    return {
+        width:  img_width,
+        height: img_height
+    };
+}
+
+function orbitvu_get_maxHeight() {
+    return parseInt(Orb$('orbitvu-gallery').offsetHeight - Orb$('orbitvu-gallery-product-views').offsetHeight) - 2;
+}
+
+function orbitvu_init_gallery() {
+    orbitvu_gallery_inner = Orb$('orbitvu-gallery').clientWidth;
+    
+    orbitvu_xMax = 0;
+    orbitvu_xAll = 0;
+    
+    var i = 0;
+    
+    for (n = orbitvu_image_thumbs.children.length, orbitvu_current = 0; i < n; i++) {
+        orbitvu_current = orbitvu_image_thumbs.children[i].clientWidth + <?=(str_replace('px', '', $_orbitvu_gallery['img_tn_margin']) * 2)?> + 2;
+        if (i == 0) orbitvu_xMax += orbitvu_current;
+        orbitvu_xAll += orbitvu_current;
+    }
+
+    if (i == 1) {
+        Orb$('orbitvu-gallery-product-views').style.height = '1px';
+    }
+    
+    orbitvu_xAllReal = orbitvu_xAll;
+    orbitvu_xAll -= orbitvu_gallery_inner;
+}
+
+
+function orbitvu_reset_classes() {
+    for (var i = 0, n = Orb$('orbitvu-image-thumbs').children.length; i < n; i++) {
+        Orb$('orbitvu-image-thumbs').children[i].className = Orb$('orbitvu-image-thumbs').children[i].className.replace('orbitvu_active', '');
+    }
+}
+
+/*
+* To delete if not used
+ * @returns {undefined} */
+function orbitvu_presentations_resize() {
+    orbitvu_window_onresize_enabled = false;
+    window.dispatchEvent(new Event('resize'));
+    orbitvu_window_onresize_enabled = true;
+}
+
+function orbitvu_switch_now(el) {
+    orbitvu_reset_classes();
+    el.parentNode.className += ' orbitvu_active';
+
+    orbitvu_current_image = OrbitvuImage(el.id);
+
+    Orb$('orbitvu-gallery-main-image').src = orbitvu_current_image.path_tn;
+    Orb$('orbitvu-gallery-main-image').alt = el.id;
+
+    if (el.rel == 'presentation-360') {
+        Orb$('orbitvu-gallery-view-image').style.display = 'none';
+        Orb$('orbitvu-gallery-view-tour').style.position = 'absolute';
+        Orb$('orbitvu-gallery-view-360').style.position = '';
+        //orbitvu_presentations_resize();
+    }
+    else if (el.rel == 'presentation-tour') {
+        Orb$('orbitvu-gallery-view-image').style.display = 'none';
+        Orb$('orbitvu-gallery-view-tour').style.position = '';
+        Orb$('orbitvu-gallery-view-360').style.position = 'absolute';
+        //orbitvu_presentations_resize();
+    }
+    else {
+        Orb$('orbitvu-gallery-view-image').style.display = 'block';
+        Orb$('orbitvu-gallery-view-360').style.position = 'absolute'; // workaround display: block/none
+        Orb$('orbitvu-gallery-view-tour').style.position = 'absolute'; // workaround display: block/none
+    } 
+}
+
+function orbitvu_switch(el, delay) {
+    if (delay > 0) {
+        clearTimeout(orbitvu_switch_timer);
+    
+        orbitvu_switch_timer = setTimeout(function () {
+            orbitvu_switch_now(el);
+        }, delay);
+    }
+    else {
+        orbitvu_switch_now(el);
+    }
+}
+
+function orbitvu_hide_zoom() {
+    Orb$('orbitvu-gallery-product-image-zoom').style.display = 'none';
+}
+
+function orbitvu_show_zoom() {
+    if (!orbitvu_ready) return false;
+
+    Orb$('orbitvu-gallery-product-image-zoom').style.backgroundImage = 'url(' + orbitvu_current_image.path + ')';
+    Orb$('orbitvu-gallery-product-image-zoom').style.display = 'block';
+    
+    if (((Orb$('orbitvu-gallery-product-image-zoom').offsetLeft + Orb$('orbitvu-gallery-product-image-zoom').offsetWidth) > document.body.offsetWidth) || window.innerWidth < 770 || document.body.offsetWidth < 770) {
+        Orb$('orbitvu-gallery-product-image-zoom').style.right = '-1px';
+        Orb$('orbitvu-gallery-product-image-zoom').style.left = '-1px';
+        Orb$('orbitvu-gallery-product-image-zoom').style.height = parseInt(Orb$('orbitvu-gallery').offsetHeight - Orb$('orbitvu-gallery-product-views').offsetHeight - 2) + 'px';
+        orbitvu_rectangle = OrbitvuOffsetRectangle(Orb$('orbitvu-gallery-product-image-zoom'));
+        orbitvu_zoom_responsive = true;
+    }
+    else {
+        Orb$('orbitvu-gallery-product-image-zoom').style.right = '-100%';
+        Orb$('orbitvu-gallery-product-image-zoom').style.left = 'auto';
+        Orb$('orbitvu-gallery-product-image-zoom').style.height = 'auto';
+        orbitvu_zoom_responsive = false;
+        orbitvu_rectangle = OrbitvuOffsetRectangle(Orb$('orbitvu-gallery-main-image'));
+    }
+}
+
+function orbitvu_manage_zoom(obj, event) {
+    if (!orbitvu_ready) return false;
+    if (!orbitvu_rectangle) {
+        orbitvu_rectangle = OrbitvuOffsetRectangle(obj);
+    }
+    
+    var mx = event.clientX - orbitvu_rectangle.left;
+    var my = event.clientY - orbitvu_rectangle.top;
+    
+    if (Orb$('orbitvu-gallery-product-image-zoom').style.display == 'none') orbitvu_show_zoom();
+    
+    if (orbitvu_current_image) {
+        //console.log('w: ' + obj.offsetWidth + ', h: ' + obj.offsetHeight + ', nw: ' + orbitvu_current_image.width_zoom + ', nh: ' + orbitvu_current_image.height_zoom);
+        var interpolate_x = Math.round(mx * (orbitvu_current_image.width_zoom / obj.offsetWidth));
+        var interpolate_y = Math.round(my * (orbitvu_current_image.height_zoom / obj.offsetHeight));
+        
+        interpolate_x = interpolate_x - (orbitvu_box_width/2);
+        interpolate_y = interpolate_y - (orbitvu_box_height/2);
+        
+        var orb_box_w = orbitvu_current_image.width_zoom - orbitvu_box_width;
+        var orb_box_h = orbitvu_current_image.height_zoom - orbitvu_box_height;
+        
+        if (interpolate_x >= orb_box_w) interpolate_x = orb_box_w;
+        if (interpolate_y >= orb_box_h) interpolate_y = orb_box_h;
+        
+        interpolate_x *= -1;
+        interpolate_y *= -1;
+        
+        if (interpolate_x >= 0) interpolate_x = 0;
+        if (interpolate_y >= 0) interpolate_y = 0;
+
+        //console.log('x: ' + mx + ', y: ' + my + ', new_x: ' + interpolate_x + ', new_y: ' + interpolate_y + ', orbw: ' + orb_box_w + ', orbh: ' + orb_box_h);
+        Orb$('orbitvu-gallery-product-image-zoom').style.backgroundPosition = Math.round(interpolate_x) + 'px ' + Math.round(interpolate_y) + 'px';
+    }
+}
+
+function orbitvu_preload_images() {
+    
+    var i = 0;
+    
+    Orb$('orbitvu-gallery-preloader').innerHTML += '<img id="orbitvu-img-tn-' + i + '" src="' + orbitvu_img_preloader_tn[i] + '" style="width: 1px; height: 1px;" alt="" /> ';
+    Orb$('orbitvu-gallery-preloader').innerHTML += '<img id="orbitvu-img-' + i + '" src="' + orbitvu_img_preloader[i] + '" style="width: 1px; height: 1px;" alt="" /> ';
+    
+    Orb$('orbitvu-img-0').onload = function() {
+        orbitvu_current_image = OrbitvuImage('orbitvu-0');
+        console.log('Image preloader continues...');
+        
+        for (var i = 1, n = orbitvu_img_preloader_tn.length; i < n; i++) {
+            Orb$('orbitvu-gallery-preloader').innerHTML += '<img id="orbitvu-img-tn-' + i + '" src="' + orbitvu_img_preloader_tn[i] + '" style="width: 1px; height: 1px;" alt="" /> ';
+            Orb$('orbitvu-gallery-preloader').innerHTML += '<img id="orbitvu-img-' + i + '" src="' + orbitvu_img_preloader[i] + '" style="width: 1px; height: 1px;" alt="" /> ';
+        }  
+        
+        console.log('Done.');
+    
+    }
+     
+}
+
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+ 
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());
+
+function orbitvu_get_pos() {
+    return parseInt(orbitvu_image_thumbs.style.marginLeft.replace('px', ''));
+}
+
+function orbitvu_go() {
+    /*
+     * Do the math
+     */
+    current_val = (orbitvu_dir * orbitvu_speed);
+    orbitvu_pos = orbitvu_get_pos();
+    
+    /*
+     * Check if animation can rewind
+     */
+    if ((orbitvu_dir == -1 && (orbitvu_pos * -1) > orbitvu_xAll) || (orbitvu_dir == 1 && (orbitvu_pos * -1) <= 0)) return false;
+    
+    /*
+     * Start animation
+     */
+    orbitvu_lastV += current_val;
+    orbitvu_animation = window.requestAnimationFrame(orbitvu_go);
+    orbitvu_image_thumbs.style.marginLeft = (current_val + orbitvu_pos) + 'px';
+
+    if ((orbitvu_dir == 1 && orbitvu_lastV >= (orbitvu_xMax * orbitvu_max_counter)) || (orbitvu_dir == -1 && (-1 * orbitvu_lastV) >= (orbitvu_xMax * orbitvu_max_counter))) {
+        window.cancelAnimationFrame(orbitvu_animation);
+        orbitvu_lastV = 0;
+        orbitvu_max_counter = 1;
+    }
+    
+    /*
+     * Hide or show buttons
+     */
+    if (orbitvu_buttons) {
+        new_pos = orbitvu_get_pos();
+        if ((orbitvu_dir == -1 && (new_pos * -1) > orbitvu_xAll)) {
+            Orb$('orbitvu_go_next').style.display = 'none';
+        }
+        else {
+            Orb$('orbitvu_go_next').style.display = 'block';
+        }
+        if ((orbitvu_dir == 1 && (new_pos * -1) <= 0)) {
+            Orb$('orbitvu_go_back').style.display = 'none';
+        }
+        else {
+            Orb$('orbitvu_go_back').style.display = 'block';
+        }
+    }
+}
+
+function orbitvu_goNext() {
+    orbitvu_dir = -1;
+    orbitvu_max_counter = 3;
+    orbitvu_go();
+}
+
+function orbitvu_goBack() {
+    orbitvu_dir = 1;
+    orbitvu_max_counter = 3;
+    orbitvu_go();
+}
+
+function orbitvu_rewind() {
+    orbitvu_dir = 1;
+    orbitvu_max_counter = 100;
+    orbitvu_go();
+}
+
+function orbitvu_get_param(element) {
+    var main_prev_visibility, main_prev_display, prev_visibility, prev_display;
+    var main_cont = Orb$('orbitvu-gallery-view-image');
+    
+    if (element.style.visibility == '') prev_visibility = 'visible';
+    else prev_visibility = element.style.visibility;
+
+    if (element.style.display == '') prev_display = 'block';
+    else prev_display = element.style.display;
+    
+    if (main_cont.style.visibility == '') main_prev_display = 'visible';
+    else main_prev_display = main_cont.style.visibility;
+    if (main_cont.style.display == '') main_prev_display = 'block';
+    else main_prev_display = main_cont.style.display;
+    
+    main_cont.style.visibility = 'visible';
+    main_cont.style.display = 'block';
+    element.style.visibility = 'visible';
+    element.style.display = 'block';
+    
+    my_height = parseInt(element.offsetHeight);
+    my_width = parseInt(element.offsetWidth);
+
+    element.style.visibility = prev_visibility;
+    element.style.display = prev_display;
+    main_cont.style.visibility = main_prev_visibility;
+    main_cont.style.display = main_prev_display;
+    
+    return {
+        width:  my_width,
+        height: my_height
+    };    
+}
+
+function orbitvu_maxHeight_fix() {
+    Orb$('orbitvu-gallery-product-image').style.maxHeight = '<?=$_orbitvu_gallery['img_height']?>';
+        
+    var orbitvu_gallery_dim = orbitvu_get_param(Orb$('orbitvu-gallery'));
+    var orbitvu_gallery_main_image_dim = orbitvu_get_param(Orb$('orbitvu-gallery-main-image'));        
+    var orbitvu_gallery_product_views_dim = { height: parseInt(Orb$('orbitvu-gallery-product-views').offsetHeight) };
+    var new_height = orbitvu_gallery_dim.height - (orbitvu_gallery_dim.height - orbitvu_gallery_main_image_dim.height - orbitvu_gallery_product_views_dim.height);
+
+    Orb$('orbitvu-gallery').style.height = parseInt(new_height + 2) + 'px';
+
+    orbitvu_smallest_height = orbitvu_get_maxHeight();
+    Orb$('orbitvu-gallery-product-image').style.maxHeight = orbitvu_smallest_height + 'px';
+    
+    if (orbitvu_img_preloader.length <= 1) {
+        var new_sm_height = orbitvu_smallest_height + 2;
+    }
+    else {
+        var new_sm_height = orbitvu_smallest_height - 2;
+    }
+    
+    Orb$('orbitvu-gallery-view-360').style.height = new_sm_height + 'px'; 
+    Orb$('orbitvu-gallery-view-tour').style.height = new_sm_height + 'px'; 
+}
+
+function orbitvu_refresh() {
+    var current_id = 'orbitvu-0';
+    
+    if (typeof orbitvu_current_image != 'undefined') { 
+        if ('orbitvu_id' in orbitvu_current_image) {
+            current_id = orbitvu_current_image.orbitvu_id;
+        }
+    }
+    orbitvu_switch(Orb$(current_id));
+    
+    if (orbitvu_current_image.width_zoom > 0) {
+        
+        orbitvu_maxHeight_fix();
+
+        clearInterval(orbitvu_init_interval); 
+        console.log('Ready.');
+        orbitvu_ready = true;
+        
+        orbitvu_calculate_zoom();
+    }
+}
+
+function orbitvu_calculate_zoom() {
+    orbitvu_show_zoom();
+    var image_zoom = orbitvu_get_param(Orb$('orbitvu-gallery-product-image-zoom'));
+    orbitvu_hide_zoom();
+    orbitvu_box_width = image_zoom.width;
+    orbitvu_box_height = image_zoom.height;
+}
+
+function orbitvu_recalculate() {    
+    orbitvu_calculate_zoom();    
+    orbitvu_refresh(); 
+}
+
+/*
+ * Starting function
+ */
+function OrbitvuInit() { 
+    /*
+     * Init gallery and images
+     */
+    orbitvu_init_gallery();
+    
+    console.log('Waiting for image preloader...');
+    orbitvu_preload_images();
+
+    /*
+     * Buttons starting visibility
+     */
+    if ((orbitvu_xAllReal - (<?=(str_replace('px', '', $_orbitvu_gallery['img_tn_margin'])*2)?>)) < orbitvu_gallery_inner) Orb$('orbitvu_go_next').style.display = 'none';
+    else orbitvu_buttons = true;
+
+    /*
+     * Attach events to thumbnails
+     */
+    var thumbnails = document.getElementsByClassName('orbitvu-gallery-item-link');
+    
+    for (var i = 0, n = thumbnails.length; i < n; i++) {
+        <?php if ($_Orbitvu->GetConfiguration('hover_mode') == 'true') { ?>
+        thumbnails[i].onmouseover = function() { orbitvu_switch(this, <?=($_Orbitvu->GetConfiguration('hover_delay')*100)?>); }
+        thumbnails[i].onmouseout = function() { clearTimeout(orbitvu_switch_timer); }
+        <?php } ?>
+        thumbnails[i].onclick = function() { orbitvu_switch(this); return false; }
+    }
+    
+    /*
+     * Attach Events
+     */
+    Orb$('orbitvu-gallery-main-image').onmousemove = function(event) { orbitvu_manage_zoom(this, event); }
+    Orb$('orbitvu-gallery-main-image').onmouseover = function() { orbitvu_show_zoom(); }
+    Orb$('orbitvu-gallery-main-image').onmouseout = function() { orbitvu_hide_zoom(); }
+    Orb$('orbitvu-gallery-product-image-zoom').onmousemove = function(event) { if (orbitvu_zoom_responsive) { orbitvu_manage_zoom(this, event); } }
+    Orb$('orbitvu-gallery-product-image-zoom').onmouseover = function() { if (orbitvu_zoom_responsive) { orbitvu_show_zoom(); } }
+    Orb$('orbitvu-gallery-product-image-zoom').onmouseout = function() { orbitvu_hide_zoom(); }
+    Orb$('orbitvu_go_next').onclick = function() { orbitvu_goNext(); }
+    Orb$('orbitvu_go_back').onclick = function() { orbitvu_goBack(); }
+
+    /*
+     * Calculate gallery dimensions
+     */
+    orbitvu_init_interval = setInterval('orbitvu_refresh()', 500);
+    orbitvu_recalculate();
+    
+    /*
+    * Load 360 presentation and/or tour
+    */
+    <?php
+    if (!empty($view_360['path'])) { 
+    ?>
+    orbitvu_360_interval = setInterval('orbitvu_inject_360()', 500);
+    <?php
+    }
+    ?>
+    
+    <?php
+    if (!empty($orbittour['path'])) { 
+    ?>
+    orbitvu_tour_interval = setInterval('orbitvu_inject_tour()', 500);
+    <?php
+    }
+    ?>
+}
+
+/*
+ * Synchronized actions 
+ */
+OrbitvuInit();
+
+/*
+ * Window events
+ */
+window.onresize = function() {
+    if (orbitvu_window_onresize_enabled) { 
+        if (window.innerWidth > orbitvu_window_before) orbitvu_window_growing = true;
+        else orbitvu_window_growing = false;
+
+        orbitvu_init_gallery();
+        orbitvu_recalculate();
+        orbitvu_rewind();
+        orbitvu_max_counter = 1;
+
+        orbitvu_window_before = window.innerWidth;
+    }
+}
+window.onorientationchange = function() { window.onresize(); }
+</script>
+<?php
+}
+?>

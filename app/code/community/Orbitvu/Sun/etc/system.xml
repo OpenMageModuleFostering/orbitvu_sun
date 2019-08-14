@@ -1,0 +1,298 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <orbitvu translate="label">
+            <label>Orbitvu</label>
+            <tab>catalog</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>30</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <api translate="label">
+                    <label>Orbitvu SUN connection settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <access_token translate="label comment">
+                            <label>License Key</label>
+                            <comment>
+                                <model>Orbitvu_Sun_Block_KeyComment</model>
+                            </comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </access_token>
+                    </fields>
+                </api>
+                <synchro>
+                    <label>Orbitvu SUN integration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>200</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+
+                        <auto_sync translate="label comment">
+                            <label>Link Orbitvu SUN presentations to products automatically</label>
+                            <comment><![CDATA[Matching (by SKU or name) Orbitvu SUN presentation will be linked to new products immediately. Once a day we will check for changes at Orbitvu SUN and link matching presentations to products.]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </auto_sync>
+                        <auto_sync_sku translate="label comment">
+                            <label>Update presentation SKU on Orbitvu SUN automatically</label>
+                            <comment><![CDATA[Automatically update empty Presentation's SKU on Orbitvu SUN server when such Presentation is linked to Product.]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Orbitvu_Sun_Block_Syncsku</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </auto_sync_sku>
+
+                    </fields>    
+                </synchro>
+
+                <items>
+                    <label>Select what type of presentation content will be visible in store by default</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>300</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+
+                        <sync_orbittour translate="label comment">
+                            <label>Orbittour</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sync_orbittour>
+                        <sync_360 translate="label comment">
+                            <label>360°</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sync_360>
+                        <sync_2d translate="label comment">
+                            <label>2D</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sync_2d>
+
+                    </fields>
+                </items>
+
+                <mode>
+                    <label>Product view - gallery behavior</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>400</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+
+                        <hover_mode translate="label comment">
+                            <label>Mouse over mode</label>
+                            <comment><![CDATA[Change presentation items in gallery with just mouse over instead of click.]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </hover_mode>
+                        <hover_delay translate="label comment">
+                            <label>Mouse over delay</label>
+                            <comment><![CDATA[Delay time before current photo will be changed.]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Orbitvu_Sun_Block_Delay</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </hover_delay>
+                        <teaser translate="label comment">
+                            <label>360° Presentation teaser</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Orbitvu_Sun_Block_Teaser</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </teaser>
+                        <html5 translate="label comment">
+                            <label>HTML5 or Flash mode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Orbitvu_Sun_Block_Html5</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </html5>
+                        <orbittour_thumbnails translate="label comment">
+                            <label>Orbittour views visibility</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>Orbitvu_Sun_Block_Orbittour</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </orbittour_thumbnails>
+
+                    </fields>
+                </mode>
+
+                <layout>
+                    <label>Product view - gallery layout (edit only if you know what are you doing!)</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>500</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>0</expanded>
+                    <fields>
+
+                        <width translate="label comment">
+                            <label>Gallery width</label>
+                            <comment><![CDATA[Enter <strong>100%</strong> if you wan't to have responsive gallery layout (recommended)]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </width>
+                        <img_width translate="label comment">
+                            <label>Gallery preview maximum width</label>
+                            <comment><![CDATA[Recommended: Your layout proportion to gallery preview maximum height eg. <strong>600px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </img_width>
+                        <img_height translate="label comment">
+                            <label>Gallery preview maximum height</label>
+                            <comment><![CDATA[Recommended: <strong>300px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </img_height>
+                        <border_color translate="label comment">
+                            <label>Gallery border color</label>
+                            <comment><![CDATA[Recommended: <strong>#ccc</strong><br />Enter <strong>transparent</strong> if you don't want borders]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </border_color>
+
+                        <img_width_zoom translate="label comment">
+                            <label>Internal zoom image width</label>
+                            <comment><![CDATA[Recommended: <strong>1024px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </img_width_zoom>
+                        <img_height_zoom translate="label comment">
+                            <label>Internal zoom image height</label>
+                            <comment><![CDATA[Recommended: <strong>768px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </img_height_zoom>
+
+                        <img_width_tn translate="label comment">
+                            <label>Thumbnail width</label>
+                            <comment><![CDATA[Recommended: <strong>75px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </img_width_tn>
+                        <img_height_tn translate="label comment">
+                            <label>Thumbnail height</label>
+                            <comment><![CDATA[Recommended: <strong>50px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </img_height_tn>
+                        <img_tn_margin translate="label comment">
+                            <label>Thumbnail margin</label>
+                            <comment><![CDATA[Recommended: <strong>3px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </img_tn_margin>
+
+                        <button_width translate="label comment">
+                            <label>Button prev/next width</label>
+                            <comment><![CDATA[Recommended: <strong>30px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </button_width>
+                        <button_height translate="label comment">
+                            <label>Button prev/next height</label>
+                            <comment><![CDATA[Recommended: <strong>53px</strong>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </button_height>
+                        <button_opacity translate="label comment">
+                            <label>Button prev/next opacity</label>
+                            <comment><![CDATA[1 = 100% (recommended), 0.5 = 50%, 0 = 0%]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </button_opacity>
+                    </fields>
+                    
+                </layout>
+            </groups>
+        </orbitvu>
+    </sections>
+</config>
