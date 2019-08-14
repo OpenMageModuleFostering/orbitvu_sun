@@ -12,9 +12,9 @@
 
 $__templates = array(
     //-------------------------------------------------------------------------------------------------------
-    'presentation_item' =>
+    'presentation_item' => 
     //-------------------------------------------------------------------------------------------------------
-        '
+    '
         <div class="orbitvu_sun_presentation"{parameters}>
             <img src="{image_path}?width=100&amp;height=80&amp;action=crop" alt="">
             <div class="presentation_data">
@@ -27,9 +27,9 @@ $__templates = array(
         </div>
     ',
     //-------------------------------------------------------------------------------------------------------
-    'magento_section_start' =>
+    'magento_section_start' => 
     //-------------------------------------------------------------------------------------------------------
-        '
+    '
     <div class="entry-edit">
         <div class="entry-edit-head">
             <h4 class="icon-head head-edit-form fieldset-legend">{name}</h4>
@@ -39,14 +39,14 @@ $__templates = array(
             <div class="hor-scroll">
     ',
     //-------------------------------------------------------------------------------------------------------
-    'magento_section_end' =>
+    'magento_section_end' => 
     //-------------------------------------------------------------------------------------------------------
-        '
+    '
             </div>
         </fieldset>
     </div>
     '
-
+    
 );
 
 /*
@@ -143,7 +143,7 @@ if ($_action == 'set_presentation' && $request->getParam('presentation_id') > 0)
     $_Orbitvu->SynchronizeProductPresentation($product_id, intval($request->getParam('presentation_id')), $cur_pres->results[0]->name);
     $_Orbitvu->SetSunPresentationSku(intval($request->getParam('presentation_id')), $product_sku, $cur_pres->results[0]->sku);
     //$observer->UpdateThumbnails($product_id);            
-
+    
     $observer->RedirectAlias('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/');
 }
 else if ($_action == 'unlink') {
@@ -153,7 +153,7 @@ else if ($_action == 'unlink') {
 }
 else if ($_action == 'update_priority' && $request->getParam('sun_item_id') > 0 && $request->getParam('sun_priority')) {
     $_Orbitvu->UpdatePresentationItemPriority(
-        intval($request->getParam('sun_item_id')),
+        intval($request->getParam('sun_item_id')), 
         intval($request->getParam('sun_priority'))
     );
     //$observer->UpdateThumbnails($product_id);
@@ -174,7 +174,7 @@ else if ($_action == 'set_sku' && $request->getParam('presentation_id') > 0 && $
 else if ($_action == 'update_status' && $request->getParam('sun_item_id') > 0) {
     if ($request->getParam('sun_status') == 'active') $sun_status = 'active';
     else $sun_status = 'inactive';
-
+    
     $_Orbitvu->UpdatePresentationItemStatus(intval($request->getParam('sun_item_id')), $sun_status);
     //$observer->UpdateThumbnails($product_id);
     echo '200 OK';
@@ -184,27 +184,13 @@ else if ($_action == 'update_status' && $request->getParam('sun_item_id') > 0) {
 else if ($_action == 'update_order' && $request->getParam('sun_item_id') > 0 && $request->getParam('sun_before_item_id') > 0) {
     $_Orbitvu->SwitchPresentationItemPriority(
         $product_id,
-        intval($request->getParam('sun_item_id')),
+        intval($request->getParam('sun_item_id')), 
         intval($request->getParam('sun_before_item_id'))
     );
     //$observer->UpdateThumbnails($product_id);
     echo '200 OK';
     exit();
     //$observer->RedirectAlias('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/');
-} else if ($_action == 'update_statuses' && $request->getParam('sun_items_statuses')) {
-    $ids = explode(",", $request->getParam('sun_items_statuses'));
-    if ($request->getParam('sun_status') == 'active') {
-        $sun_status = 'active';
-    } else {
-        $sun_status = 'inactive';
-    }
-
-    if ($ids) {
-        foreach($ids as $id) {
-            $_Orbitvu->UpdatePresentationItemStatus(intval($id), $sun_status);
-        }
-    }
-    die(json_encode(array('status' => true, 'sun_status' => $sun_status)));
 }
 //-------------------------------------------------------------------------------------------------------
 
@@ -243,7 +229,7 @@ if ($up = $_Orbitvu->CheckForUpdates()) {
     $_messages[] = array('notice', $this->__('Version').' '.$up->new_version.' '.$this->__('of Orbitvu extension is out!').' <button type="button" class="orbitvu-button scalable"><a href="http://www.magentocommerce.com/magento-connect/orbitvu-sun-product-teleporting-image-gallery.html" target="_blank" style="color: white; text-decoration: none;"><span style="float: left; width: 16px !important; height: 16px !important; margin: 0 5px 0 0; padding: 0; background-image: url('.Mage::getBaseUrl('media').'orbitvu/white.png'.'); background-repeat: no-repeat; background-position: -64px -108px;"></span><span>'.$this->__('Upgrade now from').' '.$up->version.' '.$this->__('to').' '.$up->new_version.'</span></span></span></a></button>');
 }
 //-------------------------------------------------       
-
+        
 /*
  * Check if product has a presentation set
  */
@@ -258,7 +244,7 @@ $found_match = false;
  * No? Find one!
  */
 //-------------------------------------------------------------------------------------------------------
-if ($items_count == 0) {
+if ($items_count == 0) { 
     //-------------------------------------------------------------------------------------------------------
     $auto_sync = $_Orbitvu->GetConfiguration('auto_sync');
     $unlinked_before = false;
@@ -273,22 +259,17 @@ if ($items_count == 0) {
             'product_name'   => $product_name,
             'product_sku'    => $product_sku
         ));
-
+        
         /*
          * Do not link again, if auto_sync
          */
         //-------------------------------------------------------------------------------------------------------
-        if ((!$presentations_choose || $presentations_choose->count == 0)) {
+        if ($presentations_choose->count > 0) {
             //-------------------------------------------------------------------------------------------------------
-            $presentation_id = is_object($presentations_choose) ? intval($presentations_choose->results[0]->id) : 0;
+            $presentation_id = intval($presentations_choose->results[0]->id);
             //-------------------------------------------------------------------------------------------------------
-            if ($presentation_id == 0 || $_Orbitvu->IsPresentationUnlinked($product_id, $presentation_id)) {
-                if (is_object($presentations_choose)) {
-                    $presentations_choose->count = 0;
-                } else {
-                    $presentations_choose = new stdClass();
-                    $presentations_choose->count = 0;
-                }
+            if ($_Orbitvu->IsPresentationUnlinked($product_id, $presentation_id)) {
+                $presentations_choose->count = 0;
                 $auto_sync = 'false';
                 $found_match = false;
                 $unlinked_before = true;
@@ -297,12 +278,12 @@ if ($items_count == 0) {
         //-------------------------------------------------------------------------------------------------------
     }
     //-------------------------------------------------------------------------------------------------------
-
+    
     /*
      * Not found? Show all
      */
     //-------------------------------------------------------------------------------------------------------
-    if ((!isset($presentations_choose) || !$presentations_choose || $presentations_choose->count == 0) || $_action == 'set_show_all') {
+    if ($presentations_choose->count == 0 || $_action == 'set_show_all') {
         if ($_action != 'set_show_all') {
             if ($unlinked_before) {
                 //$_messages[] = array('error', $this->__('We matched the presentation, but it was unlinked before and we don\'t link it automatically. You have to select a presentation on your own.'));
@@ -314,19 +295,19 @@ if ($items_count == 0) {
         if ($request->getParam('message') == 'unlinked') {
             $_messages[] = array('success', $this->__('Your presentation has been unlinked. You can select a new one below.'));
         }
-
+        
         $sun_params = array(
-            'page_size' => $OrbitvuPagerPageSize,
+            'page_size' => $OrbitvuPagerPageSize, 
             'page'      => $OrbitvuCurrentPage + 1,
             'ordering'  => $OrbitvuOrdering
         );
-
+        
         if (!empty($OrbitvuKeyword)) {
             $sun_params['search'] = $OrbitvuKeyword;
             $sun_params['page'] = 1;
         }
 
-        $presentations_choose = $_Orbitvu->GetPresentationsList($sun_params);
+        $presentations_choose = $_Orbitvu->GetPresentationsList($sun_params);   
     }
     //-------------------------------------------------------------------------------------------------------
     /*
@@ -339,38 +320,38 @@ if ($items_count == 0) {
         $presentation_unlinked = false;
         //-------------------------------------------------------------------------------------------------------
         $presentation_id = intval($presentations_choose->results[0]->id);
-
+        
         /*if ($_Orbitvu->IsPresentationUnlinked($product_id, $presentation_id)) {
             $_messages[] = array('error', $this->__('We matched the presentation, but it was unlinked before and we don\'t set it automatically. You have to select a presentation on your own.'));
         }*/
         //-------------------------------------------------------------------------------------------------------
-
+        
         if ($auto_sync == 'true') {
             //-------------------------------------------------------------------------------------------------------
             if (!$_Orbitvu->IsPresentationUnlinked($product_id, $presentation_id)) {
-                $_Orbitvu->SynchronizeProductPresentation($product_id, $presentation_id, $presentations_choose->results[0]->name);
+                $_Orbitvu->SynchronizeProductPresentation($product_id, $presentation_id, $presentations_choose->results[0]->name); 
                 $_Orbitvu->SetSunPresentationSku($presentation_id, $product_sku, $presentations_choose->results[0]->sku);
                 //$observer->UpdateThumbnails($product_id);
-
+                
                 $observer->RedirectAlias('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_group_tab/');
             }
             //-------------------------------------------------------------------------------------------------------
         }
-        else {
+        else { 
             //-------------------------------------------------------------------------------------------------------
             $types = $_Orbitvu->GetPresentationTypes($presentations_choose->results[0]);
             $new_types = array();
             foreach ($types as $type) {
                 switch ($type) {
-                    case '0':
+                    case '0': 
                         $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-0" title="'.$this->__('Orbittour').'"></span>';
-                        break;
+                    break;
                     case '1':
                         $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-1" title="'.$this->__('360&deg;').'"></span>';
-                        break;
+                    break;
                     default:
                         $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-3" title="'.$this->__('2D').'"></span>';
-                        break;
+                    break;
                 }
             }
             $types = $new_types;
@@ -395,13 +376,13 @@ if ($items_count == 0) {
                 </div>
                 <div class="orbitvu_clearfix">
                     '.$observer->UseTemplate(array(
-                    'parameters'    => 'onclick="OrbitvuSetAction(\'sun/set_presentation/presentation_id/'.$presentations_choose->results[0]->id.'/\');"',
-                    'image_path'    => $presentations_choose->results[0]->thumbnail_url,
-                    'name'          => $str,
-                    'sku'           => $sku,
-                    'types'         => implode('', $types)
-
-                ), $__templates['presentation_item']).'
+                        'parameters'    => 'onclick="OrbitvuSetAction(\'sun/set_presentation/presentation_id/'.$presentations_choose->results[0]->id.'/\');"',
+                        'image_path'    => $presentations_choose->results[0]->thumbnail_url,
+                        'name'          => $str,
+                        'sku'           => $sku,
+                        'types'         => implode('', $types)
+                        
+                    ), $__templates['presentation_item']).'
 
                     <div style="float: left; margin: 35px 0 0 10px;">
                         <button type="button" class="orbitvu-button orbitvu-button-link scalable" onclick="OrbitvuSetAction(\'sun/set_presentation/presentation_id/'.$presentations_choose->results[0]->id.'/\');" style=""><span><span></span>'.$this->__('Link this presentation').'</span></button>
@@ -418,453 +399,416 @@ if ($items_count == 0) {
 }
 //--------------------------------------------------------------------------------------------------------------------------------------
 ?>
-    <style type="text/css">
-        .orbitvu_sun_presentation, .orbitvu_sun_presentation_full { float: left; width: 250px; background: white; border: 1px solid #dedede; border-radius: 5px; margin: 10px 10px 0 0; padding: 10px; cursor: pointer; }
-        .orbitvu_sun_presentation_full { float: none; width: 100%; clear: both; overflow: hidden; zoom: 1.0; cursor: default; box-sizing: border-box; }
-        .orbitvu_sun_presentation { border: 2px solid #1CA0B3; }
+<style type="text/css">
+.orbitvu_sun_presentation, .orbitvu_sun_presentation_full { float: left; width: 250px; background: white; border: 1px solid #dedede; border-radius: 5px; margin: 10px 10px 0 0; padding: 10px; cursor: pointer; }    
+.orbitvu_sun_presentation_full { float: none; width: 100%; clear: both; overflow: hidden; zoom: 1.0; cursor: default; box-sizing: border-box; }
+.orbitvu_sun_presentation { border: 2px solid #1CA0B3; }
 
-        .orbitvu_sun_presentation_full table { width: 100%; margin: 0; padding: 0; border: 0; }
-        .orbitvu_sun_presentation_full table td { padding: 0; vertical-align: top; border: 0; background: white; }
-        .orbitvu_sun_presentation:hover { box-shadow: 0 0 15px black; }
-        .orbitvu_sun_presentation.orbitvu_nohover, .orbitvu_nohover { margin: 0 0 20px 0; border-color: #dedede; box-shadow: none; cursor: default; }
-        .orbitvu_sun_presentation img { float: left; width: 100px; height: 80px; margin: 0 10px 0 0; border-radius: 5px; }
-        .orbitvu_sun_presentation .presentation_data { float: left; min-height: 80px; color: black; font-weight: normal; position: relative; }
-        .orbitvu_clearfix { clear: both; overflow: hidden; zoom: 1.0; }
+.orbitvu_sun_presentation_full table { width: 100%; margin: 0; padding: 0; border: 0; }
+.orbitvu_sun_presentation_full table td { padding: 0; vertical-align: top; border: 0; background: white; }
+.orbitvu_sun_presentation:hover { box-shadow: 0 0 15px black; }
+.orbitvu_sun_presentation.orbitvu_nohover, .orbitvu_nohover { margin: 0 0 20px 0; border-color: #dedede; box-shadow: none; cursor: default; }
+    .orbitvu_sun_presentation img { float: left; width: 100px; height: 80px; margin: 0 10px 0 0; border-radius: 5px; }
+    .orbitvu_sun_presentation .presentation_data { float: left; min-height: 80px; color: black; font-weight: normal; position: relative; }
+.orbitvu_clearfix { clear: both; overflow: hidden; zoom: 1.0; }
 
-        .orbitvu-button, .orbitvu-button-disabled { border-color: #1191A6; background: #8dd5e0; background: -moz-linear-gradient(top,  #8dd5e0 0%, #009cb5 45%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#8dd5e0), color-stop(45%,#009cb5)); background: -webkit-linear-gradient(top,  #8dd5e0 0%,#009cb5 45%); background: -o-linear-gradient(top,  #8dd5e0 0%,#009cb5 45%); background: -ms-linear-gradient(top,  #8dd5e0 0%,#009cb5 45%); background: linear-gradient(to bottom,  #8dd5e0 0%,#009cb5 45%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8dd5e0', endColorstr='#009cb5',GradientType=0 ); }
-        .orbitvu-button:hover { background: #ddfaff; background: -moz-linear-gradient(top,  #ddfaff 0%, #15adc6 59%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ddfaff), color-stop(59%,#15adc6)); background: -webkit-linear-gradient(top,  #ddfaff 0%,#15adc6 59%); background: -o-linear-gradient(top,  #ddfaff 0%,#15adc6 59%);background: -ms-linear-gradient(top,  #ddfaff 0%,#15adc6 59%); background: linear-gradient(to bottom,  #ddfaff 0%,#15adc6 59%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ddfaff', endColorstr='#15adc6',GradientType=0 ); }
-        .orbitvu-icon { background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/blue.png); background-repeat: no-repeat; }
-        .orbitvu-icon-visibility { background-position: 0 -54px; }
-        .orbitvu-icon-visibility.disabled { background-position: -22px -54px; }
-        .orbitvu-icon-type-0 { background-position: 0 -92px; }
-        .orbitvu-icon-type-1 { background-position: -80px -108px; }
-        .orbitvu-icon-type-3 { background-position: -16px -92px; }
-        .orbitvu-drag-container { clear: both; overflow: hidden; zoom: 1.0; padding: 10px; }
-        .orbitvu-drag-box { float: left; margin: 0 10px 10px 0; width: 100px; height: 100px; position: relative; border: 2px solid #1CA0B3; font-size: 10px; cursor: default; font-family: verdana, tahoma, arial; background-color: #eee; border-radius: 5px; }
-        #orbitvu-drag-container .orbitvu-drag-box { cursor: pointer; }
-        .orbitvu-drag-box.hidden { border-color: #F1D6DA; opacity: 0.7; }
-        .orbitvu-drag-box.drag { opacity: 0.2; }
-        #orbitvu-drag-container .orbitvu-drag-box:hover { border-style: dashed; }
-        .orbitvu-drag-box         span.orbitvu-text { padding: 2px 0 2px 0; position: absolute; bottom: 0; left: 0; width: 100%; text-align: center; color: white; background: #1CA0B3; font-size: 10px; }
+.orbitvu-button, .orbitvu-button-disabled { border-color: #1191A6; background: #8dd5e0; background: -moz-linear-gradient(top,  #8dd5e0 0%, #009cb5 45%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#8dd5e0), color-stop(45%,#009cb5)); background: -webkit-linear-gradient(top,  #8dd5e0 0%,#009cb5 45%); background: -o-linear-gradient(top,  #8dd5e0 0%,#009cb5 45%); background: -ms-linear-gradient(top,  #8dd5e0 0%,#009cb5 45%); background: linear-gradient(to bottom,  #8dd5e0 0%,#009cb5 45%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8dd5e0', endColorstr='#009cb5',GradientType=0 ); }
+.orbitvu-button:hover { background: #ddfaff; background: -moz-linear-gradient(top,  #ddfaff 0%, #15adc6 59%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ddfaff), color-stop(59%,#15adc6)); background: -webkit-linear-gradient(top,  #ddfaff 0%,#15adc6 59%); background: -o-linear-gradient(top,  #ddfaff 0%,#15adc6 59%);background: -ms-linear-gradient(top,  #ddfaff 0%,#15adc6 59%); background: linear-gradient(to bottom,  #ddfaff 0%,#15adc6 59%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ddfaff', endColorstr='#15adc6',GradientType=0 ); }
+.orbitvu-icon { background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/blue.png); background-repeat: no-repeat; }
+    .orbitvu-icon-visibility { background-position: 0 -54px; }
+    .orbitvu-icon-visibility.disabled { background-position: -22px -54px; }
+    .orbitvu-icon-type-0 { background-position: 0 -92px; }
+    .orbitvu-icon-type-1 { background-position: -80px -108px; }
+    .orbitvu-icon-type-3 { background-position: -16px -92px; }
+.orbitvu-drag-container { clear: both; overflow: hidden; zoom: 1.0; padding: 10px; }
+.orbitvu-drag-box { float: left; margin: 0 10px 10px 0; width: 100px; height: 100px; position: relative; border: 2px solid #1CA0B3; font-size: 10px; cursor: default; font-family: verdana, tahoma, arial; background-color: #eee; border-radius: 5px; }
+#orbitvu-drag-container .orbitvu-drag-box { cursor: pointer; }
+.orbitvu-drag-box.hidden { border-color: #F1D6DA; opacity: 0.7; }
+.orbitvu-drag-box.drag { opacity: 0.2; }
+#orbitvu-drag-container .orbitvu-drag-box:hover { border-style: dashed; }
+    .orbitvu-drag-box         span.orbitvu-text { padding: 2px 0 2px 0; position: absolute; bottom: 0; left: 0; width: 100%; text-align: center; color: white; background: #1CA0B3; font-size: 10px; }
+    
+    .orbitvu-drag-box         span.orbitvu-drag-text { display: none; }
+    #orbitvu-drag-container .orbitvu-drag-box:hover   span.orbitvu-drag-text { display: block; }
+    .orbitvu-drag-box         span.orbitvu-hide-text { display: none; }
+    .orbitvu-drag-box         span.orbitvu-hide-text.active { display: block; }
+    .orbitvu-drag-box         span.orbitvu-show-text { display: none; }
+    .orbitvu-drag-box         span.orbitvu-show-text.active { display: block; }
+    .orbitvu-drag-box         span.orbitvu-visibility { display: block; width: 22px; height: 22px; position: absolute; top: -7px; right: -7px; background-color: white; border-radius: 8px; cursor: pointer; }
+    .orbitvu-drag-box         span.orbitvu-visibility:hover { box-shadow: 0 0 5px black; }
+    
+    .orbitvu-drag-box         span.orbitvu-type { display: block; width: 16px; height: 16px; position: absolute; bottom: 2px; right: 2px; }
+    
+    .orbitvu-button-sku { border-color: #CA6875; background: #e0b3b8; background: -moz-linear-gradient(top,  #e0b3b8 0%, #ca4759 45%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e0b3b8), color-stop(45%,#ca4759)); background: -webkit-linear-gradient(top,  #e0b3b8 0%,#ca4759 45%); background: -o-linear-gradient(top,  #e0b3b8 0%,#ca4759 45%); background: -ms-linear-gradient(top,  #e0b3b8 0%,#ca4759 45%); background: linear-gradient(to bottom,  #e0b3b8 0%,#ca4759 45%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e0b3b8', endColorstr='#ca4759',GradientType=0 );  }
+    .orbitvu-button-sku:hover { background: #ffced3;background: -moz-linear-gradient(top,  #ffced3 0%, #e8475d 45%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffced3), color-stop(45%,#e8475d)); background: -webkit-linear-gradient(top,  #ffced3 0%,#e8475d 45%); background: -o-linear-gradient(top,  #ffced3 0%,#e8475d 45%); background: -ms-linear-gradient(top,  #ffced3 0%,#e8475d 45%); background: linear-gradient(to bottom,  #ffced3 0%,#e8475d 45%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffced3', endColorstr='#e8475d',GradientType=0 ); }
+    button.orbitvu-button-sku span span,
+    button.orbitvu-button-edit span span,
+    button.orbitvu-button-sync span span,
+    button.orbitvu-button-unlink span span,
+    button.orbitvu-button-link span span,
+    button.orbitvu-button-ok span span,
+    button.orbitvu-button-cancel span span { float: left; width: 16px; height: 16px; margin: 0 4px 0 0 !important; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/white.png) !important; background-repeat: no-repeat; }
+    
+    button.orbitvu-button-sku span span { background-position: -32px -108px !important; }
+    button.orbitvu-button-edit span span { background-position: -48px -108px !important; }
+    button.orbitvu-button-sync span span { background-position: -64px -108px !important; }
+    button.orbitvu-button-unlink span span { background-position: -16px -108px !important; }
+    button.orbitvu-button-link span span { background-position: 0 -108px !important; }
+    button.orbitvu-button-ok span span { background-position: -32px -76px !important; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/black.png) !important; }
+    button.orbitvu-button-cancel span span { background-position: -48px -76px !important; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/black.png) !important; }
+    button.orbitvu-button-disabled { opacity: 0.5; cursor: default; }
+    button.orbitvu-button-disabled:hover, button.orbitvu-button-disabled.active { background: url("http://dev.magento.orbitvu.com/skin/adminhtml/default/default/images/btn_bg-disabled.gif") 0px 0px repeat-x #919191 !important; opacity: 0.5 !important; }
+.dragstate span.orbitvu-visibility { display: none !important; }
 
-        .orbitvu-drag-box         span.orbitvu-drag-text { display: none; }
-        #orbitvu-drag-container .orbitvu-drag-box:hover   span.orbitvu-drag-text { display: block; }
-        .orbitvu-drag-box         span.orbitvu-hide-text { display: none; }
-        .orbitvu-drag-box         span.orbitvu-hide-text.active { display: block; }
-        .orbitvu-drag-box         span.orbitvu-show-text { display: none; }
-        .orbitvu-drag-box         span.orbitvu-show-text.active { display: block; }
-        .orbitvu-drag-box         span.orbitvu-visibility { display: block; width: 22px; height: 22px; position: absolute; top: -7px; right: -7px; background-color: white; border-radius: 8px; cursor: pointer; }
-        .orbitvu-drag-box         span.orbitvu-visibility:hover { box-shadow: 0 0 5px black; }
+.presentation_types { width: 80px; position: absolute; bottom: 5px; left: 0; }
+.orbitvu-type { float: left; width: 16px; height: 16px; margin: 0 5px 0 0; }
 
-        .orbitvu-drag-box         span.orbitvu-type { display: block; width: 16px; height: 16px; position: absolute; bottom: 2px; right: 2px; }
+.orbitvu-icon-bg { background-color: white; border: 2px solid white; border-radius: 5px; }
+#orbitvu_postloader { display: none; }
+    #orbitvu_postloader_bg { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 999998; background: white; opacity: 0.8; }
+    #orbitvu_postloader_fg { position: fixed; width: 100%; top: 0; left: 0; z-index: 999999; text-align: center; }
+</style>
+<div id="orbitvu_postloader">
+    <div id="orbitvu_postloader_bg"></div>
+    <div id="orbitvu_postloader_fg"><img src="<?=Mage::getBaseUrl('media')?>orbitvu/loader.gif" style="margin-top: 150px;" alt="" /></div>
+</div>
+<script>
+    window.onbeforeunload = function() {
+        document.getElementById('orbitvu_postloader').style.display = 'block';
+    }
+</script>
+<div class="entry-edit orbitvu_clearfix">
 
-        .orbitvu-button-sku { border-color: #CA6875; background: #e0b3b8; background: -moz-linear-gradient(top,  #e0b3b8 0%, #ca4759 45%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e0b3b8), color-stop(45%,#ca4759)); background: -webkit-linear-gradient(top,  #e0b3b8 0%,#ca4759 45%); background: -o-linear-gradient(top,  #e0b3b8 0%,#ca4759 45%); background: -ms-linear-gradient(top,  #e0b3b8 0%,#ca4759 45%); background: linear-gradient(to bottom,  #e0b3b8 0%,#ca4759 45%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e0b3b8', endColorstr='#ca4759',GradientType=0 );  }
-        .orbitvu-button-sku:hover { background: #ffced3;background: -moz-linear-gradient(top,  #ffced3 0%, #e8475d 45%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffced3), color-stop(45%,#e8475d)); background: -webkit-linear-gradient(top,  #ffced3 0%,#e8475d 45%); background: -o-linear-gradient(top,  #ffced3 0%,#e8475d 45%); background: -ms-linear-gradient(top,  #ffced3 0%,#e8475d 45%); background: linear-gradient(to bottom,  #ffced3 0%,#e8475d 45%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffced3', endColorstr='#e8475d',GradientType=0 ); }
-        button.orbitvu-button-sku span span,
-        button.orbitvu-button-edit span span,
-        button.orbitvu-button-sync span span,
-        button.orbitvu-button-unlink span span,
-        button.orbitvu-button-link span span,
-        button.orbitvu-button-ok span span,
-        button.orbitvu-button-enable-items span span,
-        button.orbitvu-button-disable-items span span,
-        button.orbitvu-button-cancel span span { float: left; width: 16px; height: 16px; margin: 0 4px 0 0 !important; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/white.png) !important; background-repeat: no-repeat; }
+<?php if ($_action != 'set_show_all' && $found_match) { 
+    echo $observer->UseTemplate(array(
+        'name' => $this->__('Confirm linking matched presentation')
 
-        button.orbitvu-button-sku span span { background-position: -32px -108px !important; }
-        button.orbitvu-button-edit span span { background-position: -48px -108px !important; }
-        button.orbitvu-button-sync span span { background-position: -64px -108px !important; }
-        button.orbitvu-button-unlink span span { background-position: -16px -108px !important; }
-        button.orbitvu-button-enable-items span span { background-position: 0px -76px !important; }
-        button.orbitvu-button-disable-items span span { background-position: -16px -76px !important; }
-        button.orbitvu-button-link span span { background-position: 0 -108px !important; }
-        button.orbitvu-button-ok span span { background-position: -32px -76px !important; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/black.png) !important; }
-        button.orbitvu-button-cancel span span { background-position: -48px -76px !important; background-image: url(<?=Mage::getBaseUrl('media')?>orbitvu/black.png) !important; }
-        button.orbitvu-button-disabled { opacity: 0.5; cursor: default; }
-        button.orbitvu-button-disabled:hover, button.orbitvu-button-disabled.active { background: url(<?=$this->getSkinUrl('images/btn_bg-disabled.gif')?>) 0px 0px repeat-x #919191 !important; opacity: 0.5 !important; }
-        .dragstate span.orbitvu-visibility { display: none !important; }
+    ), $__templates['magento_section_start']);
+    
+    ?>    
 
-        .presentation_types { width: 80px; position: absolute; bottom: 5px; left: 0; }
-        .orbitvu-type { float: left; width: 16px; height: 16px; margin: 0 5px 0 0; }
-
-        .orbitvu-icon-bg { background-color: white; border: 2px solid white; border-radius: 5px; }
-        #orbitvu_postloader { display: none; }
-        #orbitvu_postloader_bg { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 999998; background: white; opacity: 0.8; }
-        #orbitvu_postloader_fg { position: fixed; width: 100%; top: 0; left: 0; z-index: 999999; text-align: center; }
-    </style>
-    <div id="orbitvu_postloader">
-        <div id="orbitvu_postloader_bg"></div>
-        <div id="orbitvu_postloader_fg"><img src="<?=Mage::getBaseUrl('media')?>orbitvu/loader.gif" style="margin-top: 150px;" alt="" /></div>
-    </div>
-    <script>
-        window.onbeforeunload = function() {
-            document.getElementById('orbitvu_postloader').style.display = 'block';
-        }
-    </script>
-    <div class="entry-edit orbitvu_clearfix">
-
-        <?php if ($_action != 'set_show_all' && $found_match) {
-            echo $observer->UseTemplate(array(
-                'name' => $this->__('Confirm linking matched presentation')
-
-            ), $__templates['magento_section_start']);
-
-            ?>
-
-        <?php }  ?>
-        <input type="hidden" name="synchronize_sun" value="false" id="synchronize_sun" />
-        <div id="orbitvu_sun_content">
-            <ul class="messages">
-                <?php for ($i = 0, $n = count($_messages); $i < $n; $i++) { ?>
-                    <li class="<?=$_messages[$i][0]?>-msg">
-                        <ul>
-                            <li>
-                                <?=$_messages[$i][1]?>
-                            </li>
-                        </ul>
-                    </li>
-                <?php }  ?>
-            </ul>
-        </div>
-
-    </div>
-<?php
+<?php }  ?>                            
+                            <input type="hidden" name="synchronize_sun" value="false" id="synchronize_sun" />
+                            <div id="orbitvu_sun_content">
+                                <ul class="messages">
+<?php for ($i = 0, $n = count($_messages); $i < $n; $i++) { ?>
+                                    <li class="<?=$_messages[$i][0]?>-msg">
+                                        <ul>
+                                            <li>
+                                            <?=$_messages[$i][1]?>
+                                            </li>
+                                        </ul>
+                                    </li>
+<?php }  ?>
+                                </ul>
+                            </div>
+                       
+</div>
+<?php 
 //--------------------------------------------------------------------------------------------------------------------------------------
 /*
  * Show tabs if match not found
  */
 //-------------------------------------------------------------------------------------------------------------------------------------
 if (!$found_match) {
-    ?>
+?>
     <div class="grid" id="local_magento">
-        <?php
-        }
-        else {
-        ?>
-        <div style="display: none;">
-            <?php
-            }
-            //--------------------------------------------------------------------------------------------------------------------------------------
-            /*
-             * First time presentation setting
-             */
-            //--------------------------------------------------------------------------------------------------------------------------------------
-            if ($items_count == 0 && !$found_match) {
+<?php 
+}
+else {
+?>
+    <div style="display: none;">                              
+<?php
+}
 //--------------------------------------------------------------------------------------------------------------------------------------
+/*
+ * First time presentation setting
+ */
+//--------------------------------------------------------------------------------------------------------------------------------------
+if ($items_count == 0 && !$found_match) { 
+//--------------------------------------------------------------------------------------------------------------------------------------
+    
+    if ($orbitvu_connected) {
+        $results = $presentations_choose->results;
 
-                if ($orbitvu_connected) {
-                    $results = $presentations_choose->results;
+        $OrbitvuPager = array(
+            'start'     => $OrbitvuCurrentPage,
+            'size'      => $OrbitvuPagerPageSize,
+            'all'       => intval(round($presentations_choose->count / $OrbitvuPagerPageSize))
+        );
 
-                    $OrbitvuPager = array(
-                        'start'     => $OrbitvuCurrentPage,
-                        'size'      => $OrbitvuPagerPageSize,
-                        'all'       => intval(round($presentations_choose->count / $OrbitvuPagerPageSize))
-                    );
+        $OrbitvuPager['url_next'] = $this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/pager_start/'.($OrbitvuPager['start'] + 1));
+        $OrbitvuPager['url_prev'] = $this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/pager_start/'.($OrbitvuPager['start'] - 1)); 
 
-                    $OrbitvuPager['url_next'] = $this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/pager_start/'.($OrbitvuPager['start'] + 1));
-                    $OrbitvuPager['url_prev'] = $this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/pager_start/'.($OrbitvuPager['start'] - 1));
+        //--------------------------------------------------------------------------------------------------------------------------------------
+        echo $observer->UseTemplate(array(
+                'name'  => $this->__('Select presentation from your Orbitvu SUN account to link with product').' '.$product_name
+            ), $__templates['magento_section_start']);
+        //--------------------------------------------------------------------------------------------------------------------------------------
+        ?>
+        <table cellspacing="0" class="actions" style="width: 98%; margin: 0 0 0 10px;">
+            <tbody>
+                <tr>
+                    <td class="pager" style="width: 350px;">
+                        <?=$this->__('Page:')?>
 
-                    //--------------------------------------------------------------------------------------------------------------------------------------
-                    echo $observer->UseTemplate(array(
-                        'name'  => $this->__('Select presentation from your Orbitvu SUN account to link with product').' '.$product_name
-                    ), $__templates['magento_section_start']);
-                    //--------------------------------------------------------------------------------------------------------------------------------------
-                    ?>
-                    <table cellspacing="0" class="actions" style="width: 98%; margin: 0 0 0 10px;">
-                        <tbody>
-                        <tr>
-                            <td class="pager" style="width: 350px;">
-                                <?=$this->__('Page:')?>
+        <?php if ($OrbitvuPager['all'] > 1 && $OrbitvuPager['start']-1 >= 0) {  ?>
+                        <a href="<?=$OrbitvuPager['url_prev']?>"><img src="/skin/adminhtml/default/default/images/pager_arrow_left.gif" alt="" class="arrow"></a>
+        <?php } else {  ?>
+                        <img src="/skin/adminhtml/default/default/images/pager_arrow_left_off.gif" alt="" class="arrow">
+        <?php }  ?>
 
-                                <?php if ($OrbitvuPager['all'] > 1 && $OrbitvuPager['start']-1 >= 0) {  ?>
-                                    <a href="<?=$OrbitvuPager['url_prev']?>"><img src="<?=$this->getSkinUrl('images/pager_arrow_left.gif')?>" alt="" class="arrow"></a>
-                                <?php } else {  ?>
-                                    <img src="<?=$this->getSkinUrl('images/pager_arrow_left_off.gif')?>" alt="" class="arrow">
-                                <?php }  ?>
+                        <strong><?=($OrbitvuPager['start']+1)?></strong>
 
-                                <strong><?=($OrbitvuPager['start']+1)?></strong>
+        <?php if ($OrbitvuPager['all'] > 1 && $OrbitvuPager['start']+1 < $OrbitvuPager['all']) {  ?>
+                        <a href="<?=$OrbitvuPager['url_next']?>"><img src="/skin/adminhtml/default/default/images/pager_arrow_right.gif" alt="" class="arrow"></a>
+        <?php } else {  ?>
+                        <img src="/skin/adminhtml/default/default/images/pager_arrow_right_off.gif" alt="" class="arrow">
+        <?php }  ?>
 
-                                <?php if ($OrbitvuPager['all'] > 1 && $OrbitvuPager['start']+1 < $OrbitvuPager['all']) {  ?>
-                                    <a href="<?=$OrbitvuPager['url_next']?>"><img src="<?=$this->getSkinUrl('images/pager_arrow_right.gif')?>" alt="" class="arrow"></a>
-                                <?php } else {  ?>
-                                    <img src="<?=$this->getSkinUrl('images/pager_arrow_right_off.gif')?>" alt="" class="arrow">
-                                <?php }  ?>
-
-                                <?=$this->__('of')?> <?=$OrbitvuPager['all']?>
-                                <span class="separator">|</span>
-                                <?=$this->__('Per page:')?>
-                                <select name="pager_size" onchange="window.location.href = '<?=$this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/')?>page_size/' + this.value + '/';">
-                                    <option value="20"<?=($OrbitvuPager['size'] == '20' ? ' selected="selected"' : '')?>>20</option>
-                                    <option value="30"<?=($OrbitvuPager['size'] == '30' ? ' selected="selected"' : '')?>>30</option>
-                                    <option value="50"<?=($OrbitvuPager['size'] == '50' ? ' selected="selected"' : '')?>>50</option>
-                                    <option value="100"<?=($OrbitvuPager['size'] == '100' ? ' selected="selected"' : '')?>>100</option>
-                                    <option value="200"<?=($OrbitvuPager['size'] == '200' ? ' selected="selected"' : '')?>>200</option>
-                                </select>
-                                <span class="separator">|</span>
-                                <?=$this->__('Total:')?> <?=intval($presentations_choose->count)?>
-                            </td>
-                            <td class="filter-actions">
-                                <div class="orbitvu_filters">
-                                    <select name="sun_ordering" style="width: 70px;" onchange="window.location.href = '<?=$this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/')?>sun_ordering/' + this.value + '/';">
-                                        <option value="create_date"<?=($OrbitvuOrdering == 'create_date' ? ' selected="selected"' : '')?>><?=$this->__('Date')?> &uArr;</option>
-                                        <option value="-create_date"<?=($OrbitvuOrdering == '-create_date' ? ' selected="selected"' : '')?>><?=$this->__('Date')?> &dArr;</option>
-                                        <option value="sku"<?=($OrbitvuOrdering == 'sku' ? ' selected="selected"' : '')?>><?=$this->__('SKU')?> &uArr;</option>
-                                        <option value="-sku"<?=($OrbitvuOrdering == '-sku' ? ' selected="selected"' : '')?>><?=$this->__('SKU')?> &dArr;</option>
-                                        <option value="name"<?=($OrbitvuOrdering == 'name' ? ' selected="selected"' : '')?>><?=$this->__('Name')?> &uArr;</option>
-                                        <option value="-name"<?=($OrbitvuOrdering == '-name' ? ' selected="selected"' : '')?>><?=$this->__('Name')?> &dArr;</option>
-                                    </select>
-                                    <input type="text" name="sun_search" id="orbitvu_sun_search" placeholder="<?=$this->__('Enter presentation name or SKU...')?>"<?php
-                                    if (!empty($OrbitvuKeyword)) { echo ' value="'.$OrbitvuKeyword.'"'; }
-                                    ?> size="30" />
-                                    <button type="button" class="orbitvu-button scalable task" onclick="window.location.href = '<?=$this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/')?>sun_keyword/' + document.getElementById('orbitvu_sun_search').value + '/';"><span><span><span><?=$this->__('Search')?></span></span></span></button>
-                                    <?php if (!empty($OrbitvuKeyword)) { ?>
-                                        <button type="button" class="orbitvu-button scalable task" onclick="window.location.href = '<?=$this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/')?>sun_keyword_reset/true/';"><span><span><span><?=$this->__('Reset')?></span></span></span></button>
-                                    <?php } ?>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                        <?=$this->__('of')?> <?=$OrbitvuPager['all']?>     
+                        <span class="separator">|</span>
+                        <?=$this->__('Per page:')?>
+                        <select name="pager_size" onchange="window.location.href = '<?=$this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/')?>page_size/' + this.value + '/';">
+                            <option value="20"<?=($OrbitvuPager['size'] == '20' ? ' selected="selected"' : '')?>>20</option>
+                            <option value="30"<?=($OrbitvuPager['size'] == '30' ? ' selected="selected"' : '')?>>30</option>
+                            <option value="50"<?=($OrbitvuPager['size'] == '50' ? ' selected="selected"' : '')?>>50</option>
+                            <option value="100"<?=($OrbitvuPager['size'] == '100' ? ' selected="selected"' : '')?>>100</option>
+                            <option value="200"<?=($OrbitvuPager['size'] == '200' ? ' selected="selected"' : '')?>>200</option>
+                        </select>
+                        <span class="separator">|</span>
+                        <?=$this->__('Total:')?> <?=intval($presentations_choose->count)?>    
+                    </td>
+                    <td class="filter-actions">
+                        <div class="orbitvu_filters">
+                            <select name="sun_ordering" style="width: 70px;" onchange="window.location.href = '<?=$this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/')?>sun_ordering/' + this.value + '/';">
+                                <option value="create_date"<?=($OrbitvuOrdering == 'create_date' ? ' selected="selected"' : '')?>><?=$this->__('Date')?> &uArr;</option>
+                                <option value="-create_date"<?=($OrbitvuOrdering == '-create_date' ? ' selected="selected"' : '')?>><?=$this->__('Date')?> &dArr;</option>
+                                <option value="sku"<?=($OrbitvuOrdering == 'sku' ? ' selected="selected"' : '')?>><?=$this->__('SKU')?> &uArr;</option>
+                                <option value="-sku"<?=($OrbitvuOrdering == '-sku' ? ' selected="selected"' : '')?>><?=$this->__('SKU')?> &dArr;</option>
+                                <option value="name"<?=($OrbitvuOrdering == 'name' ? ' selected="selected"' : '')?>><?=$this->__('Name')?> &uArr;</option>
+                                <option value="-name"<?=($OrbitvuOrdering == '-name' ? ' selected="selected"' : '')?>><?=$this->__('Name')?> &dArr;</option>
+                            </select>
+                            <input type="text" name="sun_search" id="orbitvu_sun_search" placeholder="<?=$this->__('Enter presentation name or SKU...')?>"<?php
+                                if (!empty($OrbitvuKeyword)) { echo ' value="'.$OrbitvuKeyword.'"'; }
+                            ?> size="30" />
+                            <button type="button" class="orbitvu-button scalable task" onclick="window.location.href = '<?=$this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/')?>sun_keyword/' + document.getElementById('orbitvu_sun_search').value + '/';"><span><span><span><?=$this->__('Search')?></span></span></span></button>        
+                            <?php if (!empty($OrbitvuKeyword)) { ?>
+                                <button type="button" class="orbitvu-button scalable task" onclick="window.location.href = '<?=$this->getUrl('*/catalog_product/edit/id/'.$product_id.'/back/edit/tab/product_info_tabs_tabid/sun/set_show_all/')?>sun_keyword_reset/true/';"><span><span><span><?=$this->__('Reset')?></span></span></span></button>        
+                            <?php } ?>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
 
-                    <div class="orbitvu_clearfix" style="padding: 10px;">
-                        <?php
-                        /*
-                         *  Presentations final display
-                         */
-                        for ($i = 0, $n = count($results); $i < $n; $i++) {
-                            $cur = $results[$i];
+        <div class="orbitvu_clearfix" style="padding: 10px;">
+        <?php
+        /*
+         *  Presentations final display
+         */
+        for ($i = 0, $n = count($results); $i < $n; $i++) {
+            $cur = $results[$i];
 
-                            $types = $_Orbitvu->GetPresentationTypes($cur);
-                            $new_types = array();
-                            foreach ($types as $type) {
-                                switch ($type) {
-                                    case '0':
-                                        $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-0" title="'.$this->__('Orbittour').'"></span>';
-                                        break;
-                                    case '1':
-                                        $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-1" title="'.$this->__('360&deg;').'"></span>';
-                                        break;
-                                    default:
-                                        $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-3" title="'.$this->__('2D').'"></span>';
-                                        break;
-                                }
-                            }
-                            $types = $new_types;
-
-                            $sku = $cur->sku;
-                            //-------------------------------------------------------------------------------------------------------
-                            if (!empty($sku)) {
-                                if (strlen($sku) > 10) {
-                                    $sku = '<span title="'.$sku.'">'.mb_substr($sku, 0, 10, 'utf-8').'...</span>';
-                                }
-                            }
-                            else {
-                                $sku = '-';
-                            }
-                            //-------------------------------------------------------------------------------------------------------
-                            $str = $cur->name;
-                            if (strlen($str) > 15 ) $str = mb_substr($str, 0, 15, 'utf-8').'...';
-                            //-------------------------------------------------------------------------------------------------------
-                            echo $observer->UseTemplate(array(
-                                'parameters'    => 'onclick="if (confirm(\''.$this->__('Do you really want to link this presentation with current product?').'\')) { OrbitvuSetAction(\'sun/set_presentation/presentation_id/'.$cur->id.'/\'); }"',
-                                'image_path'    => $cur->thumbnail_url,
-                                'name'          => $str,
-                                'sku'           => $sku,
-                                'types'         => implode('', $types)
-                            ), $__templates['presentation_item']);
-                        }
-                        ?>
-                    </div>
-                <?php
-                }
-                else {
-                    //--------------------------------------------------------------------------------------------------------------------------------------
-                    echo $observer->UseTemplate(array(
-                        'name'  => $product_name
-                    ), $__templates['magento_section_start']);
-                    //--------------------------------------------------------------------------------------------------------------------------------------
+            $types = $_Orbitvu->GetPresentationTypes($cur);
+            $new_types = array();
+            foreach ($types as $type) {
+                switch ($type) {
+                    case '0': 
+                        $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-0" title="'.$this->__('Orbittour').'"></span>';
+                    break;
+                    case '1':
+                        $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-1" title="'.$this->__('360&deg;').'"></span>';
+                    break;
+                    default:
+                        $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-3" title="'.$this->__('2D').'"></span>';
+                    break;
                 }
             }
-            else {
-            /*************************************************************************************************************************************************
-             * Item edit
-             ************************************************************************************************************************************************/
+            $types = $new_types;
 
-            $presentation_sun = $_Orbitvu->GetPresentationsList(array('id' => $presentations['orbitvu_id']));
-            $presentation_sun = $presentation_sun->results[0];
-
-            $sku = $presentation_sun->sku;
+            $sku = $cur->sku;
             //-------------------------------------------------------------------------------------------------------
             if (!empty($sku)) {
-                $sku = '<span title="'.$sku.'">'.$sku.'</span>';
+                if (strlen($sku) > 10) {
+                    $sku = '<span title="'.$sku.'">'.mb_substr($sku, 0, 10, 'utf-8').'...</span>';
+                }
             }
             else {
                 $sku = '-';
             }
-            //--------------------------------------------------------------------------------------------------------------------------------------
+            //-------------------------------------------------------------------------------------------------------
+            $str = $cur->name;
+            if (strlen($str) > 15 ) $str = mb_substr($str, 0, 15, 'utf-8').'...';
+            //-------------------------------------------------------------------------------------------------------
             echo $observer->UseTemplate(array(
-                'name'  => $this->__('Orbitvu SUN presentation linked to current product')
+                'parameters'    => 'onclick="if (confirm(\''.$this->__('Do you really want to link this presentation with current product?').'\')) { OrbitvuSetAction(\'sun/set_presentation/presentation_id/'.$cur->id.'/\'); }"',
+                'image_path'    => $cur->thumbnail_url,
+                'name'          => $str,
+                'sku'           => $sku,
+                'types'         => implode('', $types)
+            ), $__templates['presentation_item']);
+        }
+        ?>
+</div>
+<?php
+    }
+    else {
+        //--------------------------------------------------------------------------------------------------------------------------------------
+        echo $observer->UseTemplate(array(
+                'name'  => $product_name
             ), $__templates['magento_section_start']);
-            //--------------------------------------------------------------------------------------------------------------------------------------
-            $add_buttons = '';
+        //--------------------------------------------------------------------------------------------------------------------------------------   
+    }
+} 
+else {
+/*************************************************************************************************************************************************
+ * Item edit
+ ************************************************************************************************************************************************/
+    
+$presentation_sun = $_Orbitvu->GetPresentationsList(array('id' => $presentations['orbitvu_id']));    
+$presentation_sun = $presentation_sun->results[0];    
 
-            $thumbnail = $presentations['items'][0]['thumbnail'];
-            if ($presentations) {
-                foreach ($presentations['items'] as $item) {
-                    if ($item['status'] == 'active') {
-                        $thumbnail = $item['thumbnail'];
-                        break;
-                    }
-                }
-            }
-            ?>
-            <div class="orbitvu_sun_presentation_full">
-                <table><td><td style="width: 1%;">
-                        <div style="position: relative;">
-                            <img src="<?=$thumbnail?>?height=200" style="margin: 0; padding: 0; border: 1px solid #dedede; border-radius: 5px;" alt="">
-                            <div style="position: absolute; bottom: 10px; right: 5px;">
-                                <?php
+$sku = $presentation_sun->sku;
+//-------------------------------------------------------------------------------------------------------
+if (!empty($sku)) {
+    $sku = '<span title="'.$sku.'">'.$sku.'</span>';
+}
+else {
+    $sku = '-';
+}
+//--------------------------------------------------------------------------------------------------------------------------------------
+echo $observer->UseTemplate(array(
+        'name'  => $this->__('Orbitvu SUN presentation linked to current product')
+    ), $__templates['magento_section_start']);
+//--------------------------------------------------------------------------------------------------------------------------------------
+$add_buttons = '';
 
-                                $types = $presentations['types'];
-                                $new_types = array();
-                                if ($types) {
-                                    foreach ($types as $type) {
-                                        switch ($type) {
-                                            case '0':
-                                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-0 orbitvu-icon-bg" title="'.$this->__('Orbittour').'"></span>';
-                                                break;
-                                            case '1':
-                                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-1 orbitvu-icon-bg" title="'.$this->__('360&deg;').'"></span>';
-                                                break;
-                                            default:
-                                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-3 orbitvu-icon-bg" title="'.$this->__('2D').'"></span>';
-                                                break;
-                                        }
-                                    }
-                                    $types = $new_types;
-
-                                    print implode('', $types);
-                                }
-                                ?>
-                            </div>
-                        </div>
-                    </td><td style="padding-left: 20px;">
-
-                        <div class="presentation_data">
-                            <strong style="font-size: 1.5em;"><?=$presentations['name']?></strong><br>
-
-                            <?php if ($presentation_sun->sku != $product_sku) {
-                                $update_sku = $_Orbitvu->SetSunPresentationSku($presentations['orbitvu_id'], $product_sku, $presentation_sun->sku);
-
-                                if (!$update_sku && $orbitvu_connected) {
-
-                                    if (!$orbitvu_demo) {
-                                        $add_buttons .= '<button type="button" class="orbitvu-button-sku scalable" onclick="if (confirm(\''.$this->__('Do you really want to update this presentation SKU on your Orbitvu SUN account?').'\')) { OrbitvuSetAction(\'sun/set_sku/presentation_id/'.$presentations['orbitvu_id'].'/sun_new_sku/'.$product_sku.'\'); }"><span><span></span>'.$this->__('Update SKU on SUN').'</span></button> ';
-                                    }
-                                    else {
-                                        $add_buttons .= '<button type="button" class="orbitvu-button-sku scalable disabled orbitvu-button-disabled"><span><span></span>'.$this->__('Update SKU on SUN').'</span></button> ';
-                                    }
-                                    ?>
-                                    <strong><?=$this->__('SKU')?>:</strong> <?=$sku?><br>
-                                    <ul class="messages" style="float: left; max-width: 680px;">
-                                        <li class="error-msg">
-                                            <ul>
-                                                <li>
-
-                                                    <?=$this->__('Product\'s SKU:')?> "<?=$product_sku?>" <?=$this->__('. Presentation\'s SKU from Orbitvu SUN:')?> <?=($sku == '-' ? '""' : '"'.$sku.'"')?>. <br /> <?=$this->__('Click "Update SKU on SUN" button below to update your presentation\'s SKU from Orbitvu SUN with:')?> "<?=$product_sku?>".
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                <?php } else if ($update_sku->error == '400') {
-                                    ?>
-                                    <strong><?=$this->__('SKU')?>:</strong> <?=$sku?><br>
-                                    <ul class="messages">
-
-                                        <li class="error-msg">
-                                            <ul>
-                                                <li>
-                                                    <?=$this->__('We can\'t change your SUN Presentation SKU. One of your presentations already has this product SKU assigned. SKU need to be unique. Modify SKU on your SUN Server.')?>
-                                                </li>
-                                            </ul>
-                                        </li>
-
-                                    </ul>
-
-
-                                <?php
-
-                                }
-
-                                else { ?>
-                                    <strong><?=$this->__('SKU')?>:</strong> <?=$product_sku?><br>
-                                <?php
-                                }
-                            }
-                            else { ?>
-                                <strong><?=$this->__('SKU')?>:</strong> <?=$sku?><br>
-                            <?php } ?>
-                            <div class="orbitvu_clearfix" style="padding-top: 10px;">
-                                <?=$add_buttons?>
-                                <button type="button" class="orbitvu-button orbitvu-button-unlink scalable" onclick="if (confirm('<?=$this->__('Do you really want to unlink this presentation?')?>')) { OrbitvuSetAction('sun/unlink/'); }"><span><span></span><?=$this->__('Unlink this presentation')?></span></button>
-
-                                <button type="button" class="orbitvu-button orbitvu-button-sync scalable" onclick="SynchronizeSunItems();"><span><span></span><?=$this->__('Synchronize with SUN')?></span></button>
-
-                                <?php
-                                $presentation_sun = $_Orbitvu->GetPresentationsList(array('id' => $presentations['orbitvu_id']));
-                                $presentation_sun = $presentation_sun->results[0];
-                                ?>
-
-                                <?php if ($orbitvu_connected && !$orbitvu_demo && isset($presentation_sun->edit_url)) { ?><button type="button" class="orbitvu-button orbitvu-button-edit scalable"><span><span></span><a href="<?=$presentation_sun->edit_url?>" target="_blank" style="color: white; text-decoration: none;"><?=$this->__('Edit on SUN')?></a></span></button> <?php } else { ?><button type="button" class="orbitvu-button-edit scalable disabled orbitvu-button-disabled" disabled="disabled"><span style="padding-left: 0; background: none;"><span></span><?=$this->__('Edit on SUN')?></span></button>
-                                <?php } ?>        </div>
-
-                            <div class="orbitvu_clearfix" style="padding-top: 10px">
-
-                                <button type="button" id="orbitvu-button-enable-items" class="orbitvu-button orbitvu-button-enable-items scalable" onclick="enable_all_items();"><span><span></span><?=$this->__('Enable items')?></span></button>
-                                <img src="<?=Mage::getBaseUrl('media')?>orbitvu/loader.gif" id="enable_all_items_loader" style="display: none" alt="" />
-
-                                <button type="button" id="orbitvu-button-disable-items" class="orbitvu-button orbitvu-button-disable-items scalable" onclick="disable_all_items();"><span><span></span><?=$this->__('Disable items')?></span></button>
-                                <img src="<?=Mage::getBaseUrl('media')?>orbitvu/loader.gif" id="disable_all_items_loader" style="display: none" alt="" />
-
-                            </div>
-
-                            <?php if ($CurrentProduct->isConfigurable()): ?>
-                                <div class="orbitvu_clearfix" style="padding-top: 10px">
-                                    <ul class="messages">
-                                        <li class="notice-msg">
-                                            <ul>
-                                                <li>
-                                                    <?=$this->__('This option affect only associated products which don\'t have any images.')?>
-                                                    <div style="padding-top: 10px;">
-                                                        <input id="orbitvu-no-assign-configurable" name="orbitvu_assign_configurable" value="0" type="radio" checked="checked"><label for="orbitvu-no-assign-configurable"> <?=$this->__('Don\'t assign Orbitvu thumbnail to associated products'); ?></label><br />
-                                                        <input id="orbitvu-assign-configurable" name="orbitvu_assign_configurable" value="1" type="radio"><label for="orbitvu-assign-configurable"> <?=$this->__('Assign Orbitvu thumbnail to associated products'); ?></label>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                            <?php endif; ?>
-
-                        </div>
-
-                    </td></tr></table>
-
-                <div id="<?=($items_count > 1 ? 'orbitvu-drag-container' : '')?>" class="orbitvu-drag-container" history="History1" style="border-top: 1px solid #dedede;">
+$thumbnail = $presentations['items'][0]['thumbnail'];
+foreach ($presentations['items'] as $item) {
+    if ($item['status'] == 'active') {
+        $thumbnail = $item['thumbnail'];
+        break;
+    }
+}
+?>
+<div class="orbitvu_sun_presentation_full">
+    <table><td><td style="width: 1%;">
+            <div style="position: relative;">
+    <img src="<?=$thumbnail?>?height=200" style="margin: 0; padding: 0; border: 1px solid #dedede; border-radius: 5px;" alt="">
+                <div style="position: absolute; bottom: 10px; right: 5px;">
                     <?php
-                    for ($i = 0; $i < $items_count; $i++) {
-                        $items = $presentations['items'][$i];
+                    
+                    $types = $presentations['types'];
+                    $new_types = array();
+                    foreach ($types as $type) {
+                        switch ($type) {
+                            case '0': 
+                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-0 orbitvu-icon-bg" title="'.$this->__('Orbittour').'"></span>';
+                            break;
+                            case '1':
+                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-1 orbitvu-icon-bg" title="'.$this->__('360&deg;').'"></span>';
+                            break;
+                            default:
+                                $new_types[] = '<span class="orbitvu-type orbitvu-icon orbitvu-icon-type-3 orbitvu-icon-bg" title="'.$this->__('2D').'"></span>';
+                            break;
+                        }
+                    }
+                    $types = $new_types;
+                    
+                    print implode('', $types);
+                    ?>
+                </div>
+            </div>
+        </td><td style="padding-left: 20px;">
 
-                        $display_id = $items['id'];
-                        ?>
-                        <div class="orbitvu-drag-box<?=($items['status'] == 'inactive' ? ' hidden' : '')?>" id="orbitvu-gallery-item-<?=$display_id?>" style="background: white url(<?=$items['thumbnail']?>?width=100) center center no-repeat;">
+    <div class="presentation_data">
+        <strong style="font-size: 1.5em;"><?=$presentations['name']?></strong><br>
+        
+<?php if ($presentation_sun->sku != $product_sku) { 
+    $update_sku = $_Orbitvu->SetSunPresentationSku($presentations['orbitvu_id'], $product_sku, $presentation_sun->sku);
+    
+    if (!$update_sku && $orbitvu_connected) {
+        
+        if (!$orbitvu_demo) { 
+            $add_buttons .= '<button type="button" class="orbitvu-button-sku scalable" onclick="if (confirm(\''.$this->__('Do you really want to update this presentation SKU on your Orbitvu SUN account?').'\')) { OrbitvuSetAction(\'sun/set_sku/presentation_id/'.$presentations['orbitvu_id'].'/sun_new_sku/'.$product_sku.'\'); }"><span><span></span>'.$this->__('Update SKU on SUN').'</span></button> ';
+        }
+        else {
+            $add_buttons .= '<button type="button" class="orbitvu-button-sku scalable disabled orbitvu-button-disabled"><span><span></span>'.$this->__('Update SKU on SUN').'</span></button> ';
+        }
+?>
+        <strong><?=$this->__('SKU')?>:</strong> <?=$sku?><br>
+            <ul class="messages" style="float: left; max-width: 680px;">
+                <li class="error-msg">
+                    <ul>
+                        <li>
+                            
+                        <?=$this->__('Product\'s SKU:')?> "<?=$product_sku?>" <?=$this->__('. Presentation\'s SKU from Orbitvu SUN:')?> <?=($sku == '-' ? '""' : '"'.$sku.'"')?>. <br /> <?=$this->__('Click "Update SKU on SUN" button below to update your presentation\'s SKU from Orbitvu SUN with:')?> "<?=$product_sku?>".
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+    <?php } else if ($update_sku->error == '400') {
+        ?>
+        <strong><?=$this->__('SKU')?>:</strong> <?=$sku?><br>
+        <ul class="messages">
+
+                                    <li class="error-msg">
+                                        <ul>
+                                            <li>
+                                           <?=$this->__('We can\'t change your SUN Presentation SKU. One of your presentations already has this product SKU assigned. SKU need to be unique. Modify SKU on your SUN Server.')?>
+                                            </li>
+                                        </ul>
+                                    </li>
+       
+                                </ul>
+        
+        
+    <?php
+        
+    }
+    
+    else { ?>
+        <strong><?=$this->__('SKU')?>:</strong> <?=$product_sku?><br>
+    <?php
+        } 
+}
+else { ?>
+        <strong><?=$this->__('SKU')?>:</strong> <?=$sku?><br>
+<?php } ?>
+        <div class="orbitvu_clearfix" style="padding-top: 10px;">
+            <?=$add_buttons?>
+            <button type="button" class="orbitvu-button orbitvu-button-unlink scalable" onclick="if (confirm('<?=$this->__('Do you really want to unlink this presentation?')?>')) { OrbitvuSetAction('sun/unlink/'); }"><span><span></span><?=$this->__('Unlink this presentation')?></span></button> 
+            
+            <button type="button" class="orbitvu-button orbitvu-button-sync scalable" onclick="SynchronizeSunItems();"><span><span></span><?=$this->__('Synchronize with SUN')?></span></button>
+            
+            <?php
+            $presentation_sun = $_Orbitvu->GetPresentationsList(array('id' => $presentations['orbitvu_id']));    
+            $presentation_sun = $presentation_sun->results[0];   
+            ?>
+            
+            <?php if ($orbitvu_connected && !$orbitvu_demo && isset($presentation_sun->edit_url)) { ?><button type="button" class="orbitvu-button orbitvu-button-edit scalable"><span><span></span><a href="<?=$presentation_sun->edit_url?>" target="_blank" style="color: white; text-decoration: none;"><?=$this->__('Edit on SUN')?></a></span></button> <?php } else { ?><button type="button" class="orbitvu-button-edit scalable disabled orbitvu-button-disabled" disabled="disabled"><span style="padding-left: 0; background: none;"><span></span><?=$this->__('Edit on SUN')?></span></button>
+            <?php } ?>        </div>
+    </div>
+            
+        </td></tr></table>
+
+<div id="<?=($items_count > 1 ? 'orbitvu-drag-container' : '')?>" class="orbitvu-drag-container" history="History1" style="border-top: 1px solid #dedede;">
+    <?php 
+for ($i = 0; $i < $items_count; $i++) { 
+    $items = $presentations['items'][$i];
+    
+    $display_id = $items['id'];
+?>
+    <div class="orbitvu-drag-box<?=($items['status'] == 'inactive' ? ' hidden' : '')?>" id="orbitvu-gallery-item-<?=$display_id?>" style="background: white url(<?=$items['thumbnail']?>?width=100) center center no-repeat;">
         
         <span class="orbitvu-icon orbitvu-type orbitvu-icon-type-<?=$items['type']?>" title="<?php
-        switch ($items['type']) {
-            case '0': echo $this->__('Orbittour'); break;
-            case '1': echo $this->__('360&deg;'); break;
-            default: echo $this->__('2D'); break;
-        }
+            switch ($items['type']) {
+                case '0': echo $this->__('Orbittour'); break;
+                case '1': echo $this->__('360&deg;'); break;
+                default: echo $this->__('2D'); break;
+            }
         ?>"></span>
         
         <span class="orbitvu-text orbitvu-drag-text">
@@ -878,613 +822,547 @@ if (!$found_match) {
         <span class="orbitvu-text orbitvu-show-text" id="orbitvu-text-show-<?=$display_id?>">
             <?=$this->__('Show item')?>
         </span>
-
-
-
-                            <span class="orbitvu-visibility orbitvu-icon orbitvu-icon-visibility<?=($items['status'] == 'inactive' ? ' disabled' : '')?>" id="orbitvu-visibility-trigger-<?=$display_id?>"></span>
-                        </div>
-                    <?php } ?>
-                </div>
-
-            </div>
-            <script>
-                function orbitvu_ajax(file, func) {
-                    var obj = null;
-                    if (window.XMLHttpRequest) obj = new XMLHttpRequest();
-                    else if (window.ActiveXObject) obj = new ActiveXObject('Microsoft.XMLHTTP');
-                    else return false;
-
-                    obj.onreadystatechange = function() {
-                        if (this.readyState == 4) func(this.responseText);
-                    };
-                    obj.open('GET', file, true);
-                    obj.send(null);
-                }
-
-                function orbitvu_drag_start() {
-                    if (document.getElementsByClassName('orbitvu-drag-box')) {
-                        var elems = document.getElementsByClassName('orbitvu-drag-box');
-
-                        for (var i = 0, n = elems.length; i < n; i++) {
-                            if (elems[i]) {
-                                elems[i].className += ' drag';
-                            }
-                        }
-                    }
-                    //orbitvu_log('Drag start!');
-                }
-
-                function orbitvu_drag_end() {
-                    if (document.getElementsByClassName('orbitvu-drag-box')) {
-                        var elems = document.getElementsByClassName('orbitvu-drag-box');
-
-                        //orbitvu_log('Drag end!');
-
-                        for (var i = 0, n = elems.length; i < n; i++) {
-                            if (elems[i]) {
-                                elems[i].className = elems[i].className.replace(' drag', '');
-                            }
-                        }
-                    }
-                }
-
-                function enable_all_items() {
-                    var elems = document.getElementsByClassName('orbitvu-visibility'),
-                        button = document.getElementById('orbitvu-button-enable-items'),
-                        img = document.getElementById('enable_all_items_loader'),
-                        ids = [],
-                        proper_elems = [];
-
-                    button.style.display = 'none';
-                    img.style.display = 'inline-block';
-                    for (var i = 0, n = elems.length; i < n; i++) {
-                        if (elems[i].className.replace(' disabled', '') !== elems[i].className) {
-                            ids.push(parseInt(elems[i].id.replace('orbitvu-visibility-trigger-', '')));
-                            proper_elems.push(elems[i]);
-                        }
-                    }
-                    if (ids.length) {
-                        orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_statuses/sun_items_statuses/' + ids.join(',') + '/sun_status/active', function(data){
-                            data = JSON.parse(data);
-                            if (data.status) {
-                                for (var i = 0, n = proper_elems.length; i < n; i++) {
-                                    proper_elems[i].className = proper_elems[i].className.replace(' disabled', '');
-                                    document.getElementById('orbitvu-gallery-item-' + ids[i]).className = document.getElementById('orbitvu-gallery-item-' + ids[i]).className.replace(' hidden', '');
-                                }
-                                button.style.display = 'inline-block';
-                                img.style.display = 'none';
-                            }
-                        });
-                    } else {
-                        button.style.display = 'inline-block';
-                        img.style.display = 'none';
-                    }
-                }
-
-                function disable_all_items() {
-                    var elems = document.getElementsByClassName('orbitvu-visibility'),
-                        button = document.getElementById('orbitvu-button-disable-items'),
-                        img = document.getElementById('disable_all_items_loader'),
-                        ids = [],
-                        proper_elems = [];
-
-                    button.style.display = 'none';
-                    img.style.display = 'inline-block';
-                    for (var i = 0, n = elems.length; i < n; i++) {
-                        if (elems[i].className.replace(' disabled', '') === elems[i].className) {
-                            ids.push(parseInt(elems[i].id.replace('orbitvu-visibility-trigger-', '')));
-                            proper_elems.push(elems[i]);
-                        }
-                    }
-                    if (ids.length) {
-                        orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_statuses/sun_items_statuses/' + ids.join(','), function(data){
-                            data = JSON.parse(data);
-                            if (data.status) {
-                                for (var i = 0, n = proper_elems.length; i < n; i++) {
-                                    proper_elems[i].className += ' disabled';
-                                    document.getElementById('orbitvu-gallery-item-' + ids[i]).className += ' hidden';
-                                }
-                                button.style.display = 'inline-block';
-                                img.style.display = 'none';
-                            }
-                        });
-                    } else {
-                        button.style.display = 'inline-block';
-                        img.style.display = 'none';
-                    }
-                }
-
-                var elems = document.getElementsByClassName('orbitvu-visibility');
-
-                for (var i = 0, n = elems.length; i < n; i++) {
-                    elems[i].onmouseover = function() {
-                        var this_id = parseInt(this.id.replace('orbitvu-visibility-trigger-', ''));
-
-                        if (this.className.replace(' disabled', '') != this.className) {
-                            document.getElementById('orbitvu-text-show-' + this_id).className += ' active';
-                            document.getElementById('orbitvu-text-hide-' + this_id).className = document.getElementById('orbitvu-text-hide-' + this_id).className.replace(' active', '');
-                        }
-                        else {
-                            document.getElementById('orbitvu-text-hide-' + this_id).className += ' active';
-                            document.getElementById('orbitvu-text-show-' + this_id).className = document.getElementById('orbitvu-text-show-' + this_id).className.replace(' active', '');
-                        }
-                    }
-
-                    elems[i].onmouseout = function() {
-                        var this_id = parseInt(this.id.replace('orbitvu-visibility-trigger-', ''));
-
-                        document.getElementById('orbitvu-text-hide-' + this_id).className = document.getElementById('orbitvu-text-hide-' + this_id).className.replace(' active', '');
-                        document.getElementById('orbitvu-text-show-' + this_id).className = document.getElementById('orbitvu-text-show-' + this_id).className.replace(' active', '');
-                    }
-
-                    elems[i].onclick = function() {
-                        var this_id = parseInt(this.id.replace('orbitvu-visibility-trigger-', ''));
-
-                        if (this.className.replace(' disabled', '') != this.className) {
-                            this.className = this.className.replace(' disabled', '');
-                            document.getElementById('orbitvu-gallery-item-' + this_id).className = document.getElementById('orbitvu-gallery-item-' + this_id).className.replace(' hidden', '');
-
-                            orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_status/sun_item_id/' + this_id + '/sun_status/active', function(odp){});
-                        }
-                        else {
-                            this.className += ' disabled';
-                            document.getElementById('orbitvu-gallery-item-' + this_id).className += ' hidden';
-
-                            orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_status/sun_item_id/' + this_id, function(odp){});
-                        }
-                    }
-                }
-                var orbitvu_mouse_offset = null;
-                var orbitvu_i_mouse_down = false;
-                var orbitvu_l_mouse_state = false;
-                var orbitvu_drag_object = null;
-                var orbitvu_drag_drops = [];
-                var OrbitvuCurrentTarget = null;
-                var OrbitvuLastTarget = null;
-                var OrbitvuDragTemp = null;
-                var OrbitvuTempDiv = null;
-                var OrbitvuRootParent = null;
-                var OrbitvuRootSibling = null;
-                var orbitvu_final_node, orbitvu_final_item_id;
-                var OrbitvuD1Target = null;
-
-                Number.prototype.NaN0 = function() {
-                    return isNaN(this) ? 0 : this;
-                }
-
-                function orbitvu_create_drag_container() {
-
-                    var cDrag = orbitvu_drag_drops.length;
-                    orbitvu_drag_drops[cDrag] = [];
-
-
-                    for (var i = 0; i < arguments.length; i++) {
-                        var cObj = arguments[i];
-                        orbitvu_drag_drops[cDrag].push(cObj);
-                        cObj.setAttribute('DropObj', cDrag);
-
-
-                        for (var j = 0; j < cObj.childNodes.length; j++) {
-
-
-                            if (cObj.childNodes[j].nodeName == '#text')
-                                continue;
-
-                            cObj.childNodes[j].setAttribute('DragObj', cDrag);
-                        }
-                    }
-                }
-
-                function orbitvu_get_position(e) {
-                    var left = 0;
-                    var top = 0;
-                    while (e.offsetParent) {
-                        left += e.offsetLeft + (e.currentStyle ? (parseInt(e.currentStyle.borderLeftWidth)).NaN0() : 0);
-                        top += e.offsetTop + (e.currentStyle ? (parseInt(e.currentStyle.borderTopWidth)).NaN0() : 0);
-                        e = e.offsetParent;
-                    }
-
-
-                    left += e.offsetLeft + (e.currentStyle ? (parseInt(e.currentStyle.borderLeftWidth)).NaN0() : 0);
-                    top += e.offsetTop + (e.currentStyle ? (parseInt(e.currentStyle.borderTopWidth)).NaN0() : 0);
-
-                    return {x: left, y: top};
-
-                }
-
-                function orbitvu_mouse_coords(ev) {
-                    if (ev.pageX || ev.pageY) {
-                        return {x: ev.pageX, y: ev.pageY};
-                    }
-                    return {
-                        x: ev.clientX + document.body.scrollLeft - document.body.clientLeft,
-                        y: ev.clientY + document.body.scrollTop - document.body.clientTop
-                    };
-                }
-
-                function orbitvu_log(object, message) {
-                    if (!object || !object.parentNode || !object.parentNode.getAttribute)
-                        return;
-                    //console.log(object.id + ': ' + message);
-                }
-
-                function orbitvu_get_mouse_offset(target, ev) {
-                    ev = ev || window.event;
-
-                    var docPos = orbitvu_get_position(target);
-                    var mousePos = orbitvu_mouse_coords(ev);
-                    return {x: mousePos.x - docPos.x, y: mousePos.y - docPos.y};
-                }
-
-                function orbitvu_mouse_move(ev) {
-                    ev = ev || window.event;
-
-
-                    var target = ev.target || ev.srcElement;
-                    var mousePos = orbitvu_mouse_coords(ev);
-
-
-
-                    if (OrbitvuLastTarget && (target !== OrbitvuLastTarget)) {
-                        //orbitvu_log(OrbitvuLastTarget, 'Mouse Out Fired');
-
-
-                        var origClass = OrbitvuLastTarget.getAttribute('origClass');
-                        if (origClass)
-                            OrbitvuLastTarget.className = origClass;
-                    }
-
-
-                    var dragObj = target.getAttribute('DragObj');
-
-
-                    if (dragObj != null) {
-
-
-                        if (target != OrbitvuLastTarget) {
-                            //orbitvu_log(target, 'Mouse Over Fired');
-
-                            var oClass = target.getAttribute('overClass');
-                            if (oClass) {
-                                target.setAttribute('origClass', target.className);
-                                target.className = oClass;
-                            }
-                        }
-
-
-                        if (orbitvu_i_mouse_down && !orbitvu_l_mouse_state) {
-                            orbitvu_log(target, 'Start Dragging');
-
-
-                            OrbitvuCurrentTarget = target;
-
-
-                            OrbitvuRootParent = OrbitvuCurrentTarget.parentNode;
-                            OrbitvuRootSibling = OrbitvuCurrentTarget.nextSibling;
-
-                            orbitvu_mouse_offset = orbitvu_get_mouse_offset(target, ev);
-
-
-                            for (var i = 0; i < OrbitvuDragTemp.childNodes.length; i++)
-                                OrbitvuDragTemp.removeChild(OrbitvuDragTemp.childNodes[i]);
-
-
-                            OrbitvuDragTemp.appendChild(OrbitvuCurrentTarget.cloneNode(true));
-                            //OrbitvuDragTemp.style.display = 'block';
-
-
-                            var dragClass = OrbitvuCurrentTarget.getAttribute('dragClass');
-                            if (dragClass) {
-                                OrbitvuDragTemp.firstChild.className = dragClass;
-                            }
-
-
-                            OrbitvuDragTemp.firstChild.removeAttribute('DragObj');
-
-
-                            var dragConts = orbitvu_drag_drops[dragObj];
-
-
-                            OrbitvuCurrentTarget.setAttribute('startWidth', parseInt(OrbitvuCurrentTarget.offsetWidth));
-                            OrbitvuCurrentTarget.setAttribute('startHeight', parseInt(OrbitvuCurrentTarget.offsetHeight));
-                            OrbitvuCurrentTarget.style.display = 'none';
-
-                            for (var i = 0; i < dragConts.length; i++) {
-                                with (dragConts[i]) {
-                                    var pos = orbitvu_get_position(dragConts[i]);
-
-
-                                    setAttribute('startWidth', parseInt(offsetWidth));
-                                    setAttribute('startHeight', parseInt(offsetHeight));
-                                    setAttribute('startLeft', pos.x);
-                                    setAttribute('startTop', pos.y);
-                                }
-
-
-                                for (var j = 0; j < dragConts[i].childNodes.length; j++) {
-                                    with (dragConts[i].childNodes[j]) {
-                                        if ((nodeName == '#text') || (dragConts[i].childNodes[j] == OrbitvuCurrentTarget))
-                                            continue;
-
-                                        var pos = orbitvu_get_position(dragConts[i].childNodes[j]);
-
-
-                                        setAttribute('startWidth', parseInt(offsetWidth));
-                                        setAttribute('startHeight', parseInt(offsetHeight));
-                                        setAttribute('startLeft', pos.x);
-                                        setAttribute('startTop', pos.y);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
-                    if (OrbitvuCurrentTarget) {
-
-                        OrbitvuDragTemp.style.top = mousePos.y - orbitvu_mouse_offset.y;
-                        OrbitvuDragTemp.style.left = mousePos.x - orbitvu_mouse_offset.x;
-
-                        var dragConts = orbitvu_drag_drops[OrbitvuCurrentTarget.getAttribute('DragObj')];
-                        var activeCont = null;
-
-                        var xPos = mousePos.x - orbitvu_mouse_offset.x + (parseInt(OrbitvuCurrentTarget.getAttribute('startWidth')) / 2);
-                        var yPos = mousePos.y - orbitvu_mouse_offset.y + (parseInt(OrbitvuCurrentTarget.getAttribute('startHeight')) / 2);
-
-
-                        for (var i = 0; i < dragConts.length; i++) {
-                            with (dragConts[i]) {
-                                if ((parseInt(getAttribute('startLeft')) < xPos) &&
-                                    (parseInt(getAttribute('startTop')) < yPos) &&
-                                    ((parseInt(getAttribute('startLeft')) + parseInt(getAttribute('startWidth'))) > xPos) &&
-                                    ((parseInt(getAttribute('startTop')) + parseInt(getAttribute('startHeight'))) > yPos)) {
-
-
-                                    activeCont = dragConts[i];
-
-
-                                    break;
-                                }
-                            }
-                        }
-
-
-                        if (activeCont) {
-                            if (activeCont != OrbitvuCurrentTarget.parentNode) {
-                                orbitvu_log(OrbitvuCurrentTarget, 'Moved into ' + activeCont.id);
-                            }
-
-
-                            var beforeNode = null;
-
-
-                            for (var i = activeCont.childNodes.length - 1; i >= 0; i--) {
-                                with (activeCont.childNodes[i]) {
-                                    if (nodeName == '#text')
-                                        continue;
-
-
-                                    if (OrbitvuCurrentTarget != activeCont.childNodes[i] &&
-                                        ((parseInt(getAttribute('startLeft')) + parseInt(getAttribute('startWidth'))) > xPos) &&
-                                        ((parseInt(getAttribute('startTop')) + parseInt(getAttribute('startHeight'))) > yPos)) {
-                                        beforeNode = activeCont.childNodes[i];
-                                    }
-                                }
-                            }
-
-
-                            if (beforeNode) {
-                                if (beforeNode != OrbitvuCurrentTarget.nextSibling) {
-                                    //`orbitvu_log(OrbitvuCurrentTarget, 'Ajax action -> Insert before ' + beforeNode.id);
-                                    orbitvu_final_item_id = OrbitvuCurrentTarget.id;
-                                    orbitvu_final_node = beforeNode.id;
-                                    activeCont.insertBefore(OrbitvuCurrentTarget, beforeNode);
-                                }
-
-
-                            } else {
-                                if ((OrbitvuCurrentTarget.nextSibling) || (OrbitvuCurrentTarget.parentNode != activeCont)) {
-                                    orbitvu_log(OrbitvuCurrentTarget, 'Inserted at end of ' + activeCont.id);
-
-                                    activeCont.appendChild(OrbitvuCurrentTarget);
-                                }
-                            }
-
-
-                            setTimeout(function() {
-                                var contPos = orbitvu_get_position(activeCont);
-                                activeCont.setAttribute('startWidth', parseInt(activeCont.offsetWidth));
-                                activeCont.setAttribute('startHeight', parseInt(activeCont.offsetHeight));
-                                activeCont.setAttribute('startLeft', contPos.x);
-                                activeCont.setAttribute('startTop', contPos.y);
-                            }, 5);
-
-
-                            if (OrbitvuCurrentTarget.style.display != '') {
-                                orbitvu_log(OrbitvuCurrentTarget, 'Made Visible');
-                                orbitvu_drag_start();
-                                OrbitvuCurrentTarget.style.display = '';
-                                OrbitvuCurrentTarget.className += ' dragstate';
-                                OrbitvuCurrentTarget.style.opacity = '1';
-                                OrbitvuCurrentTarget.style.cursor = 'move';
-                                OrbitvuCurrentTarget.style.borderStyle = 'dashed';
-                                OrbitvuCurrentTarget.style.boxShadow = '0 0 15px black';
-                            }
-                        } else {
-
-
-                            if (OrbitvuCurrentTarget.style.display != 'none') {
-                                orbitvu_log(OrbitvuCurrentTarget, 'Hidden');
-                                OrbitvuCurrentTarget.style.display = 'none';
-                            }
-                        }
-                    }
-
-
-                    orbitvu_l_mouse_state = orbitvu_i_mouse_down;
-
-
-                    OrbitvuLastTarget = target;
-
-
-                    if (orbitvu_drag_object) {
-                        orbitvu_drag_object.style.position = 'absolute';
-                        orbitvu_drag_object.style.top = mousePos.y - orbitvu_mouse_offset.y;
-                        orbitvu_drag_object.style.left = mousePos.x - orbitvu_mouse_offset.x;
-                    }
-
-
-                    orbitvu_l_mouse_state = orbitvu_i_mouse_down;
-
-
-                    if (OrbitvuCurrentTarget || orbitvu_drag_object)
-                        return false;
-                }
-
-                function orbitvu_mouse_up(ev) {
-
-
-                    if (OrbitvuCurrentTarget) {
-                        orbitvu_log(OrbitvuCurrentTarget, 'Mouse Up Fired');
-                        orbitvu_drag_end();
-                        orbitvu_log(OrbitvuCurrentTarget, 'orbitvu_final_item_id: ' + orbitvu_final_item_id + ' / orbitvu_final_node: ' + orbitvu_final_node + ' / final_target: ' + OrbitvuLastTarget.id);
-
-                        orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_order/sun_item_id/' + parseInt(orbitvu_final_item_id.replace('orbitvu-gallery-item-', '')) + '/sun_before_item_id/' + parseInt(orbitvu_final_node.replace('orbitvu-gallery-item-', '')), function(odp){});
-
-                        if (document.getElementById('media_gallery_content_grid')) {
-                            var torem = document.getElementById('media_gallery_content_grid');
-                            torem.parentNode.removeChild(torem);
-                        }
-
-                        if (document.getElementById('media_gallery_content_save')) {
-                            var torem2 = document.getElementById('media_gallery_content_save');
-                            torem2.parentNode.removeChild(torem2);
-                        }
-
-                        if (document.getElementById('media_gallery_content_save_image')) {
-                            var torem3 = document.getElementById('media_gallery_content_save_image');
-                            torem3.parentNode.removeChild(torem3);
-                        }
-
-                        OrbitvuDragTemp.style.display = 'none';
-                        if (OrbitvuCurrentTarget.style.display == 'block') {
-                            if (OrbitvuRootSibling) {
-                                OrbitvuRootParent.insertBefore(OrbitvuCurrentTarget, OrbitvuRootSibling);
-                            } else {
-                                OrbitvuRootParent.appendChild(OrbitvuCurrentTarget);
-                            }
-                        }
-
-                        OrbitvuCurrentTarget.style.display = '';
-                        OrbitvuCurrentTarget.style.opacity = '';
-                        OrbitvuCurrentTarget.style.cursor = '';
-                        OrbitvuCurrentTarget.style.borderStyle = '';
-                        OrbitvuCurrentTarget.style.boxShadow = '';
-                        OrbitvuCurrentTarget.className = OrbitvuCurrentTarget.className.replace(' dragstate','');
-                    }
-
-                    orbitvu_drag_end();
-
-                    OrbitvuCurrentTarget = null;
-
-
-                    orbitvu_drag_object = null;
-
-                    orbitvu_i_mouse_down = false;
-                }
-
-                function orbitvu_mouse_down(ev) {
-                    ev = ev || window.event;
-                    var target = ev.target || ev.srcElement;
-
-                    orbitvu_i_mouse_down = true;
-
-                    if (OrbitvuLastTarget) {
-                        orbitvu_log(OrbitvuLastTarget, 'Mouse Down Fired');
-                    }
-
-                    if (target.onmousedown || target.getAttribute('DragObj')) {
-                        return false;
-                    }
-                }
-
-                function orbitvu_make_draggable(item) {
-                    if (!item)
-                        return;
-                    item.onmousedown = function(ev) {
-                        orbitvu_drag_object = this;
-                        orbitvu_mouse_offset = orbitvu_get_mouse_offset(this, ev);
-                        return false;
-                    }
-                }
-
-                function orbitvu_make_clickable(item) {
-                    if (!item)
-                        return;
-                    item.onmousedown = function(ev) {
-                        document.getElementById('ClickImage').value = this.name;
-                    }
-                }
-
-                function orbitvu_add_drop_target(item, target) {
-                    item.setAttribute('droptarget', target);
-                }
-
-                if (document.getElementById('orbitvu-drag-container')) {
-                    document.onmousemove = orbitvu_mouse_move;
-                    document.onmousedown = orbitvu_mouse_down;
-                    document.onmouseup = orbitvu_mouse_up;
-
-                    orbitvu_create_drag_container(document.getElementById('orbitvu-drag-container'));
-
-                    OrbitvuDragTemp = document.createElement('DIV');
-                    OrbitvuDragTemp.style.cssText = 'position:absolute;display:none;';
-
-                    document.body.appendChild(OrbitvuDragTemp);
-                }
-            </script>
-
-
-
-
-        </div>
-
-
-        <?php }  ?>
-
-        <?php
-
-        //--------------------------------------------------------------------------------------------------------------------------------------
-        echo $observer->UseTemplate(array(), $__templates['magento_section_end']);
-        //--------------------------------------------------------------------------------------------------------------------------------------
-
-        ?>
-
-        <div style="text-align: right;">
-            <button type="button" class="orbitvu-button scalable"><a href="<?=$this->getUrl('*/system_config/edit/section/orbitvu/')?>" target="_blank" style="color: white; text-decoration: none;"><span style="float: left; width: 16px !important; height: 16px !important; margin: 0 5px 0 0; padding: 0; background-image: url(<?=Mage::getBaseUrl('media').'orbitvu/white.png'?>); background-repeat: no-repeat; background-position: -64px -108px;"></span><span><?=$this->__('Orbitvu Configuration')?></span></span></span></a></button>
-        </div>
-
-        <script>
-            function SynchronizeSun() {
-                document.getElementById('synchronize_sun').value = 'true';
-                productForm.submit();
+        
+        
+        
+        <span class="orbitvu-visibility orbitvu-icon orbitvu-icon-visibility<?=($items['status'] == 'inactive' ? ' disabled' : '')?>" id="orbitvu-visibility-trigger-<?=$display_id?>"></span>
+    </div>
+<?php } ?>
+</div>
+
+</div>
+<script>
+function orbitvu_ajax(file, func) {
+	var obj = null;
+	if (window.XMLHttpRequest) obj = new XMLHttpRequest();
+	else if (window.ActiveXObject) obj = new ActiveXObject('Microsoft.XMLHTTP');
+	else return false;
+
+	obj.onreadystatechange = function() { 
+		if (this.readyState == 4) func(this.responseText);
+	};
+	obj.open('GET', file, true);
+	obj.send(null);
+}
+
+function orbitvu_drag_start() {
+    if (document.getElementsByClassName('orbitvu-drag-box')) {
+        var elems = document.getElementsByClassName('orbitvu-drag-box');
+
+        for (var i = 0, n = elems.length; i < n; i++) {
+            if (elems[i]) {
+                elems[i].className += ' drag';
             }
-            <?php
-            $ex = explode('index.php', $_SERVER['REQUEST_URI']);
-            $http_host = str_replace('//', '/', $ex[0]);
-            ?>
-            function RefreshSun() {
-                saveAndContinueEdit('<?=$this->getUrl('*/catalog_product/save/back/edit/')?>tab/{{tab_id}}/id/<?=$product_id?>/');
+        }
+    }
+    //orbitvu_log('Drag start!');
+}
+
+function orbitvu_drag_end() {
+    if (document.getElementsByClassName('orbitvu-drag-box')) {
+        var elems = document.getElementsByClassName('orbitvu-drag-box');
+
+        //orbitvu_log('Drag end!');
+
+        for (var i = 0, n = elems.length; i < n; i++) {
+            if (elems[i]) {
+                elems[i].className = elems[i].className.replace(' drag', '');
+            }
+        }    
+    }
+}
+
+var elems = document.getElementsByClassName('orbitvu-visibility');
+
+for (var i = 0, n = elems.length; i < n; i++) {
+    elems[i].onmouseover = function() {
+        var this_id = parseInt(this.id.replace('orbitvu-visibility-trigger-', ''));
+
+        if (this.className.replace(' disabled', '') != this.className) {
+            document.getElementById('orbitvu-text-show-' + this_id).className += ' active';
+            document.getElementById('orbitvu-text-hide-' + this_id).className = document.getElementById('orbitvu-text-hide-' + this_id).className.replace(' active', '');
+        }
+        else {
+            document.getElementById('orbitvu-text-hide-' + this_id).className += ' active';
+            document.getElementById('orbitvu-text-show-' + this_id).className = document.getElementById('orbitvu-text-show-' + this_id).className.replace(' active', '');
+        }
+    }
+    
+    elems[i].onmouseout = function() {
+        var this_id = parseInt(this.id.replace('orbitvu-visibility-trigger-', ''));
+        
+        document.getElementById('orbitvu-text-hide-' + this_id).className = document.getElementById('orbitvu-text-hide-' + this_id).className.replace(' active', '');
+        document.getElementById('orbitvu-text-show-' + this_id).className = document.getElementById('orbitvu-text-show-' + this_id).className.replace(' active', '');
+    }
+    
+    elems[i].onclick = function() {
+        var this_id = parseInt(this.id.replace('orbitvu-visibility-trigger-', ''));
+        
+        if (this.className.replace(' disabled', '') != this.className) {      
+            this.className = this.className.replace(' disabled', '');
+            document.getElementById('orbitvu-gallery-item-' + this_id).className = document.getElementById('orbitvu-gallery-item-' + this_id).className.replace(' hidden', '');
+            
+            orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_status/sun_item_id/' + this_id + '/sun_status/active', function(odp){});
+        }
+        else {
+            this.className += ' disabled';
+            document.getElementById('orbitvu-gallery-item-' + this_id).className += ' hidden';
+            
+            orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_status/sun_item_id/' + this_id, function(odp){});
+        }
+    }
+}
+var orbitvu_mouse_offset = null;
+var orbitvu_i_mouse_down = false;
+var orbitvu_l_mouse_state = false;
+var orbitvu_drag_object = null;
+var orbitvu_drag_drops = [];
+var OrbitvuCurrentTarget = null;
+var OrbitvuLastTarget = null;
+var OrbitvuDragTemp = null;
+var OrbitvuTempDiv = null;
+var OrbitvuRootParent = null;
+var OrbitvuRootSibling = null;
+var orbitvu_final_node, orbitvu_final_item_id;
+var OrbitvuD1Target = null;
+
+Number.prototype.NaN0 = function() {
+    return isNaN(this) ? 0 : this;
+}
+
+function orbitvu_create_drag_container() {
+
+    var cDrag = orbitvu_drag_drops.length;
+    orbitvu_drag_drops[cDrag] = [];
+
+
+    for (var i = 0; i < arguments.length; i++) {
+        var cObj = arguments[i];
+        orbitvu_drag_drops[cDrag].push(cObj);
+        cObj.setAttribute('DropObj', cDrag);
+
+
+        for (var j = 0; j < cObj.childNodes.length; j++) {
+
+
+            if (cObj.childNodes[j].nodeName == '#text')
+                continue;
+
+            cObj.childNodes[j].setAttribute('DragObj', cDrag);
+        }
+    }
+}
+
+function orbitvu_get_position(e) {
+    var left = 0;
+    var top = 0;
+    while (e.offsetParent) {
+        left += e.offsetLeft + (e.currentStyle ? (parseInt(e.currentStyle.borderLeftWidth)).NaN0() : 0);
+        top += e.offsetTop + (e.currentStyle ? (parseInt(e.currentStyle.borderTopWidth)).NaN0() : 0);
+        e = e.offsetParent;
+    }
+
+
+    left += e.offsetLeft + (e.currentStyle ? (parseInt(e.currentStyle.borderLeftWidth)).NaN0() : 0);
+    top += e.offsetTop + (e.currentStyle ? (parseInt(e.currentStyle.borderTopWidth)).NaN0() : 0);
+
+    return {x: left, y: top};
+
+}
+
+function orbitvu_mouse_coords(ev) {
+    if (ev.pageX || ev.pageY) {
+        return {x: ev.pageX, y: ev.pageY};
+    }
+    return {
+        x: ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+        y: ev.clientY + document.body.scrollTop - document.body.clientTop
+    };
+}
+
+function orbitvu_log(object, message) {
+    if (!object || !object.parentNode || !object.parentNode.getAttribute)
+        return;
+        //console.log(object.id + ': ' + message);
+}
+
+function orbitvu_get_mouse_offset(target, ev) {
+    ev = ev || window.event;
+
+    var docPos = orbitvu_get_position(target);
+    var mousePos = orbitvu_mouse_coords(ev);
+    return {x: mousePos.x - docPos.x, y: mousePos.y - docPos.y};
+}
+
+function orbitvu_mouse_move(ev) {
+    ev = ev || window.event;
+
+
+    var target = ev.target || ev.srcElement;
+    var mousePos = orbitvu_mouse_coords(ev);
+
+
+
+    if (OrbitvuLastTarget && (target !== OrbitvuLastTarget)) {
+        //orbitvu_log(OrbitvuLastTarget, 'Mouse Out Fired');
+
+
+        var origClass = OrbitvuLastTarget.getAttribute('origClass');
+        if (origClass)
+            OrbitvuLastTarget.className = origClass;
+    }
+
+
+    var dragObj = target.getAttribute('DragObj');
+
+
+    if (dragObj != null) {
+
+
+        if (target != OrbitvuLastTarget) {
+            //orbitvu_log(target, 'Mouse Over Fired');
+
+            var oClass = target.getAttribute('overClass');
+            if (oClass) {
+                target.setAttribute('origClass', target.className);
+                target.className = oClass;
+            }
+        }
+
+
+        if (orbitvu_i_mouse_down && !orbitvu_l_mouse_state) {
+            orbitvu_log(target, 'Start Dragging');
+
+
+            OrbitvuCurrentTarget = target;
+
+
+            OrbitvuRootParent = OrbitvuCurrentTarget.parentNode;
+            OrbitvuRootSibling = OrbitvuCurrentTarget.nextSibling;
+
+            orbitvu_mouse_offset = orbitvu_get_mouse_offset(target, ev);
+
+
+            for (var i = 0; i < OrbitvuDragTemp.childNodes.length; i++)
+                OrbitvuDragTemp.removeChild(OrbitvuDragTemp.childNodes[i]);
+
+
+            OrbitvuDragTemp.appendChild(OrbitvuCurrentTarget.cloneNode(true));
+            //OrbitvuDragTemp.style.display = 'block';
+
+
+            var dragClass = OrbitvuCurrentTarget.getAttribute('dragClass');
+            if (dragClass) {
+                OrbitvuDragTemp.firstChild.className = dragClass;
             }
 
-            function SynchronizeSunItems() {
-                saveAndContinueEdit('<?=$this->getUrl('*/catalog_product/save/back/edit/sun/synchronize_items/')?>tab/{{tab_id}}/id/<?=$product_id?>/');
+
+            OrbitvuDragTemp.firstChild.removeAttribute('DragObj');
+
+
+            var dragConts = orbitvu_drag_drops[dragObj];
+
+
+            OrbitvuCurrentTarget.setAttribute('startWidth', parseInt(OrbitvuCurrentTarget.offsetWidth));
+            OrbitvuCurrentTarget.setAttribute('startHeight', parseInt(OrbitvuCurrentTarget.offsetHeight));
+            OrbitvuCurrentTarget.style.display = 'none';
+
+            for (var i = 0; i < dragConts.length; i++) {
+                with (dragConts[i]) {
+                    var pos = orbitvu_get_position(dragConts[i]);
+
+
+                    setAttribute('startWidth', parseInt(offsetWidth));
+                    setAttribute('startHeight', parseInt(offsetHeight));
+                    setAttribute('startLeft', pos.x);
+                    setAttribute('startTop', pos.y);
+                }
+
+
+                for (var j = 0; j < dragConts[i].childNodes.length; j++) {
+                    with (dragConts[i].childNodes[j]) {
+                        if ((nodeName == '#text') || (dragConts[i].childNodes[j] == OrbitvuCurrentTarget))
+                            continue;
+
+                        var pos = orbitvu_get_position(dragConts[i].childNodes[j]);
+
+
+                        setAttribute('startWidth', parseInt(offsetWidth));
+                        setAttribute('startHeight', parseInt(offsetHeight));
+                        setAttribute('startLeft', pos.x);
+                        setAttribute('startTop', pos.y);
+                    }
+                }
+            }
+        }
+    }
+
+
+    if (OrbitvuCurrentTarget) {
+
+        OrbitvuDragTemp.style.top = mousePos.y - orbitvu_mouse_offset.y;
+        OrbitvuDragTemp.style.left = mousePos.x - orbitvu_mouse_offset.x;
+
+        var dragConts = orbitvu_drag_drops[OrbitvuCurrentTarget.getAttribute('DragObj')];
+        var activeCont = null;
+
+        var xPos = mousePos.x - orbitvu_mouse_offset.x + (parseInt(OrbitvuCurrentTarget.getAttribute('startWidth')) / 2);
+        var yPos = mousePos.y - orbitvu_mouse_offset.y + (parseInt(OrbitvuCurrentTarget.getAttribute('startHeight')) / 2);
+
+
+        for (var i = 0; i < dragConts.length; i++) {
+            with (dragConts[i]) {
+                if ((parseInt(getAttribute('startLeft')) < xPos) &&
+                        (parseInt(getAttribute('startTop')) < yPos) &&
+                        ((parseInt(getAttribute('startLeft')) + parseInt(getAttribute('startWidth'))) > xPos) &&
+                        ((parseInt(getAttribute('startTop')) + parseInt(getAttribute('startHeight'))) > yPos)) {
+
+
+                    activeCont = dragConts[i];
+
+
+                    break;
+                }
+            }
+        }
+
+
+        if (activeCont) {
+            if (activeCont != OrbitvuCurrentTarget.parentNode) {
+                orbitvu_log(OrbitvuCurrentTarget, 'Moved into ' + activeCont.id);
             }
 
-            function OrbitvuSetAction(act) {
-                window.location.href = '<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/tab/' + product_info_tabsJsTabs.activeTab.id + '/' + act;
+
+            var beforeNode = null;
+
+
+            for (var i = activeCont.childNodes.length - 1; i >= 0; i--) {
+                with (activeCont.childNodes[i]) {
+                    if (nodeName == '#text')
+                        continue;
+
+
+                    if (OrbitvuCurrentTarget != activeCont.childNodes[i] &&
+                            ((parseInt(getAttribute('startLeft')) + parseInt(getAttribute('startWidth'))) > xPos) &&
+                            ((parseInt(getAttribute('startTop')) + parseInt(getAttribute('startHeight'))) > yPos)) {
+                        beforeNode = activeCont.childNodes[i];
+                    }
+                }
             }
-        </script>
+
+
+            if (beforeNode) {
+                if (beforeNode != OrbitvuCurrentTarget.nextSibling) {
+                    //`orbitvu_log(OrbitvuCurrentTarget, 'Ajax action -> Insert before ' + beforeNode.id);
+                    orbitvu_final_item_id = OrbitvuCurrentTarget.id;
+                    orbitvu_final_node = beforeNode.id;
+                    activeCont.insertBefore(OrbitvuCurrentTarget, beforeNode);
+                }
+
+
+            } else {
+                if ((OrbitvuCurrentTarget.nextSibling) || (OrbitvuCurrentTarget.parentNode != activeCont)) {
+                    orbitvu_log(OrbitvuCurrentTarget, 'Inserted at end of ' + activeCont.id);
+
+                    activeCont.appendChild(OrbitvuCurrentTarget);
+                }
+            }
+
+
+            setTimeout(function() {
+                var contPos = orbitvu_get_position(activeCont);
+                activeCont.setAttribute('startWidth', parseInt(activeCont.offsetWidth));
+                activeCont.setAttribute('startHeight', parseInt(activeCont.offsetHeight));
+                activeCont.setAttribute('startLeft', contPos.x);
+                activeCont.setAttribute('startTop', contPos.y);
+            }, 5);
+
+
+            if (OrbitvuCurrentTarget.style.display != '') {
+                orbitvu_log(OrbitvuCurrentTarget, 'Made Visible');
+                orbitvu_drag_start();
+                OrbitvuCurrentTarget.style.display = '';
+                OrbitvuCurrentTarget.className += ' dragstate';
+                OrbitvuCurrentTarget.style.opacity = '1';
+                OrbitvuCurrentTarget.style.cursor = 'move';
+                OrbitvuCurrentTarget.style.borderStyle = 'dashed';
+                OrbitvuCurrentTarget.style.boxShadow = '0 0 15px black';
+            }
+        } else {
+
+
+            if (OrbitvuCurrentTarget.style.display != 'none') {
+                orbitvu_log(OrbitvuCurrentTarget, 'Hidden');
+                OrbitvuCurrentTarget.style.display = 'none';
+            }
+        }
+    }
+
+
+    orbitvu_l_mouse_state = orbitvu_i_mouse_down;
+
+
+    OrbitvuLastTarget = target;
+
+
+    if (orbitvu_drag_object) {
+        orbitvu_drag_object.style.position = 'absolute';
+        orbitvu_drag_object.style.top = mousePos.y - orbitvu_mouse_offset.y;
+        orbitvu_drag_object.style.left = mousePos.x - orbitvu_mouse_offset.x;
+    }
+
+
+    orbitvu_l_mouse_state = orbitvu_i_mouse_down;
+
+
+    if (OrbitvuCurrentTarget || orbitvu_drag_object)
+        return false;
+}
+
+function orbitvu_mouse_up(ev) {
+
+
+    if (OrbitvuCurrentTarget) {
+        orbitvu_log(OrbitvuCurrentTarget, 'Mouse Up Fired');
+        orbitvu_drag_end();
+        orbitvu_log(OrbitvuCurrentTarget, 'orbitvu_final_item_id: ' + orbitvu_final_item_id + ' / orbitvu_final_node: ' + orbitvu_final_node + ' / final_target: ' + OrbitvuLastTarget.id);
+        
+        orbitvu_ajax('<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/sun/update_order/sun_item_id/' + parseInt(orbitvu_final_item_id.replace('orbitvu-gallery-item-', '')) + '/sun_before_item_id/' + parseInt(orbitvu_final_node.replace('orbitvu-gallery-item-', '')), function(odp){});
+                
+        if (document.getElementById('media_gallery_content_grid')) {
+            var torem = document.getElementById('media_gallery_content_grid');
+            torem.parentNode.removeChild(torem);
+        }
+        
+        if (document.getElementById('media_gallery_content_save')) {
+            var torem2 = document.getElementById('media_gallery_content_save');
+            torem2.parentNode.removeChild(torem2);
+        }
+        
+        if (document.getElementById('media_gallery_content_save_image')) {
+            var torem3 = document.getElementById('media_gallery_content_save_image');
+            torem3.parentNode.removeChild(torem3);
+        }
+
+        OrbitvuDragTemp.style.display = 'none';
+        if (OrbitvuCurrentTarget.style.display == 'block') {
+            if (OrbitvuRootSibling) {
+                OrbitvuRootParent.insertBefore(OrbitvuCurrentTarget, OrbitvuRootSibling);
+            } else {
+                OrbitvuRootParent.appendChild(OrbitvuCurrentTarget);
+            }
+        }
+        
+        OrbitvuCurrentTarget.style.display = '';
+        OrbitvuCurrentTarget.style.opacity = '';
+        OrbitvuCurrentTarget.style.cursor = '';
+        OrbitvuCurrentTarget.style.borderStyle = '';
+        OrbitvuCurrentTarget.style.boxShadow = '';
+        OrbitvuCurrentTarget.className = OrbitvuCurrentTarget.className.replace(' dragstate','');
+    }
+    
+    orbitvu_drag_end();
+    
+    OrbitvuCurrentTarget = null;
+
+
+    orbitvu_drag_object = null;
+
+    orbitvu_i_mouse_down = false;
+}
+
+function orbitvu_mouse_down(ev) {
+    ev = ev || window.event;
+    var target = ev.target || ev.srcElement;
+
+    orbitvu_i_mouse_down = true;
+
+    if (OrbitvuLastTarget) {
+        orbitvu_log(OrbitvuLastTarget, 'Mouse Down Fired');
+    }
+
+    if (target.onmousedown || target.getAttribute('DragObj')) {
+        return false;
+    }
+}
+
+function orbitvu_make_draggable(item) {
+    if (!item)
+        return;
+    item.onmousedown = function(ev) {
+        orbitvu_drag_object = this;
+        orbitvu_mouse_offset = orbitvu_get_mouse_offset(this, ev);
+        return false;
+    }
+}
+
+function orbitvu_make_clickable(item) {
+    if (!item)
+        return;
+    item.onmousedown = function(ev) {
+        document.getElementById('ClickImage').value = this.name;
+    }
+}
+
+function orbitvu_add_drop_target(item, target) {
+    item.setAttribute('droptarget', target);
+}
+
+if (document.getElementById('orbitvu-drag-container')) {
+    document.onmousemove = orbitvu_mouse_move;
+    document.onmousedown = orbitvu_mouse_down;
+    document.onmouseup = orbitvu_mouse_up;
+
+    orbitvu_create_drag_container(document.getElementById('orbitvu-drag-container'));
+
+    OrbitvuDragTemp = document.createElement('DIV');
+    OrbitvuDragTemp.style.cssText = 'position:absolute;display:none;';
+
+    document.body.appendChild(OrbitvuDragTemp);
+}
+</script>
+
+
+        
+
+    </div>
+
+                        
+<?php }  ?>
+                                
+<?php
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+echo $observer->UseTemplate(array(), $__templates['magento_section_end']);
+//--------------------------------------------------------------------------------------------------------------------------------------
+
+?>
+        
+<div style="text-align: right;">
+    <button type="button" class="orbitvu-button scalable"><a href="<?=$this->getUrl('*/system_config/edit/section/orbitvu/')?>" target="_blank" style="color: white; text-decoration: none;"><span style="float: left; width: 16px !important; height: 16px !important; margin: 0 5px 0 0; padding: 0; background-image: url(<?=Mage::getBaseUrl('media').'orbitvu/white.png'?>); background-repeat: no-repeat; background-position: -64px -108px;"></span><span><?=$this->__('Orbitvu Configuration')?></span></span></span></a></button>
+</div>
+
+<script>
+function SynchronizeSun() {
+    document.getElementById('synchronize_sun').value = 'true'; 
+    productForm.submit();
+}
+<?php
+$ex = explode('index.php', $_SERVER['REQUEST_URI']);
+$http_host = str_replace('//', '/', $ex[0]);
+?>
+function RefreshSun() {
+    saveAndContinueEdit('<?=$this->getUrl('*/catalog_product/save/back/edit/')?>tab/{{tab_id}}/id/<?=$product_id?>/');
+}
+
+function SynchronizeSunItems() {
+    saveAndContinueEdit('<?=$this->getUrl('*/catalog_product/save/back/edit/sun/synchronize_items/')?>tab/{{tab_id}}/id/<?=$product_id?>/');
+}
+
+function OrbitvuSetAction(act) {
+    window.location.href = '<?=$this->getUrl('*/catalog_product/edit/')?>id/<?=$product_id?>/back/edit/tab/' + product_info_tabsJsTabs.activeTab.id + '/' + act;
+}
+</script>
 <?php
 /*************************************************************************************************************************************************
  * Scheduled actions

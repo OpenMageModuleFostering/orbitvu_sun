@@ -14,13 +14,8 @@ class Orbitvu_Sun_Model_Observer {
     public $_Orbitvu;
     //-------------------------------------------------------------------------------------------------------
     public function ExtendOrbitvu($return = true) {
-        $no = strpos(dirname((__FILE__)), "Orbitvu".DIRECTORY_SEPARATOR."Sun");
-        $dir = substr(dirname(__FILE__), 0, $no ? $no : strlen(dirname(__FILE__)));
-        $helpers = $dir.DIRECTORY_SEPARATOR."Orbitvu".DIRECTORY_SEPARATOR."Sun".DIRECTORY_SEPARATOR."controllers".DIRECTORY_SEPARATOR."OrbitvuAdmin.php";
-        include_once($helpers);
-
-        /*$helpers = __DIR__.'/../controllers/OrbitvuAdmin.php';
-    	include_once($helpers);*/
+    	$helpers = __DIR__.'/../controllers/OrbitvuAdmin.php';
+    	include_once($helpers);
     	
     	$this->_Orbitvu = new OrbitvuAdmin(false);
     	
@@ -40,17 +35,17 @@ class Orbitvu_Sun_Model_Observer {
         //-------------------------------------------------------------------------------------------------------
         $CurrentProduct = Mage::getModel('catalog/product')->load($product_id);
         $ProductHelper = Mage::helper('catalog/product');
-        $medias = $CurrentProduct->getMediaGallery();
+        $medias = $CurrentProduct->getMediaGalleryImages();
         $orbithumbs = $this->_Orbitvu->GetProductThumbnails($product_id);
         //-------------------------------------------------------------------------------------------------------
         $o_thumbs_count = intval(count($orbithumbs)); // = 1 or 0
-        $m_thumbs_count = intval(count($medias['images']));
+        $m_thumbs_count = intval(count($medias));
         $n = $m_thumbs_count - $o_thumbs_count;
         //-------------------------------------------------------------------------------------------------------
-        /*if ($o_thumbs_count > 0) {
+        if ($o_thumbs_count > 0) {
             $this->DeleteThumbnail($product_id, $orbithumbs[0]);
             $o_thumbs_count = 0;
-        }*/
+        }
         //-------------------------------------------------------------------------------------------------------
         if ($m_thumbs_count > 1 && $o_thumbs_count == 0) {
             // magento own images - do nothing
@@ -74,9 +69,9 @@ class Orbitvu_Sun_Model_Observer {
     /*
      * Add thumbnail
      */
-    public function AddThumbnail($product_id, $configurable_id = false) {
+    public function AddThumbnail($product_id) {
         //-------------------------------------------------------------------------------------------------------
-        $presentation = $this->_Orbitvu->GetProductPresentation($configurable_id ? $configurable_id : $product_id, true);
+        $presentation = $this->_Orbitvu->GetProductPresentation($product_id, true);
         //-------------------------------------------------------------------------------------------------------
         if (count($presentation['items']) <= 0) {
             return false;
@@ -94,8 +89,6 @@ class Orbitvu_Sun_Model_Observer {
         $sun = file_get_contents($file);
         //-------------------------------------------------------------------------------------------------------
         $media_api = Mage::getModel('catalog/product_attribute_media_api');
-        $pmodel = Mage::getModel('catalog/product');
-        $_product = $pmodel->load($product_id);
         //-------------------------------------------------------------------------------------------------------
         $newImage = array(
             'file' => array(
@@ -103,7 +96,7 @@ class Orbitvu_Sun_Model_Observer {
                 'content'   => base64_encode($sun),
                 'mime'      => 'image/'.$ext
             ),
-            'label'    => $_product->getName(),
+            'label'    => 'Orbitvu Thumbnail',
             'position' => 1,
             'types'    => array('thumbnail', 'small_image', 'image'),
             'exclude'  => 1
@@ -205,33 +198,11 @@ class Orbitvu_Sun_Model_Observer {
              */
             //-------------------------------------------------------------------------------------------------------
             if (Mage::app()->getRequest()->getParam('sun') != 'update') {
-                if (is_object(Mage::registry('product'))) {
-                    $product_id = Mage::registry('product')->getId();
-                    $this->UpdateThumbnails($product_id);
-
-                    /*
-                     * (No) Assign images to associated products
-                     */
-                    if (Mage::registry('product')->isConfigurable()) {
-                        $should_assign = (bool)Mage::app()->getRequest()->getParam('orbitvu_assign_configurable');
-                        if ($should_assign) {
-                            $associated = $this->_Orbitvu->GetAssociatedProducts(Mage::registry('product')->getId());
-                            foreach($associated as $product) {
-                                $pr = Mage::getModel('catalog/product')->load((int)$product['product_id']);
-                                $pr->load('media_gallery');
-                                $medias = $pr->getMediaGallery();
-                                //-------------------------------------------------------------------------------------------------------
-                                $m_thumbs_count = intval(count($medias['images']));
-                                if ($m_thumbs_count <= 0) {
-                                    $this->AddThumbnail($product['product_id'], Mage::registry('product')->getId());
-                                }
-                            }
-                        }
-                    }
-                }
+                $product_id = Mage::registry('product')->getId();
+                $this->UpdateThumbnails($product_id);
             }
             //-------------------------------------------------------------------------------------------------------
-
+            
             /*
              * Force SUN synchro
              */

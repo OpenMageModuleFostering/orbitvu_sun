@@ -4,7 +4,7 @@
  * @Copyright: Orbitvu Sp. z o.o. is the owner of full rights to this code
  */
 
-final class OrbitvuAdmin {
+class OrbitvuAdmin {
     
     /**
      * Database driver instance
@@ -29,12 +29,6 @@ final class OrbitvuAdmin {
      * @var instance
      */
     public $Connect;
-    
-    /**
-     * XML Handler
-     * @var SimpleXMLElement
-     */
-    private $remote_xml;
 
     /**
      * Include all classes
@@ -63,31 +57,8 @@ final class OrbitvuAdmin {
         }
         $this->Connect->ViewerPath = $this->Config->viewers_path;
         $this->Connect->DownloadPath = $this->Config->temp_path;
-        $this->Connect->PresentationsPath = property_exists($this->Config, 'presentations_path') ? $this->Config->presentations_path : '';
         //-------------------------------------------------------------------------------------------------------
         $this->driver->SetSUNConnection($this->Connect);
-        //-------------------------------------------------------------------------------------------------------
-    }
-    
-    /**
-     * Get presentations path
-     * @return string
-     */
-    public function GetPresentationsPath() {
-        //-------------------------------------------------------------------------------------------------------
-        return $this->Connect->PresentationsPath;
-        //-------------------------------------------------------------------------------------------------------
-    }
-    
-    /**
-     * Install presentation from file
-     * @param string $file Presentation archive file (*.ovus, *.zip)
-     * @param boolean $print_output Print console-like output messages
-     * @return string
-     */
-    public function InstallPresentation($file, $print_output = true) {
-        //-------------------------------------------------------------------------------------------------------
-        return $this->Connect->InstallPresentation($file, $print_output);
         //-------------------------------------------------------------------------------------------------------
     }
     
@@ -120,7 +91,7 @@ final class OrbitvuAdmin {
             //-------------------------------------------------------------------------------------------------------
             $account = $this->Connect->CreateAccount($email);
             
-            $this->UpdateConfiguration('access_token', $account->key);
+            $this->driver->UpdateConfiguration('access_token', $account->key);
             //-------------------------------------------------------------------------------------------------------
             return $account;
             //-------------------------------------------------------------------------------------------------------
@@ -134,366 +105,6 @@ final class OrbitvuAdmin {
             return $ret;
             //-------------------------------------------------------------------------------------------------------
         }
-        //-------------------------------------------------------------------------------------------------------
-    }
-    
-    /**
-     * Renders XML content
-     * @param SimpleXMLElement $xml
-     */
-    private function render_xml() {
-        //----------------------------------------------------------------------
-        header('Content-Type: text/xml; charset=utf-8');
-        print $this->remote_xml->asXML();
-        exit();
-        //----------------------------------------------------------------------
-    }
-
-    /**
-     * Authorization
-     * @param $_POST['username'] @hidden
-     * @param $_POST['password'] @hidden
-     * @param object $ov_xml XML element
-     * @return string
-     */
-    private function do_remote_authorize_action($ov_xml) {
-        //----------------------------------------------------------------------
-        if (count($_POST) > 0) {
-            //-------------------------------------------------------------------------------------------------------
-            if ($key = $this->Connect->LogInSun(filter_var($_POST['username']), filter_var($_POST['password']))) {
-                if ($this->Connect->CheckAccessToken($key)) {
-
-                    /**
-                     * Generate token
-                     * Set cookie
-                     * Provide upload URL (expires)
-                     */
-                    //-------------------------------------------------------------------------------------------------------
-                    $token = md5(md5($_POST['username'].' '.$_POST['password'].' '.date('Y-m-d H:i:s').' '.mt_rand(1000, 10000)));
-
-                    session_start();
-                    
-                    $_SESSION['orbitvu_token'] = $token;
-                    setcookie('orbitvuid', $token, time()+3600*3);
-                    $upload_url = str_replace('&', '&amp;', $this->GetRemoteUploadUrl().'&ov_token='.$token);
-                    //-------------------------------------------------------------------------------------------------------
-                    $ov_xml->addChild('code', 0);
-                    $ov_xml->addChild('message', 'Authorization succeeded!');
-                    $ov_xml->addChild('data', $upload_url);
-                    //-------------------------------------------------------------------------------------------------------
-                }
-                else {
-                    //-------------------------------------------------------------------------------------------------------
-                    $ov_xml->addChild('code', 4);
-                    $ov_xml->addChild('message', 'Authorization failed. Permissions denied!');
-                    header('HTTP/1.0 401 Unauthorized');
-                    //-------------------------------------------------------------------------------------------------------
-                }
-            }
-            else {
-                //-------------------------------------------------------------------------------------------------------
-                $ov_xml->addChild('code', 1);
-                $ov_xml->addChild('message', 'Authorization failed. Wrong username/password!');
-                header('HTTP/1.0 401 Unauthorized');
-                //-------------------------------------------------------------------------------------------------------
-            }
-        }
-        else {
-            $ov_xml->addChild('code', 3);
-            $ov_xml->addChild('message', 'Wrong HTTP method!');
-            header('HTTP/1.0 501 Not implemented');
-        }
-        
-        return $this->render_xml();
-        //----------------------------------------------------------------------
-    }
-    
-    /**
-     * Upload
-     * @param $_FILES['path'] @hidden
-     * @param $_COOKIE['orbitvuid'] @hidden
-     * @param $_SESSION['orbitvu_token'] @hidden
-     * @param $_GET['ov_token'] @hidden
-     * @param object $ov_xml XML handler
-     * @return string
-     */
-    private function do_remote_upload_action($ov_xml) {
-        //----------------------------------------------------------------------
-        $no_errors = true;
-        
-        if (count($_POST) > 0 || count($_FILES) > 0) {
-            if ($_SESSION['orbitvu_token'] != $_GET['ov_token']) {
-                //-------------------------------------------------------------------------------------------------------
-                $ov_xml->addChild('code', 2);
-                $ov_xml->addChild('message', 'Authorization failed!');
-                header('HTTP/1.0 401 Unauthorized');
-                $no_errors = false;
-                //-------------------------------------------------------------------------------------------------------
-            }
-            else if (!isset($_FILES['path']['tmp_name']) || (!stristr($_FILES['path']['name'], '.zip') && !stristr($_FILES['path']['name'], '.ovus'))) {
-                //-------------------------------------------------------------------------------------------------------
-                $ov_xml->addChild('code', 1);
-                $ov_xml->addChild('message', 'Ovus file not provided or not valid!');
-                header('HTTP/1.0 400 Bad request');
-                $no_errors = false;
-                //-------------------------------------------------------------------------------------------------------
-            }
-            else if (!$this->IsConnected()) {
-                //-------------------------------------------------------------------------------------------------------
-                $ov_xml->addChild('code', 6);
-                $ov_xml->addChild('message', 'DEMO version - upload not permitted.');
-                header('HTTP/1.0 401 Unauthorized');
-                $no_errors = false;
-                //-------------------------------------------------------------------------------------------------------
-            }
-            else {
-                //----------------------------------------------------------------------
-                $archive_name = $this->GetPresentationsPath().$_FILES['path']['name'];
-                $file_contents = file_get_contents($file_contents);
-                
-                if (!empty($file_contents)) {
-                    //-------------------------------------------------------------------------------------------------------
-                    $ov_xml->addChild('code', 1);
-                    $ov_xml->addChild('message', 'Ovus file not valid!');
-                    header('HTTP/1.0 400 Bad request');
-                    $no_errors = false;
-                    //-------------------------------------------------------------------------------------------------------
-                }
-                else {
-                    try {
-                        if (copy($_FILES['path']['tmp_name'], $archive_name)) {
-                            //-------------------------------------------------------------------------------------------------------
-                            $this->InstallPresentation($archive_name, false);
-                            //-------------------------------------------------------------------------------------------------------
-                            $ov_xml->addChild('code', 0);
-                            $ov_xml->addChild('message', 'Upload succeed!');
-                            //-------------------------------------------------------------------------------------------------------
-                            setcookie('orbitvuid', '', time()-3600);
-                            unset($_SESSION['orbitvu_token']);
-                            $no_errors = false;
-                            //-------------------------------------------------------------------------------------------------------
-                        }
-                        else if ($_FILES['path']['error'] == '1') {
-                            //-------------------------------------------------------------------------------------------------------
-                            $ov_xml->addChild('code', 5);
-                            $ov_xml->addChild('message', 'No space available or file too big! Change `upload_max_filesize` value in your server php.ini file.');
-                            header('HTTP/1.0 400 Bad request');
-                            $no_errors = false;
-                            //-------------------------------------------------------------------------------------------------------
-                        }
-                        else {
-                            //-------------------------------------------------------------------------------------------------------
-                            $ov_xml->addChild('code', 4);
-                            $ov_xml->addChild('message', 'Upload error! Error code: '.intval($_FILES['path']['error']));
-                            header('HTTP/1.0 400 Bad request');
-                            $no_errors = false;
-                            //-------------------------------------------------------------------------------------------------------
-                        }
-                    }
-                    catch (Exception $e) {
-                        //-------------------------------------------------------------------------------------------------------
-                        $ov_xml->addChild('code', 4);
-                        $ov_xml->addChild('message', $e->getMessage());
-                        header('HTTP/1.0 400 Bad request');
-                        $no_errors = false;
-                        //-------------------------------------------------------------------------------------------------------
-                    }
-                }
-                //----------------------------------------------------------------------
-            }
-        }
-        else {
-            //-------------------------------------------------------------------------------------------------------
-            $ov_xml->addChild('code', 3);
-            $ov_xml->addChild('message', 'Wrong HTTP method!');
-            header('HTTP/1.0 501 Not implemented');
-            $no_errors = false;
-            //-------------------------------------------------------------------------------------------------------
-        }
-        //----------------------------------------------------------------------
-        if ($no_errors) {
-            //-------------------------------------------------------------------------------------------------------
-            $ov_xml->addChild('code', 4);
-            $ov_xml->addChild('message', 'Other no permissions related error!');
-            header('HTTP/1.0 401 Unauthorized');
-            //-------------------------------------------------------------------------------------------------------
-        }
-        //----------------------------------------------------------------------
-        return $this->render_xml();
-        //----------------------------------------------------------------------
-    }    
-    
-    /**
-     * Abstract layer for all remote actions for ALL platforms
-     * @param $_GET['ov_key'] 
-     * @param $_GET['ov_action']
-     * @return type
-     */
-    public function StartRemoteListener() {
-        //-------------------------------------------------------------------------------------------------------
-        $this->remote_xml = new SimpleXMLElement('<ovs_response/>');
-        //$ovs_response = $this->remote_xml->addChild('ovs_response');
-        //-------------------------------------------------------------------------------------------------------
-        
-        /**
-         * Security first
-         */
-        //-------------------------------------------------------------------------------------------------------
-        if (!$_GET['ov_key'] || $_GET['ov_key'] != $this->GetLocalSessionKey()) {
-            
-            $this->remote_xml->addChild('code', 4);
-            //$ovs_response->addChild('code', 4);
-            $this->remote_xml->addChild('message', 'Authorization URL is not complete, not valid or expired.');
-            //$ovs_response->addChild('message', 'Authorization URL is not complete, not valid or expired.');
-            header('HTTP/1.0 401 Unauthorized');
-            
-            return $this->render_xml();
-        }
-        //-------------------------------------------------------------------------------------------------------
-        
-        /**
-         * Session OK?
-         * All right...
-         */
-        //-------------------------------------------------------------------------------------------------------
-        if ($_GET['ov_action'] == 'upload') {
-            //return $this->do_remote_upload_action($ovs_response);
-            return $this->do_remote_upload_action($this->remote_xml);
-            
-        }
-                
-        //return $this->do_remote_authorize_action($ovs_response);
-        return $this->do_remote_authorize_action($this->remote_xml);
-        //-------------------------------------------------------------------------------------------------------
-    }
-    
-    /**
-     * Resize Image. Process image and generate other size in $target_path
-     * @param string $file Original image file
-     * @param integer|null $width New image width (null = auto)
-     * @param integer|null $height New image height (null = auto)
-     * @param string $target_path Output images path (cached processed versions)
-     * @param string $scale_type[=crop] Scaling type crop|stretch|auto 
-     * @return string Path to new file
-     */
-    public function ResizeImage($file, $width = null, $height = null, $target_path = null, $scale_type = 'auto', $background = 'white') {
-        //-------------------------------------------------------------------------------------------------------
-        /**
-         * Original file directory parsing
-         */
-        //-------------------------------------------------------------------------------------------------------
-        $file_name = explode('/', $file);
-        $file_name = $file_name[count($file_name)-1];
-        
-        if ($target_path === null) {
-            $target_path = str_replace($file_name, '', $file);
-        }
-        
-        $fname = $target_path.str_ireplace(array('.jpg', '.png', '.gif', '.jpeg'), '', $file_name);
-        
-        //-------------------------------------------------------------------------------------------------------
-
-        /**
-         * New dimensions
-         */
-        //-------------------------------------------------------------------------------------------------------
-        if ($width === null) {
-            $width = '*';
-        }
-        if ($height === null) {
-            $height = '*';
-        }
-        //-------------------------------------------------------------------------------------------------------
-	
-        /**
-         * Get image details
-         * Create new image with proper type
-         */
-        //-------------------------------------------------------------------------------------------------------
-	list($w, $h, $type) = getimagesize($file); 
-        
-	switch ($type){ 
-            case IMAGETYPE_GIF: 
-                $src_im = imagecreatefromgif($file);  
-            break; 
-            case IMAGETYPE_PNG: 
-                $src_im = imagecreatefrompng($file);  
-            break; 
-            default:			
-                $src_im = imagecreatefromjpeg($file); 
-            break;
-	}
-	
-        /**
-         * Image dimensions
-         */
-        //-------------------------------------------------------------------------------------------------------
-        $tw = $width;
-        $th = $height;
-        if ($tw == '*') {
-            $tw = $th / $h * $w;
-        }
-        if ($th == '*') {
-            $th = $tw / $w * $h;
-        }
-        
-        /**
-         * Check if file already exists.
-         * If so, return file path
-         */
-        //-------------------------------------------------------------------------------------------------------
-        $final_path = $fname.'_'.round($tw).'_'.round($th).'.jpg';
-        
-        if (file_exists($final_path)) {
-            return $final_path;
-        }
-        
-        /**
-         * Image resizing
-         */
-        //-------------------------------------------------------------------------------------------------------
-        $dst_im = imagecreatetruecolor($tw, $th); 
-
-        if ($background == 'white') {
-            $background = 16777215;
-        }
-        else {
-            $background = 0;
-        }
-        imagefill($dst_im, 0, 0, $background); 
-        
-        switch ($scale_type) {
-            case 'crop':
-                $nw = ceil($w / $h > $tw / $th ? $th * ($w / $h) : $tw);
-                $nh = ceil($w / $h > $tw / $th ? $th : $tw / ($w / $h));
-                $temp_gdim = imagecreatetruecolor($nw, $nh);
-                imagecopyresampled($temp_gdim, $src_im, 0, 0, 0, 0, $nw, $nh, $w, $h);
-                imagecopy($dst_im, $temp_gdim, 0, 0, ($nw - $tw) / 2, ($nh - $th) / 2, $tw, $th);
-                imagedestroy($temp_gdim);
-            break;
-            case 'stretch':
-                imagecopyresampled($dst_im, $src_im, 0, 0, 0, 0, $tw, $th, $w, $h);
-            break;
-            default:
-                $nw = ceil($w > $tw || $h > $th ? ($th < $tw ? $th / ($h / $w) : $tw) : $w);
-                $nh = ceil($w > $tw || $h > $th ? ($th > $tw ? $tw * ($h / $w) : $th) : $h);
-                imagecopyresampled($dst_im, $src_im, ($tw - $nw) / 2, ($th - $nh) / 2, 0, 0, $nw, $nh, $w, $h); 
-            break;
-        }
-        //-------------------------------------------------------------------------------------------------------
-		
-        /**
-         * Use imagejpeg as one format and better quality
-         */
-        //-------------------------------------------------------------------------------------------------------
-        imagejpeg($dst_im, $final_path, 100); 
-        imagedestroy($dst_im);
-        
-        if (!file_exists($final_path)) {
-            throw new Exception('Orbitvu: Image file cannot be saved. Make sure you have set write permissions to parent directory of file: '.$final_path.'');
-        }
-        //-------------------------------------------------------------------------------------------------------
-	return $final_path;
         //-------------------------------------------------------------------------------------------------------
     }
     
@@ -550,7 +161,7 @@ final class OrbitvuAdmin {
     public function SynchronizeProductPresentation($product_id, $presentation_id, $presentation_name) {
         //-------------------------------------------------------------------------------------------------------
         $this->SetProductPresentation($product_id, $presentation_id, $presentation_name); 
-        $p_items = $this->GetProductPresentationItems($presentation_id);
+        $p_items = $this->GetProductPresentationItems($presentation_id, $this->GetConfiguration('sync_order'));
         $this->SetProductPresentationItems($product_id, $presentation_id, $presentation_name, $p_items);
         //-------------------------------------------------------------------------------------------------------
         return true;
@@ -637,16 +248,6 @@ final class OrbitvuAdmin {
         //-------------------------------------------------------------------------------------------------------
         $this->driver->SetConfiguration($var, $value);
         $this->driver->SetConfigurationParent($var, $value);
-        //-------------------------------------------------------------------------------------------------------
-    }
-    
-    /**
-     * Clear Cache
-     * @return boolean
-     */
-    public function ClearCache() {
-        //-------------------------------------------------------------------------------------------------------
-        return $this->driver->SetConfiguration('last_flushed_cache', date('Y-m-d'));
         //-------------------------------------------------------------------------------------------------------
     }
         
@@ -841,36 +442,6 @@ final class OrbitvuAdmin {
     }
     
     /**
-     * @see OrbitvuDatabaseDriver.php\GetLocalSessionKey()
-     * @return string
-     */
-    public function GetLocalSessionKey() {
-        //-------------------------------------------------------------------------------------------------------
-        return $this->driver->GetLocalSessionKey();        
-        //-------------------------------------------------------------------------------------------------------
-    }
-    
-    /**
-     * @see OrbitvuDatabaseDriver.php\GetRemoteAuthorizationUrl()
-     * @return string
-     */
-    public function GetRemoteAuthorizationUrl() {
-        //-------------------------------------------------------------------------------------------------------
-        return $this->driver->GetRemoteAuthorizationUrl();
-        //-------------------------------------------------------------------------------------------------------
-    }
-    
-    /**
-     * @see OrbitvuDatabaseDriver.php\GetRemoteUploadUrl()
-     * @return string
-     */
-    public function GetRemoteUploadUrl() {
-        //-------------------------------------------------------------------------------------------------------
-        return $this->driver->GetRemoteUploadUrl();
-        //-------------------------------------------------------------------------------------------------------
-    }
-    
-    /**
      * Install database tables
      * @return boolean
      */
@@ -932,18 +503,10 @@ final class OrbitvuAdmin {
      */
     public function SynchronizeAllProducts() {
         //-------------------------------------------------------------------------------------------------------
-        return $this->driver->SynchronizeAllProducts();
+        return $this->driver->SynchronizeAllProducts($params);
         //-------------------------------------------------------------------------------------------------------
     }
-
-    /**
-     * Get associated products of a given product     *
-     * @param $product_id
-     * @return mixed
-     */
-    public function GetAssociatedProducts($product_id) {
-        return $this->driver->GetAssociatedProducts($product_id);
-    }
+     
 }
 
 ?>

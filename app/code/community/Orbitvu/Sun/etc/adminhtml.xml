@@ -11,7 +11,7 @@
             <children>
               <config>
                 <children>
-                  <orbitvu translate="title" module="sun">
+                  <orbitvu translate="title" module="orbitvu">
                     <title>Orbitvu SUN Synchronization</title>
                     <sort_order>100</sort_order>
                   </orbitvu>
