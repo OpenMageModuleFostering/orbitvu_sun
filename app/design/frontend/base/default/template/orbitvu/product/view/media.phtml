@@ -398,7 +398,7 @@ else if ($all_items > 0) {
 /*
  * Orbitvu Public Declarations
  */   
-var orbitvu_timer, orbitvu_rectangle, orbitvu_current_image, orbitvu_init_interval, orbitvu_box_width, orbitvu_box_height, orbitvu_switch_timer, orbitvu_360_interval, orbitvu_tour_interval;
+var orbitvu_timer, orbitvu_rectangle, orbitvu_current_image, orbitvu_init_interval, orbitvu_box_width, orbitvu_box_height, orbitvu_switch_timer;
 var orbitvu_image_thumbs = Orb$('orbitvu-image-thumbs');
 var orbitvu_speed = 24;
 var orbitvu_xAll = 0;
@@ -961,7 +961,12 @@ function OrbitvuInit() {
     <?php
     if (!empty($view_360['path'])) { 
     ?>
-    orbitvu_360_interval = setInterval('orbitvu_inject_360()', 500);
+    if (typeof(orbitvu_360_interval) == 'undefined') {
+        orbitvu_360_interval = setInterval('orbitvu_inject_360()', 500);
+    }
+    else {
+        orbitvu_inject_360();
+    }
     <?php
     }
     ?>
@@ -969,7 +974,11 @@ function OrbitvuInit() {
     <?php
     if (!empty($orbittour['path'])) { 
     ?>
-    orbitvu_tour_interval = setInterval('orbitvu_inject_tour()', 500);
+    if (typeof(orbitvu_tour_interval) == 'undefined') {
+        orbitvu_tour_interval = setInterval('orbitvu_inject_tour()', 500);
+    } else {
+        orbitvu_inject_tour()
+    }
     <?php
     }
     ?>
