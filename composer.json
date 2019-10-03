@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Orbitvu_Sun",
+    "name": "OpenMageModuleFostering\/Orbitvu_Sun",
     "type": "magento-module",
     "license": "Commercial",
     "homepage": "",
-    "description": "Automate and improve your customer's expierience with dynamic zoom, 360°/3D spins, product tours using ORBITVU imaging solution.",
+    "description": "Automate and improve your customer's expierience with dynamic zoom, 360\u00b0\/3D spins, product tours using ORBITVU imaging solution.",
     "authors": [
-    {
-        "name": "Orbitvu",
-        "email": "dev@orbitvu.com"
-    }
-],
+        {
+            "name": "Orbitvu",
+            "email": "dev@orbitvu.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
